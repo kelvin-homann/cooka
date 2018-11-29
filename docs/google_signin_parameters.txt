@@ -1,0 +1,7 @@
+Google Sign-In for Android Parameters
+
+Client ID
+177265685080-vm8a0oqa7sl8n5jg5odmnp48b9e7unhg.apps.googleusercontent.com
+
+Client Secret
+JgTJMMvsuLeIUp4rtx4p7_dT

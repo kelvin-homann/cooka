@@ -151,34 +151,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * gets a system specific key hash that during development is required for social sign in services such as Facebook
+     * gets a Android Studio instance specific key hash that during development is required for social sign in services such as Facebook
      * @param context
-     * @return the system key hash to be registered with the social sign in service for developmental access
+     * @return the Android Studio instance specific key hash to be registered with the social sign in service for developmental access; returns null if an error occurred
      */
     public static String getSystemKeyHash(Activity context) {
         PackageInfo packageInfo;
         String key = null;
         try {
-            // get application package name as defined in manifest
             String packageName = context.getApplicationContext().getPackageName();
-
             packageInfo = context.getPackageManager().getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
-            //Log.e("Package Name = ", context.getApplicationContext().getPackageName());
 
             for(Signature signature : packageInfo.signatures) {
                 MessageDigest md = MessageDigest.getInstance("SHA");
                 md.update(signature.toByteArray());
                 key = new String(Base64.encode(md.digest(), 0));
-
-                // String key = new String(Base64.encodeBytes(md.digest()));
-                //Log.e("Key Hash = ", key);
             }
         }
-        catch(PackageManager.NameNotFoundException e1) {
-            Log.e("Name not found", e1.toString());
+        catch(PackageManager.NameNotFoundException e) {
+            Log.e("Name not found", e.toString());
         }
         catch(NoSuchAlgorithmException e) {
-            Log.e("No such an algorithm", e.toString());
+            Log.e("No such algorithm", e.toString());
         }
         catch(Exception e) {
             Log.e("Exception", e.toString());
