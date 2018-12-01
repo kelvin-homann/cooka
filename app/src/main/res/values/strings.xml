@@ -3,4 +3,11 @@
 
     <string name="facebook_app_id">2042351182521855</string>
     <string name="fb_login_protocol_scheme">fb2042351182521855</string>
+    <string name="title_activity_bottom_nav">bottomNavActivity</string>
+
+    <!-- Bottom Navigation Bar -->
+    <string name="title_explore">Explore</string>
+    <string name="title_cookbook">Cookbook</string>
+    <string name="title_plan">Plan</string>
+    <string name="title_cook">Cook</string>
 </resources>
