@@ -11,36 +11,14 @@ import android.view.MenuItem;
 
 public class BottomNavActivity extends AppCompatActivity implements OnFragmentInteractionListener {
 
+    //Bottom navigation bar ui component
     private BottomNavigationView navigationView;
 
+    //Main fragments for the different screens of the app
     private ExploreFragment exploreFragment;
     private CookbookFragment cookbookFragment;
     private PlanFragment planFragment;
     private CookFragment cookFragment;
-
-    //Switch fragment based on selected navigation item
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_explore:
-                    loadFragment(exploreFragment);
-                    return true;
-                case R.id.navigation_cookbook:
-                    loadFragment(cookbookFragment);
-                    return true;
-                case R.id.navigation_plan:
-                    loadFragment(planFragment);
-                    return true;
-                case R.id.navigation_cook:
-                    loadFragment(cookFragment);
-                    return true;
-            }
-            return false;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +36,14 @@ public class BottomNavActivity extends AppCompatActivity implements OnFragmentIn
 
         //Get reference to bottom navigation bar
         navigationView = (BottomNavigationView) findViewById(R.id.navigation);
-        navigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        //Add the item selected listener that calls onNavigationItemSelected to switch the fragment
+        navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                return BottomNavActivity.this.onNavigationItemSelected(menuItem);
+            }
+        });
     }
 
     //Change out the current fragment
@@ -67,6 +52,25 @@ public class BottomNavActivity extends AppCompatActivity implements OnFragmentIn
         transaction.replace(R.id.fragment_frame, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    //Switch the fragment based on selected navigation item
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.navigation_explore:
+                loadFragment(exploreFragment);
+                return true;
+            case R.id.navigation_cookbook:
+                loadFragment(cookbookFragment);
+                return true;
+            case R.id.navigation_plan:
+                loadFragment(planFragment);
+                return true;
+            case R.id.navigation_cook:
+                loadFragment(cookFragment);
+                return true;
+        }
+        return false;
     }
 
     //Callback for fragment interaction
