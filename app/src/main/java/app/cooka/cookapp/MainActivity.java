@@ -25,6 +25,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
         //Init fragments
         exploreFragment = new ExploreFragment();
         cookbookFragment = new CookbookFragment();
@@ -32,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         cookFragment = new CookFragment();
 
         //Load explore fragment
-        loadFragment(exploreFragment);
+        //loadFragment(exploreFragment);
 
         //Get reference to bottom navigation bar
         navigationView = (BottomNavigationView) findViewById(R.id.navigation);

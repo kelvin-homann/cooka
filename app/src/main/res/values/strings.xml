@@ -10,5 +10,7 @@
     <string name="title_cookbook">Cookbook</string>
     <string name="title_plan">Plan</string>
     <string name="title_cook">Cook</string>
+    <string name="action_search">Search</string>
+    <string name="action_settings">Settings</string>
 
 </resources>
