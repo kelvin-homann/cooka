@@ -1,6 +1,7 @@
 package app.cooka.cookapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -88,6 +89,11 @@ public class ExploreFragment extends Fragment {
             case R.id.action_settings:
                 //Settings action
                 Toast.makeText(this.getActivity(), R.string.action_settings, Toast.LENGTH_LONG).show();
+                return true;
+            case R.id.action_profile:
+                //Starting the Profile Activity
+                Intent intent = new Intent(getActivity(), ProfileActivity.class);
+                startActivity(intent);
                 return true;
         }
         return false;

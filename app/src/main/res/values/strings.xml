@@ -10,7 +10,21 @@
     <string name="title_cookbook">Cookbook</string>
     <string name="title_plan">Plan</string>
     <string name="title_cook">Cook</string>
+
+    <!-- Toolbar -->
     <string name="action_search">Search</string>
     <string name="action_settings">Settings</string>
+    <string name="action_profile">Profile</string>
+
+    <!-- Profile -->
+    <string name="title_activity_profile">Profile</string>
+    <string name="profile_header">Header</string>
+    <string name="profile_avatar_desc">Profile Avatar</string>
+    <string name="profile_name">%1$s!</string>
+    <string name="profile_username">\@%1$s</string>
+    <string name="profile_following_nr">%1$d</string>
+    <string name="profile_follower_nr">%1$d</string>
+    <string name="profile_following_text">Following</string>
+    <string name="profile_follower_text">Follower</string>
 
 </resources>
