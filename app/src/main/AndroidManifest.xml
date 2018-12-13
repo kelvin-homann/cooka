@@ -72,6 +72,15 @@
             android:exported="true">
         </activity>
         <activity android:name=".ProfileActivity" />
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login"></activity>
+        <activity
+            android:name=".CookModeActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_cook_mode"
+            android:theme="@style/FullscreenTheme"
+            android:exported="true"></activity>
     </application>
 
 </manifest>
