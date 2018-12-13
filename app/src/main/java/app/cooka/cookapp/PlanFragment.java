@@ -69,6 +69,7 @@ public class PlanFragment extends Fragment {
         mListener = null;
     }
 
+
     //This method is called when a menu item from the toolbar is selected
     private boolean onToolbarMenuItemClicked(MenuItem item) {
         switch (item.getItemId()){

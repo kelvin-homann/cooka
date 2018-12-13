@@ -3,5 +3,5 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="action_bar_elevation">4dp</dimen>
-    <item name="inactiveAlpha" type="dimen" format="float">0.5</item>
+    <item name="inactiveAlpha" format="float" type="dimen">0.5</item>
 </resources>
