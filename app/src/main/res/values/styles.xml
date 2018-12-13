@@ -32,4 +32,8 @@
         <item name="android:textColor">@android:color/primary_text_light</item>
     </style>
 
+    <style name="HeaderBar">
+        <item name="android:background">#303F9F</item>
+    </style>
+
 </resources>
