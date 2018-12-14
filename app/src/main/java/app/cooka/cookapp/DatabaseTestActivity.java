@@ -70,7 +70,7 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
 
         findViewById(R.id.lvwCategories).setVisibility(View.GONE);
 
-        Settings.Factory.getInstance().setCurrentLanguageId(1031);
+        Settings.getInstance().setCurrentLanguageId(1031);
         String systemKeyHash = SystemUtils.getSystemKeyHash(this);
 
         // if this is Sebastian's machine trust its local ssl certificate

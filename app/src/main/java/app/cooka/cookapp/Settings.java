@@ -17,6 +17,10 @@ public class Settings {
         }
     }
 
+    public static Settings getInstance() {
+        return Factory.getInstance();
+    }
+
     public long getCurrentLanguageId() {
         return currentLanguageId;
     }

@@ -3,6 +3,7 @@ package app.cooka.cookapp.model;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -43,17 +44,18 @@ public class CategoryGridViewAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        Category category = (Category)getItem(position);
         final View view = (convertView != null ? convertView : createView(parent));
         final CategoryGridViewItem viewHolder = (CategoryGridViewItem)view.getTag();
-        viewHolder.setCategory((Category)getItem(position));
+        viewHolder.setCategory(category);
         return view;
     }
 
-    public void setCategories(@Nullable List<Category> categorys) {
-        if(categorys == null)
+    public void setCategories(@Nullable List<Category> categories) {
+        if(categories == null)
             return;
         this.categories.clear();
-        this.categories.addAll(categorys);
+        this.categories.addAll(categories);
         notifyDataSetChanged();
     }
 
@@ -76,6 +78,11 @@ public class CategoryGridViewAdapter extends BaseAdapter {
         private ImageView ivwCategoryImage;
         private ImageView ivwOverlay;
 
+        private static Typeface browsableTypeface;
+        private static Typeface unbrowsableTypeface;
+        private static int browsableTextColor = Color.rgb(0x59, 0x64, 0x48);
+        private static int unbrowsableTextColor = Color.rgb(0x88, 0x99, 0x6e);
+
         public CategoryGridViewItem(View view) {
             tvwCategoryName = view.findViewById(R.id.tvwCategoryName);
             ivwCategoryImage = view.findViewById(R.id.ivwCategoryImage);
@@ -83,7 +90,24 @@ public class CategoryGridViewAdapter extends BaseAdapter {
         }
 
         public void setCategory(Category category) {
-            tvwCategoryName.setText(category.getName(Settings.Factory.getInstance().getCurrentLanguageId()));
+            String categoryName = category.getName(Settings.Factory.getInstance().getCurrentLanguageId());
+//            if(!category.isBrowsable())
+//                categoryName += "*";
+            tvwCategoryName.setText(categoryName);
+
+            if(browsableTypeface == null)
+                browsableTypeface = Typeface.create(tvwCategoryName.getTypeface(), Typeface.BOLD);
+            if(unbrowsableTypeface == null)
+                unbrowsableTypeface = Typeface.create(tvwCategoryName.getTypeface(), Typeface.NORMAL);
+
+            if(category.isBrowsable()) {
+                tvwCategoryName.setTypeface(browsableTypeface);
+                tvwCategoryName.setTextColor(browsableTextColor);
+            }
+            else {
+                tvwCategoryName.setTypeface(unbrowsableTypeface);
+                tvwCategoryName.setTextColor(unbrowsableTextColor);
+            }
 
             if(category.getImage() != null) {
                 ivwCategoryImage.setImageBitmap(category.getImage());
