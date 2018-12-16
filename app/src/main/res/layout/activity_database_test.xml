@@ -18,19 +18,21 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
+            android:id="@+id/lltCreateAccountPanel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:elevation="2dp"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
 
             <TextView
-                android:id="@+id/tvSignUpTitle"
+                android:id="@+id/tvRegisterTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="3dp"
                 android:paddingRight="3dp"
-                android:text="Sign Up"
+                android:text="Create an account"
                 android:textColor="#44aa22"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -45,7 +47,8 @@
                 android:hint="User Name"
                 android:inputType="textPersonName"
                 android:maxLength="32"
-                android:text="sepplroy"
+                android:text="trevornoah"
+                android:textColorHint="#cccccc"
                 android:textSize="16sp"
                 android:typeface="serif" />
 
@@ -57,7 +60,8 @@
                 android:hint="E-mail Address"
                 android:inputType="textEmailAddress"
                 android:maxLength="96"
-                android:text="cooka@sebastianzander.de"
+                android:text="trevornoah@thedailyshow.com"
+                android:textColorHint="#cccccc"
                 android:textSize="16sp" />
 
             <EditText
@@ -68,28 +72,124 @@
                 android:hint="Password"
                 android:inputType="textPassword"
                 android:maxLength="32"
-                android:text="sleeptight"
+                android:text="IAmTheDaywalker!"
+                android:textColorHint="#cccccc"
                 android:textSize="16sp" />
 
             <Button
-                android:id="@+id/btnSignUpButton"
+                android:id="@+id/btnCreateAccount"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="16dp"
                 android:clickable="false"
-                android:text="Sign up" />
+                android:text="Create Account" />
 
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/lltLoginPanel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:id="@+id/tvLoginTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp"
+                android:text="Log in with your credentials"
+                android:textColor="#44aa22"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etLoginId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:ems="10"
+                android:fontFamily="sans-serif"
+                android:hint="User name or e-mail address"
+                android:inputType="textEmailAddress|textPersonName"
+                android:maxLength="32"
+                android:textColorHint="#cccccc"
+                android:textSize="16sp"
+                android:typeface="serif" />
+
+            <EditText
+                android:id="@+id/etLoginPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:maxLength="32"
+                android:textColorHint="#cccccc"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/btnLogin"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:clickable="false"
+                android:text="Log in" />
+
+            <Button
+                android:id="@+id/btnRegister"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:clickable="false"
+                android:elevation="2dp"
+                android:text="Register" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lltWelcomePanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:id="@+id/tvwWelcomeMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="@font/catamaran_bold"
+                android:text="Welcome back @username"
+                android:textAlignment="viewStart"
+                android:textAllCaps="false"
+                android:textColor="#444444"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/btnLogout"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:text="Log out" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lltPollCategoriesPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:elevation="2dp"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
 
             <TextView
                 android:id="@+id/tvPollCategoriesTitle"
@@ -123,7 +223,7 @@
             <GridView
                 android:id="@+id/gvwCategories"
                 android:layout_width="match_parent"
-                android:layout_height="400dp"
+                android:layout_height="800dp"
                 android:layout_marginBottom="16dp"
                 android:alignmentMode="alignMargins"
                 android:columnWidth="150dp"

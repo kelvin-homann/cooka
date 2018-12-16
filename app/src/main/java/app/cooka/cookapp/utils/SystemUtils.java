@@ -1,9 +1,11 @@
 package app.cooka.cookapp.utils;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
 
@@ -13,11 +15,12 @@ import java.security.NoSuchAlgorithmException;
 public class SystemUtils {
 
     /**
-     * gets a Android Studio instance specific key hash that during development is required for social sign in services such as Facebook
+     * Gets a Android Studio instance specific key hash that during development is required for social sign in services such as Facebook
      * @param context
      * @return the Android Studio instance specific key hash to be registered with the social sign in service for developmental access; returns null if an error occurred
      */
     public static String getSystemKeyHash(Activity context) {
+
         PackageInfo packageInfo;
         String key = null;
         try {
@@ -41,5 +44,15 @@ public class SystemUtils {
         }
 
         return key;
+    }
+
+    /**
+     * Gets a Android device specific unique identifier
+     * @param contentResolver
+     * @return the Android ID; null if an error occurred
+     */
+    public static String getAndroidId(ContentResolver contentResolver) {
+
+        return Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
     }
 }

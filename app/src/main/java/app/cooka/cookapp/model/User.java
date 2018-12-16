@@ -12,11 +12,17 @@ import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Observable;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import rx.Observer;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * A class that represents a user and that is an app model representation of the corresponding
@@ -24,7 +30,7 @@ import java.util.Observable;
  * state without needing to repeatedly query the same unchanged object from the database.
  */
 @JsonAdapter(User.JsonAdapter.class)
-public class User extends Observable {
+public class User extends java.util.Observable {
 
     public static final String LOGTAG = "COOKALOG";
 
@@ -39,34 +45,35 @@ public class User extends Observable {
     public static final int CHANGED_FORCE_UPDATE = 0xffffffff;
 
     private int changeState = 0;
+    private boolean committed = false;
 
     private final long userId;
     private String userName;
     private String firstName;
     private String lastName;
     private String emailAddress;
-    private int confirmedEmailAddress;
-    private int verifiedState;
+    private int confirmedEmailAddress = 0;
+    private int verifiedState = 0;
     private long userRights;
 
-    private ELinkedProfileType linkedProfileType;
-    private String linkedProfileUserId;
+    private ELinkedProfileType linkedProfileType = ELinkedProfileType.unlinked;
+    private String linkedProfileUserId = null;
 
-    private long profileImageId;
-    private String profileImageFileName;
-    private Bitmap profileImage;
+    private long profileImageId = 0;
+    private String profileImageFileName = null;
+    private Bitmap profileImage = null;
 
-    private Date joinedDateTime;
-    private Date lastActiveDateTime;
-    private Date lastRecipeCreatedDateTime;
-    private Date lastCollectionEditedDateTime;
-    private Date lastCookModeUsedDateTime;
+    private Date joinedDateTime = null;
+    private Date lastActiveDateTime = null;
+    private Date lastRecipeCreatedDateTime = null;
+    private Date lastCollectionEditedDateTime = null;
+    private Date lastCookModeUsedDateTime = null;
 
-    private int viewedCount;
-    private int followedCount;
-    private int followingCount;
+    private int viewedCount = 0;
+    private int followedCount = 0;
+    private int followingCount = 0;
 
-    public User(final long userId, String userName, String emailAddress, int userRights) {
+    private User(final long userId, String userName, String emailAddress, long userRights) {
 
         this.userId = userId;
         this.userName = userName;
@@ -74,7 +81,25 @@ public class User extends Observable {
         this.userRights = userRights;
     }
 
-    public User(final long userId, String userName, String firstName, String lastName,
+    private User(final long userId, String userName, String firstName, String lastName,
+        String emailAddress, ELinkedProfileType linkedProfileType, String linkedProfileUserId,
+        long userRights)
+    {
+        this.userId = userId;
+        this.userName = userName;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.emailAddress = emailAddress;
+        this.linkedProfileType = linkedProfileType;
+        this.linkedProfileUserId = linkedProfileUserId;
+        this.userRights = userRights;
+    }
+
+    /**
+     * This constructor is solely used by the user factory to initialize a user previously
+     * deserialized from the database.
+     */
+    private User(final long userId, String userName, String firstName, String lastName,
         String emailAddress, int confirmedEmailAddress, String linkedProfileType,
         String linkedProfileUserId, long profileImageId, String profileImageFileName,
         String joinedDateTime, String lastActiveDateTime, String lastRecipeCreatedDateTime,
@@ -87,56 +112,257 @@ public class User extends Observable {
         this.lastName = lastName;
         this.emailAddress = emailAddress;
         this.confirmedEmailAddress = confirmedEmailAddress;
+
         try {
-            this.linkedProfileType = ELinkedProfileType.valueOf(linkedProfileType);
+            if(linkedProfileType.length() > 0)
+                this.linkedProfileType = ELinkedProfileType.valueOf(linkedProfileType);
         }
         catch(IllegalArgumentException e) {
             e.printStackTrace();
             Log.e(LOGTAG, String.format("could not parse linkedProfileType while creating user %d: %s. Set to null instead.", userId, userName));
         }
+
         this.linkedProfileUserId = linkedProfileUserId;
         this.profileImageId = profileImageId;
-        this.profileImageFileName = profileImageFileName;
+
+        setProfileImageFileName(profileImageFileName);
+
         try {
-            this.joinedDateTime = DatabaseClient.databaseDateFormat.parse(joinedDateTime);
+            if(joinedDateTime.length() > 0)
+                this.joinedDateTime = DatabaseClient.databaseDateFormat.parse(joinedDateTime);
         }
         catch(ParseException e) {
             e.printStackTrace();
             Log.e(LOGTAG, String.format("could not parse joinedDateTime while creating user %d: %s. Set to null instead.", userId, userName));
         }
+
         try {
-            this.lastActiveDateTime = DatabaseClient.databaseDateFormat.parse(lastActiveDateTime);
+            if(lastActiveDateTime.length() > 0)
+                this.lastActiveDateTime = DatabaseClient.databaseDateFormat.parse(lastActiveDateTime);
         }
         catch(ParseException e) {
             e.printStackTrace();
             Log.e(LOGTAG, String.format("could not parse lastActiveDateTime while creating user %d: %s. Set to null instead.", userId, userName));
         }
+
         try {
-            this.lastRecipeCreatedDateTime = DatabaseClient.databaseDateFormat.parse(lastRecipeCreatedDateTime);
+            if(lastRecipeCreatedDateTime.length() > 0)
+                this.lastRecipeCreatedDateTime = DatabaseClient.databaseDateFormat.parse(lastRecipeCreatedDateTime);
         }
         catch(ParseException e) {
             e.printStackTrace();
             Log.e(LOGTAG, String.format("could not parse lastRecipeCreatedDateTime while creating user %d: %s. Set to null instead.", userId, userName));
         }
+
         try {
-            this.lastCollectionEditedDateTime = DatabaseClient.databaseDateFormat.parse(lastCollectionEditedDateTime);
+            if(lastCollectionEditedDateTime.length() > 0)
+                this.lastCollectionEditedDateTime = DatabaseClient.databaseDateFormat.parse(lastCollectionEditedDateTime);
         }
         catch(ParseException e) {
             e.printStackTrace();
             Log.e(LOGTAG, String.format("could not parse lastCollectionEditedDateTime while creating user %d: %s. Set to null instead.", userId, userName));
         }
+
         try {
-            this.lastCookModeUsedDateTime = DatabaseClient.databaseDateFormat.parse(lastCookModeUsedDateTime);
+            if(lastCookModeUsedDateTime.length() > 0)
+                this.lastCookModeUsedDateTime = DatabaseClient.databaseDateFormat.parse(lastCookModeUsedDateTime);
         }
         catch(ParseException e) {
             e.printStackTrace();
             Log.e(LOGTAG, String.format("could not parse lastCookModeUsedDateTime while creating user %d: %s. Set to null instead.", userId, userName));
         }
+
         this.viewedCount = viewedCount;
         this.followedCount = followedCount;
         this.followingCount = followingCount;
         this.verifiedState = verifiedState;
         this.userRights = userRights;
+    }
+
+    /**
+     * A user factory class that does user creation, selection and database serialization.
+     */
+    public static class Factory {
+
+        /**
+         * Creates a new user in the database and a new connected user object.
+         * @return a subscription object to the create request; null if en error occurred.
+         */
+        public static Subscription createUser(final String userName, final String emailAddress,
+            final long userRights)
+        {
+            // execute database insert and receive a valid user id
+            // create and return user object
+            return null;
+        }
+
+        public static void createUser(final String userName, final String firstName,
+            final String lastName, final String emailAddress, final String hashedPassword,
+            final String salt, final String accessToken, final ELinkedProfileType linkedProfileType,
+            final String linkedProfileUserId, final long userRights, final String deviceId,
+            final ICreateUserCallback createUserCallback)
+        {
+            if(createUserCallback == null) {
+                throw new NullPointerException("create user callback is null");
+            }
+            DatabaseClient.Factory.getInstance()
+                .createUser(userName, firstName, lastName, emailAddress, hashedPassword,
+                    salt, accessToken, linkedProfileType, linkedProfileUserId, userRights,
+                    deviceId)
+                .enqueue(new Callback<CreateUserResult>() {
+                    @Override
+                    public void onResponse(Call<CreateUserResult> call, Response<CreateUserResult> response) {
+                        CreateUserResult createUserResult = response.body();
+                        User createdUser = new User(createUserResult.userId, userName, firstName, lastName,
+                            emailAddress, linkedProfileType, linkedProfileUserId, userRights);
+                        // todo: register new user at the update observer
+                        createUserCallback.onSucceeded(createUserResult, createdUser);
+                    }
+
+                    @Override
+                    public void onFailure(Call<CreateUserResult> call, Throwable t) {
+                        Log.e(LOGTAG, "User.Factory.createUser() failed");
+                        Log.e(LOGTAG, t.getMessage());
+                        createUserCallback.onFailed();
+                    }
+                });
+        }
+
+        /**
+         * Selects an existing user from the database and creates a connected user object.
+         * @return a subscription object to the select request; null if en error occurred.
+         */
+        public static Subscription selectUser(final long userId, final IResultCallback<User>
+            selectUserCallback)
+        {
+            if(selectUserCallback == null) {
+                throw new NullPointerException("select user callback is null");
+            }
+            return DatabaseClient.Factory.getInstance()
+                .selectUser(userId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<User>() {
+                    @Override public void onCompleted() {}
+                    @Override public void onError(Throwable e) {
+                        Log.e(LOGTAG, "User.Factory.selectUser() failed");
+                        Log.e(LOGTAG, e.getMessage());
+                    }
+                    @Override public void onNext(User user) {
+                        // todo: register user at the update observer
+                        selectUserCallback.onSucceeded(user);
+                    }
+                });
+        }
+
+        /**
+         * Selects multiple existing users from the database, creates connected user objects and
+         * puts them into a list.
+         * @param selectUsersCallback the select callback that will be called when the selection
+         * succeeded and that will be given the list of user objects
+         * @return a subscription object to the select request; null if an error occurred.
+         */
+        public static Subscription selectUsers(final IResultCallback<List<User>> selectUsersCallback) {
+
+            if(selectUsersCallback == null) {
+                throw new NullPointerException("select users callback is null");
+            }
+            return DatabaseClient.Factory.getInstance()
+                .selectUsers()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<User>>() {
+                    @Override public void onCompleted() {}
+                    @Override public void onError(Throwable e) {
+                        Log.e(LOGTAG, "User.Factory.selectUsers() failed");
+                        Log.e(LOGTAG, e.getMessage());
+                    }
+                    @Override public void onNext(List<User> users) {
+                        // todo: register all users at the update observer
+                        selectUsersCallback.onSucceeded(users);
+                    }
+                });
+        }
+
+        public static Subscription selectUsers(final IResultCallback<List<User>> selectUsersCallback,
+            final SelectModifier... modifiers)
+        {
+            if(selectUsersCallback == null) {
+                throw new NullPointerException("select users callback is null");
+            }
+            return DatabaseClient.Factory.getInstance()
+                .selectUsers(modifiers)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<User>>() {
+                    @Override public void onCompleted() {}
+                    @Override public void onError(Throwable e) {
+                        Log.e(LOGTAG, "User.Factory.selectUsers() failed");
+                        Log.e(LOGTAG, e.getMessage());
+                    }
+                    @Override public void onNext(List<User> users) {
+                        // todo: register all users at the update observer
+                        selectUsersCallback.onSucceeded(users);
+                    }
+                });
+        }
+
+        /**
+         * Selects multiple existing users from the database, creates connected user objects and
+         * adds them to the specified list.
+         * @param usersReceivingList the list that will receive the selected user objects
+         * @return a subscription object to the select request; null if an error occurred.
+         */
+        public static Subscription selectUsers(final List<User> usersReceivingList) {
+
+            if(usersReceivingList == null) {
+                throw new NullPointerException("users receiving list is null");
+            }
+            return DatabaseClient.Factory.getInstance()
+                .selectUsers()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<User>>() {
+                    @Override public void onCompleted() {}
+                    @Override public void onError(Throwable e) {
+                        Log.e(LOGTAG, "User.Factory.selectUsers() failed");
+                        Log.e(LOGTAG, e.getMessage());
+                    }
+                    @Override public void onNext(List<User> users) {
+                        // todo: register all users at the update observer
+                        usersReceivingList.addAll(users);
+                    }
+                });
+        }
+    }
+
+    /**
+     * Gets the change state of this category instance that reflects what fields have changed
+     * since the last synchronization. Basically an extended dirty flag.
+     * @return
+     */
+    public long getChangeState() {
+        return changeState;
+    }
+
+    public void resetChangeState() {
+        changeState = 0;
+    }
+
+    public void setForceUpdate() {
+        changeState = CHANGED_FORCE_UPDATE;
+    }
+
+    public boolean getCommited() {
+        return committed;
+    }
+
+    public void resetCommitted() {
+        this.committed = false;
+    }
+
+    public void commit() {
+        this.committed = true;
     }
 
     public long getUserId() {
@@ -276,8 +502,6 @@ public class User extends Observable {
 
             if(profileImageFileName.length() > 0) {
                 String imageUrl = "https://www.sebastianzander.de/cooka/img/" + profileImageFileName;
-                Log.d(LOGTAG, String.format("downloading profile image from url %s for user %d: %s", imageUrl,
-                    userId, userName));
                 new DownloadImageTask(imageUrl, this).execute();
             }
 
@@ -420,8 +644,6 @@ public class User extends Observable {
         protected void onPostExecute(Bitmap bitmap) {
             if(bitmap != null && user != null) {
                 user.setProfileImage(bitmap);
-                Log.d(LOGTAG, String.format("image bitmap set for user %d: %s",
-                    user.userId, user.userName));
             }
         }
     }
@@ -562,7 +784,7 @@ public class User extends Observable {
             in.nextName();
             long userRights = in.nextLong();
 
-            in.nextInt();
+            in.endObject();
 
             return new User(userId, userName, firstName, lastName, emailAddress, confirmedEmailAddress,
                 linkedProfileType, linkedProfileUserId, profileImageId, profileImageFileName,

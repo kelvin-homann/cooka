@@ -38,6 +38,7 @@ public class Category extends Observable {
     public static final int CHANGED_FORCE_UPDATE = 0xffffffff;
 
     private int changeState = 0;
+    private boolean committed = false;
 
     private final long categoryId;
     private long parentCategoryId;
@@ -49,7 +50,7 @@ public class Category extends Observable {
     private String sortPrefix;
     private boolean browsable;
 
-    public Category(final long categoryId, long parentCategoryId, String name, String description,
+    private Category(final long categoryId, long parentCategoryId, String name, String description,
         long languageId, long imageId, String imageFileName, String sortPrefix, boolean browsable)
     {
         this.categoryId = categoryId;
@@ -59,7 +60,9 @@ public class Category extends Observable {
         this.description = new TreeMap<>();
         this.description.put(languageId, description);
         this.imageId = imageId;
-        this.imageFileName = imageFileName;
+
+        setImageFileName(imageFileName);
+
         this.sortPrefix = sortPrefix;
         this.browsable = browsable;
     }
@@ -79,6 +82,18 @@ public class Category extends Observable {
 
     public void setForceUpdate() {
         changeState = CHANGED_FORCE_UPDATE;
+    }
+
+    public boolean getCommited() {
+        return committed;
+    }
+
+    public void resetCommitted() {
+        this.committed = false;
+    }
+
+    public void commit() {
+        this.committed = true;
     }
 
     public long getCategoryId() {
@@ -147,8 +162,6 @@ public class Category extends Observable {
 
             if(imageFileName.length() > 0) {
                 String imageUrl = "https://www.sebastianzander.de/cooka/img/" + imageFileName;
-                Log.d(LOGTAG, String.format("downloading image from url %s for category %d: %s", imageUrl,
-                    categoryId, name.get(Settings.Factory.getInstance().getCurrentLanguageId())));
                 new DownloadImageTask(imageUrl, this).execute();
             }
 
@@ -227,8 +240,6 @@ public class Category extends Observable {
         protected void onPostExecute(Bitmap bitmap) {
             if(bitmap != null && category != null) {
                 category.setImage(bitmap);
-                Log.d(LOGTAG, String.format("image bitmap set for category %d: %s",
-                    category.categoryId, category.name.get(Settings.Factory.getInstance().getCurrentLanguageId())));
             }
         }
     }
