@@ -86,9 +86,9 @@
         $updateCollectionRowCount = $updateCollectionStmt->rowCount();
 
         // insert a new login
-        $insertLoginStmt = $database->prepare("insert into Logins (userId, accessToken, deviceId, loggedInDateTime, " .
-            "validUntilDateTime, expiresAtDateTime) " .
-            "values (?, ?, ?, now(), date_add(now(), interval 30 day), date_add(now(), interval 4 month))");
+        $insertLoginStmt = $database->prepare("insert into Logins (userId, accessToken, deviceId, refreshes, " .
+            "loggedInDateTime, lastRefreshedDateTime, validUntilDateTime, expiresAtDateTime) " .
+            "values (?, ?, ?, 0, now(), null, date_add(now(), interval 30 day), date_add(now(), interval 4 month))");
         $insertLoginStmt->bindValue(1, $insertedUserId, PDO::PARAM_INT);
         $insertLoginStmt->bindValue(2, $accessToken, PDO::PARAM_STR);
         $insertLoginStmt->bindValue(3, $deviceId, PDO::PARAM_STR);

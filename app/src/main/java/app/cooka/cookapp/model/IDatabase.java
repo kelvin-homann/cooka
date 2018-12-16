@@ -68,6 +68,12 @@ public interface IDatabase {
         @Query("accessToken") String accessToken
     );
 
+    @POST("database.php?action=invalidateLogin")
+    Call<InvalidateLoginResult> invalidateLogin(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken
+    );
+
     /*  ************************************************************************************  *
      *  CATEGORY METHODS
      *  ************************************************************************************  */

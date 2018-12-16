@@ -85,8 +85,8 @@ public class CategoryGridViewAdapter extends BaseAdapter {
 
         private static Typeface browsableTypeface;
         private static Typeface unbrowsableTypeface;
-        private static int browsableTextColor = Color.rgb(0x23, 0x30, 0x1c);
-        private static int unbrowsableTextColor = Color.rgb(0x66, 0x8c, 0x51);
+        private static int browsableTextColor = Color.rgb(0xff, 0xff, 0xff); //Color.rgb(0x23, 0x30, 0x1c);
+        private static int unbrowsableTextColor = Color.rgb(0xc6, 0xd6, 0x4d); //Color.rgb(0x66, 0x8c, 0x51);
 
         public CategoryGridViewItem(View view) {
             tvwCategoryName = view.findViewById(R.id.tvwCategoryName);
@@ -100,32 +100,32 @@ public class CategoryGridViewAdapter extends BaseAdapter {
 //                categoryName += "*";
             tvwCategoryName.setText(categoryName);
 
-            if(browsableTypeface == null)
-                browsableTypeface = ResourcesCompat.getFont(tvwCategoryName.getContext(), R.font.catamaran);
+            //if(browsableTypeface == null)
+            //    browsableTypeface = ResourcesCompat.getFont(tvwCategoryName.getContext(), R.font.catamaran);
             //if(unbrowsableTypeface == null)
             //    unbrowsableTypeface = Typeface.create(tvwCategoryName.getTypeface(), Typeface.NORMAL);
 
             if(category.isBrowsable()) {
-                tvwCategoryName.setTypeface(browsableTypeface);
+                //tvwCategoryName.setTypeface(browsableTypeface);
                 tvwCategoryName.setTextColor(browsableTextColor);
             }
             else {
-                tvwCategoryName.setTypeface(browsableTypeface);
+                //tvwCategoryName.setTypeface(browsableTypeface);
                 tvwCategoryName.setTextColor(unbrowsableTextColor);
             }
 
-            ivwOverlay.setAlpha(0.6f);
+            ivwOverlay.setAlpha(0f);
 
             if(category.getImage() != null) {
                 //ivwCategoryImage.setAlpha(0f);
                 ivwCategoryImage.setImageBitmap(category.getImage());
                 //Animation fadeInAnimation = AnimationUtils.loadAnimation(
                 //    ivwCategoryImage.getContext(), R.anim.image_fadein_animation);
-                ivwOverlay.setBackgroundColor(Color.WHITE);
+                //ivwOverlay.setBackgroundColor(Color.WHITE);
             }
             else {
                 ivwCategoryImage.setImageBitmap(null);
-                ivwOverlay.setBackgroundColor(Color.rgb(0xe9, 0xef, 0xd5)); // 0xe9efd5
+                //ivwOverlay.setBackgroundColor(Color.rgb(0xe9, 0xef, 0xd5)); // 0xe9efd5
             }
         }
     }

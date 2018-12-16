@@ -21,7 +21,7 @@
         android:layout_width="0dp"
         android:layout_height="400dp"
         android:alpha="0.6"
-        android:background="#ffffff"
+        android:background="#000000"
         app:layout_constraintBottom_toTopOf="@+id/ivwCategoryImage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

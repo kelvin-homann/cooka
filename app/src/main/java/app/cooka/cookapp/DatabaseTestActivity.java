@@ -32,6 +32,11 @@ import java.util.List;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
+import app.cooka.cookapp.login.ICreateAccountCallback;
+import app.cooka.cookapp.login.ILoginCallback;
+import app.cooka.cookapp.login.IRefreshLoginCallback;
+import app.cooka.cookapp.login.LoginManager;
+import app.cooka.cookapp.login.ILogoutCallback;
 import app.cooka.cookapp.model.ArrayListObserver;
 import app.cooka.cookapp.model.AuthenticateUserResult;
 import app.cooka.cookapp.model.Category;
@@ -39,8 +44,9 @@ import app.cooka.cookapp.model.CategoryGridViewAdapter;
 import app.cooka.cookapp.model.CategoryListViewAdapter;
 import app.cooka.cookapp.model.CreateUserResult;
 import app.cooka.cookapp.model.DatabaseClient;
-import app.cooka.cookapp.model.ExistsUserResult;
 import app.cooka.cookapp.model.ICreateUserCallback;
+import app.cooka.cookapp.model.InvalidateLoginResult;
+import app.cooka.cookapp.model.RefreshLoginResult;
 import app.cooka.cookapp.model.User;
 import app.cooka.cookapp.utils.SecurityUtils;
 import app.cooka.cookapp.utils.SystemUtils;
@@ -64,6 +70,7 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
     public static final String SPK_ACCESSTOKEN = "accessToken";
     public static final String SPK_USERRIGHTS = "userRights";
     public static final String SPK_LANGUAGEID = "languageId";
+    public static final String SPK_INVALID = "invalid";
 
     public static SharedPreferences sharedPreferences;
 
@@ -96,16 +103,23 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         lltWelcomePanel = findViewById(R.id.lltWelcomePanel);
         lltPollCategoriesPanel = findViewById(R.id.lltPollCategoriesPanel);
 
-        // hide the create account panel
-        lltCreateAccountPanel.setVisibility(View.GONE);
+        // hide all panels until the login state is known
+        hideAllPanels();
+
+        // if the stored login information was declared invalid
+        if(sharedPreferences.contains(SPK_INVALID) && sharedPreferences.getBoolean(SPK_INVALID, false)) {
+            logout(false);
+            Log.d(LOGTAG, String.format("the login associated with the access token %s is now invalid",
+                sharedPreferences.getString(SPK_ACCESSTOKEN, "n/a")));
+            Log.d(LOGTAG, "the user has been logged out");
+        }
+        else
+            refreshLogin(true);
 
         // if there is currently a user logged in
         if(sharedPreferences.contains(DatabaseTestActivity.SPK_USERID) &&
             sharedPreferences.getLong(DatabaseTestActivity.SPK_USERID, 0L) != 0L)
         {
-            // hide login panel
-            lltLoginPanel.setVisibility(View.GONE);
-
             // set welcome message
             TextView tvwWelcomeMessage = findViewById(R.id.tvwWelcomeMessage);
             String userName = sharedPreferences.getString(SPK_USERNAME, null);
@@ -118,16 +132,15 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
             Button btnCreateAccount = findViewById(R.id.btnCreateAccount);
             btnCreateAccount.setClickable(false);
 
+            showAuthenticationRequiredPanels();
+
             Log.d(LOGTAG, String.format("SPK_USERID = %d", sharedPreferences.getLong(DatabaseTestActivity.SPK_USERID, 0L)));
             Log.d(LOGTAG, String.format("SPK_USERRIGHTS = 0x%08x", sharedPreferences.getLong(DatabaseTestActivity.SPK_USERRIGHTS, 0)));
             Log.d(LOGTAG, String.format("SPK_LANGUAGEID = %d", sharedPreferences.getLong(DatabaseTestActivity.SPK_LANGUAGEID, 0L)));
         }
         // if there is no user logged in
         else {
-            // hide welcome panel
-            lltWelcomePanel.setVisibility(View.GONE);
-            // show login panel
-            lltLoginPanel.setVisibility(View.VISIBLE);
+            hideAuthenticationRequiredPanels();
         }
 
         Settings.getInstance().setCurrentLanguageId(1031);
@@ -140,6 +153,7 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         findViewById(R.id.btnLogin).setOnClickListener(this);
         findViewById(R.id.btnLogout).setOnClickListener(this);
         findViewById(R.id.btnRegister).setOnClickListener(this);
+        findViewById(R.id.btnIHaveAnAccount).setOnClickListener(this);
         findViewById(R.id.btnCreateAccount).setOnClickListener(this);
         findViewById(R.id.btnPollCategories).setOnClickListener(this);
 
@@ -165,11 +179,15 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
                 break;
 
             case R.id.btnLogout:
-                logout();
+                logout(true);
                 break;
 
             case R.id.btnRegister:
                 showCreateAccountPanel();
+                break;
+
+            case R.id.btnIHaveAnAccount:
+                showLoginPanel();
                 break;
 
             case R.id.btnCreateAccount:
@@ -182,6 +200,18 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
+    private void hideAllPanels() {
+
+        lltLoginPanel.setVisibility(View.GONE);
+        lltCreateAccountPanel.setVisibility(View.GONE);
+        lltWelcomePanel.setVisibility(View.GONE);
+        lltPollCategoriesPanel.setVisibility(View.GONE);
+    }
+
+    /**
+     * Shows the create account panel and populates its fields with user name and password if were
+     * previously entered into the login panel.
+     */
     private void showCreateAccountPanel() {
 
         EditText etUserName = findViewById(R.id.etUserName);
@@ -203,7 +233,19 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         lltCreateAccountPanel.setVisibility(View.VISIBLE);
     }
 
-    private void showWelcomePanel() {
+    /**
+     * Shows the login panel and hides all other authentication-required panels.
+     */
+    private void showLoginPanel() {
+
+        lltCreateAccountPanel.setVisibility(View.GONE);
+        hideAuthenticationRequiredPanels();
+    }
+
+    /**
+     * Shows all authentication-required panels and hides login or create account panels.
+     */
+    private void showAuthenticationRequiredPanels() {
 
         lltLoginPanel.setVisibility(View.GONE);
         lltCreateAccountPanel.setVisibility(View.GONE);
@@ -211,13 +253,26 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         lltPollCategoriesPanel.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Hides all authentication-required panels and shows the login panel.
+     */
+    private void hideAuthenticationRequiredPanels() {
+
+        lltWelcomePanel.setVisibility(View.GONE);
+        lltPollCategoriesPanel.setVisibility(View.GONE);
+        lltLoginPanel.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Starts a login process with the login information provided in the login panel.
+     */
     private void login() {
 
         final Button btnLogin = findViewById(R.id.btnLogin);
         btnLogin.setClickable(false);
 
-        EditText etLoginId = findViewById(R.id.etLoginId);
-        EditText etLoginPassword = findViewById(R.id.etLoginPassword);
+        final EditText etLoginId = findViewById(R.id.etLoginId);
+        final EditText etLoginPassword = findViewById(R.id.etLoginPassword);
 
         if(etLoginId.getText().length() == 0)
             Toast.makeText(getApplicationContext(), "Please enter a user name or e-mail address", Toast.LENGTH_LONG).show();
@@ -227,111 +282,57 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         final String loginId = etLoginId.getText().toString();
         final String password = etLoginPassword.getText().toString();
 
-        // run user exists request
-        DatabaseClient.Factory.getInstance()
-            .existsUser(loginId, null, null, true)
-            .enqueue(new Callback<ExistsUserResult>() {
+        LoginManager.Factory.getInstance(getApplicationContext()).
+            login(loginId, password, new ILoginCallback() {
                 @Override
-                public void onResponse(Call<ExistsUserResult> call, Response<ExistsUserResult> response) {
-                    // do the authentication using the received salt
-                    ExistsUserResult existsUserResult = response.body();
-                    // if the user name/e-mail address exists
-                    if(existsUserResult.result == 1) {
-                        final long userId = existsUserResult.userId;
-                        final String salt = existsUserResult.salt;
-                        if(userId != 0 && salt.length() != 0) {
-                            // do the authentication
-                            authenticate(userId, password, salt);
-                        }
-                        // this should really not happen (database inconsistency)
-                        else {
-                            Toast.makeText(getApplicationContext(), "Error code 13. Please contact the app developer.", Toast.LENGTH_LONG).show();
-                            btnLogin.setClickable(true);
-                        }
-                    }
-                    // if the user name/e-mail address does not exist
-                    else {
-                        Toast.makeText(getApplicationContext(), "Invalid user name/e-mail address or password", Toast.LENGTH_LONG).show();
-                        btnLogin.setClickable(true);
-                    }
+                public void onSucceeded(AuthenticateUserResult result) {
+                    // set welcome message
+                    TextView tvwWelcomeMessage = findViewById(R.id.tvwWelcomeMessage);
+                    if(result.userName != null)
+                        tvwWelcomeMessage.setText(String.format("Welcome back @%s", result.userName));
+                    else
+                        tvwWelcomeMessage.setText("Welcome back!");
+
+                    // show all authentication-required panels and hide login panel
+                    showAuthenticationRequiredPanels();
+
+                    etLoginId.setText("");
+                    etLoginPassword.setText("");
+
+                    Toast.makeText(getApplicationContext(), "Successfully logged in", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
-                public void onFailure(Call<ExistsUserResult> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Oops, that didn't work. Please try again in a minute.", Toast.LENGTH_LONG).show();
-                    t.printStackTrace();
+                public void onFailed(int errorCode, String errorMessage, Throwable t) {
+                    Toast.makeText(getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
+                    Log.e(LOGTAG, String.format("error code %d: %s", errorCode, errorMessage));
                     btnLogin.setClickable(true);
                 }
             });
     }
 
-    private void authenticate(final long userId, final String password, final String salt) {
+    /**
+     * Logs the user out and removes the login associated with the stored access token. Hides any
+     * authentication-required content panels and shows the login panel again.
+     * @param manual deletes the login from the database if set true (used when the user manually
+     *      chooses to log out); does not delete the login from the database and assumes it was
+     *      already removed (used in effect of automatic login invalidation).
+     */
+    private void logout(final boolean manual) {
 
-        final Button btnLogin = findViewById(R.id.btnLogin);
-        final String hashedPassword = SecurityUtils.generateHashedPassword(password, salt);
-        final String accessToken = SecurityUtils.generateAccessToken();
-        final String deviceId = SystemUtils.getAndroidId(getContentResolver());
+        LoginManager.Factory.getInstance(getApplicationContext()).logout(manual,
+            new ILogoutCallback() {
+            @Override
+            public void onSucceeded(InvalidateLoginResult result) {
+                Log.d(LOGTAG, "the stored login information has been invalidated");
+                Log.d(LOGTAG, "the user has been logged out");
+                Toast.makeText(getApplicationContext(), "You have been logged out", Toast.LENGTH_SHORT).show();
+            }
 
-        // run authentication request
-        DatabaseClient.Factory.getInstance()
-            .authenticateUser(userId, null, null, hashedPassword, accessToken, deviceId)
-            .enqueue(new Callback<AuthenticateUserResult>() {
-                @Override
-                public void onResponse(Call<AuthenticateUserResult> call, Response<AuthenticateUserResult> response) {
-                    AuthenticateUserResult authenticateUserResult = response.body();
-                    // if login successful
-                    if(authenticateUserResult.result == 1) {
-                        // set shared preferences (session variables)
-                        if(sharedPreferences == null) {
-                            sharedPreferences = getApplicationContext().getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
-                        }
-                        if(sharedPreferences != null) {
-                            SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-                            sharedPreferencesEditor.putLong(SPK_USERID, authenticateUserResult.userId);
-                            sharedPreferencesEditor.putString(SPK_USERNAME, authenticateUserResult.userName);
-                            sharedPreferencesEditor.putString(SPK_ACCESSTOKEN, accessToken);
-                            sharedPreferencesEditor.putLong(SPK_USERRIGHTS, authenticateUserResult.userRights);
-                            sharedPreferencesEditor.putLong(SPK_LANGUAGEID, Settings.Factory.getInstance().getCurrentLanguageId());
-                            sharedPreferencesEditor.apply();
-                        }
+            @Override public void onFailed(int errorCode, String errorMessage, Throwable t) {}
+        });
 
-                        // hide login panel
-                        lltLoginPanel.setVisibility(View.GONE);
-
-                        // set welcome message
-                        TextView tvwWelcomeMessage = findViewById(R.id.tvwWelcomeMessage);
-                        if(authenticateUserResult.userName != null)
-                            tvwWelcomeMessage.setText(String.format("Welcome back @%s", authenticateUserResult.userName));
-                        else
-                            tvwWelcomeMessage.setText("Welcome back!");
-
-                        // show welcome panel
-                        lltWelcomePanel.setVisibility(View.VISIBLE);
-
-                        Toast.makeText(getApplicationContext(), "Successfully logged in", Toast.LENGTH_SHORT).show();
-                    }
-                    // if login failed (probably wrong password)
-                    else {
-                        Toast.makeText(getApplicationContext(), "Invalid user name/e-mail address or password", Toast.LENGTH_LONG).show();
-                        btnLogin.setClickable(true);
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<AuthenticateUserResult> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Oops, that didn't work. Please try again in a minute.", Toast.LENGTH_LONG).show();
-                    t.printStackTrace();
-                    btnLogin.setClickable(true);
-                }
-            });
-    }
-
-    private void logout() {
-
-        // remove shared preferences (session variables)
-        if(sharedPreferences == null) {
-            sharedPreferences = getApplicationContext().getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
-        }
+        // clear the shared preferences and remove any stored login information
         if(sharedPreferences != null) {
             SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
             sharedPreferencesEditor.clear();
@@ -346,24 +347,53 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         Button btnLogin = findViewById(R.id.btnLogin);
         btnLogin.setClickable(true);
 
-        // hide welcome panel
-        lltWelcomePanel.setVisibility(View.GONE);
-
-        // show login panel
-        lltLoginPanel.setVisibility(View.VISIBLE);
+        hideAuthenticationRequiredPanels();
     }
 
     /**
-     * makes a new retrofit database request to create a new user account
+     * Refreshes the login associated with the stored access token. If the refresh happens within
+     * 30 days of the last user activity the login remains alive and will get refreshed. If the
+     * refresh happens after these 30 days or after 4 month after the login was created the login
+     * has expired or if the access token has been declared invalid or deleted for some other
+     * reason, the user will get logged out. The user has to log in again and will receive a new
+     * access token.
+     * @param forceLogout forces a logout if the stored login information is invalid if set true;
+     *      postpones the logout until the next authentication-required user action of until the
+     *      next refresh login at the latest if set false.
+     */
+    private void refreshLogin(final boolean forceLogout) {
+
+        LoginManager.Factory.getInstance(getApplicationContext()).refreshLogin(forceLogout,
+            new IRefreshLoginCallback() {
+                @Override
+                public void onLoginRefreshed(RefreshLoginResult result) {
+                    // nothing to do here; the login has been refreshed on the database
+                    Log.d(LOGTAG, "the stored login information has been refreshed");
+                }
+
+                @Override
+                public void onLoginInvalidated() {
+
+                }
+
+                @Override
+                public void onFailed(int errorCode, String errorMessage, Throwable t) {
+
+                }
+            });
+    }
+
+    /**
+     * Creates a new user account with the information provided in the create account panel.
      */
     private void createAccount() {
 
         final Button btnCreateAccount = findViewById(R.id.btnCreateAccount);
         btnCreateAccount.setClickable(false);
 
-        EditText etUserName = findViewById(R.id.etUserName);
-        EditText etEmailAddress = findViewById(R.id.etEmailAddress);
-        EditText etPassword = findViewById(R.id.etPassword);
+        final EditText etUserName = findViewById(R.id.etUserName);
+        final EditText etEmailAddress = findViewById(R.id.etEmailAddress);
+        final EditText etPassword = findViewById(R.id.etPassword);
 
         if(etUserName.getText().length() == 0)
             Toast.makeText(getApplicationContext(), "Please enter a user name", Toast.LENGTH_LONG).show();
@@ -375,64 +405,42 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         final String userName = etUserName.getText().toString();
         final String emailAddress = etEmailAddress.getText().toString();
         final String password = etPassword.getText().toString();
-        final String salt = SecurityUtils.generateSalt(SecurityUtils.DEFAULT_SALT_LENGTH);
-        final String hashedPassword = SecurityUtils.generateHashedPassword(password, salt);
-        final String accessToken = SecurityUtils.generateAccessToken();
-        final String deviceId = SystemUtils.getAndroidId(getContentResolver());
-        final int userRights = 1;
 
-//        Log.d(LOGTAG, String.format("registering user %s (%s)", userName, emailAddress));
-//        Log.d(LOGTAG, String.format("hashed password = %s", hashedPassword));
-//        Log.d(LOGTAG, String.format("generated salt = %s", salt));
-//        Log.d(LOGTAG, String.format("generated access token = %s", accessToken));
+        LoginManager.Factory.getInstance(getApplicationContext()).createAccount(userName,
+            emailAddress, password, new ICreateAccountCallback() {
+                @Override
+                public void onSucceeded(CreateUserResult result, User createdUser) {
+                    // hide the create account panel
+                    lltCreateAccountPanel.setVisibility(View.GONE);
 
-        User.Factory.createUser(userName, null, null, emailAddress, hashedPassword, salt,
-            accessToken, null, null, userRights, deviceId, new ICreateUserCallback() {
-            @Override public void onSucceeded(CreateUserResult createUserResult, User createdUser) {
-                Log.d(LOGTAG, String.format("successfully created user %s", createdUser.getUserName()));
-                Log.d(LOGTAG, String.format("user id = %d", createdUser.getUserId()));
-                Log.d(LOGTAG, String.format("main collection id = %d", createUserResult.mainCollectionId));
-                Log.d(LOGTAG, String.format("login id = %d", createUserResult.loginId));
+                    // set welcome message
+                    TextView tvwWelcomeMessage = findViewById(R.id.tvwWelcomeMessage);
+                    String userName = createdUser.getUserName();
+                    if(userName != null)
+                        tvwWelcomeMessage.setText(String.format("Welcome to Cooka @%s", userName));
+                    else
+                        tvwWelcomeMessage.setText("Welcome to Cooka!");
 
-                // set shared preferences (session variables)
-                if(sharedPreferences == null) {
-                    sharedPreferences = getApplicationContext().getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
-                }
-                if(sharedPreferences != null) {
-                    SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-                    sharedPreferencesEditor.putLong(SPK_USERID, createdUser.getUserId());
-                    sharedPreferencesEditor.putString(SPK_USERNAME, createdUser.getUserName());
-                    sharedPreferencesEditor.putString(SPK_ACCESSTOKEN, accessToken);
-                    sharedPreferencesEditor.putLong(SPK_USERRIGHTS, userRights);
-                    sharedPreferencesEditor.putLong(SPK_LANGUAGEID, Settings.Factory.getInstance().getCurrentLanguageId());
-                    sharedPreferencesEditor.apply();
+                    // show all authentication-required panels
+                    showAuthenticationRequiredPanels();
+
+                    etUserName.setText("");
+                    etEmailAddress.setText("");
+                    etPassword.setText("");
+
+                    Toast.makeText(getApplicationContext(), "Account successfully created", Toast.LENGTH_SHORT).show();
                 }
 
-                // hide the create account panel
-                lltCreateAccountPanel.setVisibility(View.GONE);
-
-                // set welcome message
-                TextView tvwWelcomeMessage = findViewById(R.id.tvwWelcomeMessage);
-                String userName = createdUser.getUserName();
-                if(userName != null)
-                    tvwWelcomeMessage.setText(String.format("Welcome to Cooka @%s", userName));
-                else
-                    tvwWelcomeMessage.setText("Welcome to Cooka!");
-
-                // show welcome panel
-                lltWelcomePanel.setVisibility(View.VISIBLE);
-
-                Toast.makeText(getApplicationContext(), "Account successfully created", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override public void onFailed() {
-                btnCreateAccount.setClickable(true);
-            }
-        });
+                @Override
+                public void onFailed(int errorCode, String errorMessage, Throwable t) {
+                    btnCreateAccount.setClickable(true);
+                }
+            });
     }
 
     /**
-     * makes a retrofit database request to receive all unhidden categories in the specified language
+     * Polls all categories from the database and populates a grid view in the poll categories
+     * panel with them.
      */
     private void pollCategoriesAsync() {
 
@@ -510,8 +518,9 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
     }
 
     /**
-     * installs and trusts Sebastian's local self-signed SSL certificate used by the development web server
-     * shall only be executed in debug builds
+     * {{DEBUG}}
+     * Installs and trusts Sebastian's local self-signed SSL certificate used by the development
+     * web server. Shall only be executed in debug builds.
      */
     private void trustLocalSslCertificate() {
 

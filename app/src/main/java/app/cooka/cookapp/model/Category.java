@@ -61,6 +61,8 @@ public class Category extends Observable {
         this.description.put(languageId, description);
         this.imageId = imageId;
 
+        Log.d(LOGTAG, String.format("set category name \"%s\"", name));
+
         setImageFileName(imageFileName);
 
         this.sortPrefix = sortPrefix;

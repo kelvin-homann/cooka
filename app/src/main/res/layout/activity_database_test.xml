@@ -7,7 +7,7 @@
     tools:context=".DatabaseTestActivity">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
@@ -30,9 +30,10 @@
                 android:id="@+id/tvRegisterTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
                 android:paddingLeft="3dp"
                 android:paddingRight="3dp"
-                android:text="Create an account"
+                android:text="Register"
                 android:textColor="#44aa22"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -44,10 +45,9 @@
                 android:clickable="false"
                 android:ems="10"
                 android:fontFamily="sans-serif"
-                android:hint="User Name"
+                android:hint="user name"
                 android:inputType="textPersonName"
                 android:maxLength="32"
-                android:text="trevornoah"
                 android:textColorHint="#cccccc"
                 android:textSize="16sp"
                 android:typeface="serif" />
@@ -57,10 +57,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="E-mail Address"
+                android:hint="email address"
                 android:inputType="textEmailAddress"
                 android:maxLength="96"
-                android:text="trevornoah@thedailyshow.com"
                 android:textColorHint="#cccccc"
                 android:textSize="16sp" />
 
@@ -69,10 +68,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="Password"
+                android:hint="password"
                 android:inputType="textPassword"
                 android:maxLength="32"
-                android:text="IAmTheDaywalker!"
                 android:textColorHint="#cccccc"
                 android:textSize="16sp" />
 
@@ -82,9 +80,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:layout_marginBottom="16dp"
                 android:clickable="false"
                 android:text="Create Account" />
+
+            <Button
+                android:id="@+id/btnIHaveAnAccount"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:clickable="false"
+                android:text="I have an account" />
 
         </LinearLayout>
 
@@ -100,9 +106,10 @@
                 android:id="@+id/tvLoginTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
                 android:paddingLeft="3dp"
                 android:paddingRight="3dp"
-                android:text="Log in with your credentials"
+                android:text="Login"
                 android:textColor="#44aa22"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -114,7 +121,7 @@
                 android:clickable="false"
                 android:ems="10"
                 android:fontFamily="sans-serif"
-                android:hint="User name or e-mail address"
+                android:hint="user name or email"
                 android:inputType="textEmailAddress|textPersonName"
                 android:maxLength="32"
                 android:textColorHint="#cccccc"
@@ -126,7 +133,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="Password"
+                android:hint="password"
                 android:inputType="textPassword"
                 android:maxLength="32"
                 android:textColorHint="#cccccc"
@@ -148,8 +155,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:clickable="false"
-                android:elevation="2dp"
-                android:text="Register" />
+                android:text="I don't have an account" />
         </LinearLayout>
 
         <LinearLayout

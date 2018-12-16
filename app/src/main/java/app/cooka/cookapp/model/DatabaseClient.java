@@ -11,6 +11,7 @@ import java.util.List;
 
 import app.cooka.cookapp.DatabaseTestActivity;
 import app.cooka.cookapp.Settings;
+import app.cooka.cookapp.login.LoginManager;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -29,7 +30,7 @@ public class DatabaseClient {
 
     private DatabaseClient() {
 
-        sharedPreferences = DatabaseTestActivity.sharedPreferences;
+        sharedPreferences = LoginManager.sharedPreferences;
         categoryJsonAdapter = new Category.JsonAdapter(Settings.getInstance().getCurrentLanguageId());
 
         final Gson gson = new GsonBuilder()
@@ -95,15 +96,15 @@ public class DatabaseClient {
     }
 
     /**
-     * Checks if a user identified by either a login ID (handled as either user name or e-mail
-     *      address), user name or e-mail address.
+     * Checks if a user - identified by either a login ID (handled as either user name or e-mail
+     *      address), user name or e-mail address - exists.
      * @param loginId the login ID to check against. Useful for login screens with only one input
      *      field that allows both user name and e-mail address. Either-or-check is performed on
      *      the database side.
      * @param userName the user name to check if exists.
      * @param emailAddress the e-mail address to check if exists.
-     * @param pullSalt
-     * @return
+     * @param pullSalt pulls the salt and the user ID if set to true.
+     * @return a ExistsUserResult object within a Call to it; null if an error occurred
      */
     public Call<ExistsUserResult> existsUser(final String loginId, final String userName,
         final String emailAddress, boolean pullSalt)
@@ -116,7 +117,7 @@ public class DatabaseClient {
      * Authenticates a user identified by either a user ID, user name or e-mail address and returns
      *      a AuthenticateUserResult that holds detailed information about the authentication
      *      result.
-     * @param userId the user ID of the user to be authenticated (first priority
+     * @param userId the user ID of the user to be authenticated (first priority)
      * @param userName the user name of the user to be authenticated (second priority)
      * @param emailAddress the e-mail address of the user to be authenticated (third priority)
      * @param hashedPassword the hashed password to check against the hashed password stored in the
@@ -136,16 +137,41 @@ public class DatabaseClient {
     }
 
     /**
-     * Refreshes the current login that is associated with the stored user ID and access token
+     * Refreshes the current login that is associated with the stored user ID and access token.
      * @return a RefreshLoginResult object within a Call to it; null if an error occurred or there
      *      is currently no user logged in (user ID or access token in shared preferences not set)
      */
-    public Call<RefreshLoginResult> refreshLogin()  {
+    public Call<RefreshLoginResult> refreshLogin() {
 
         final long userId = sharedPreferences.getLong(DatabaseTestActivity.SPK_USERID, 0L);
         final String accessToken = sharedPreferences.getString(DatabaseTestActivity.SPK_ACCESSTOKEN, "");
         return userId != 0 && accessToken != null && accessToken.length() > 0 ?
             databaseInterface.refreshLogin(userId, accessToken) : null;
+    }
+
+    public Call<RefreshLoginResult> refreshLogin(final long userId, final String accessToken) {
+
+        return userId != 0 && accessToken != null && accessToken.length() > 0 ?
+            databaseInterface.refreshLogin(userId, accessToken) : null;
+    }
+
+    /**
+     * Invalidates the current login that is associated with the stored user ID and access token.
+     * @return a InvalidateLoginResult object within a Call to it; null if an error occurred or
+     *      there is currently no user logged in (user ID or access token in shared prefs not set)
+     */
+    public Call<InvalidateLoginResult> invalidateLogin()  {
+
+        final long userId = sharedPreferences.getLong(DatabaseTestActivity.SPK_USERID, 0L);
+        final String accessToken = sharedPreferences.getString(DatabaseTestActivity.SPK_ACCESSTOKEN, "");
+        return userId != 0 && accessToken != null && accessToken.length() > 0 ?
+            databaseInterface.invalidateLogin(userId, accessToken) : null;
+    }
+
+    public Call<InvalidateLoginResult> invalidateLogin(final long userId, final String accessToken) {
+
+        return userId != 0 && accessToken != null && accessToken.length() > 0 ?
+            databaseInterface.invalidateLogin(userId, accessToken) : null;
     }
 
     /*  ************************************************************************************  *

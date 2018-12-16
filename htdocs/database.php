@@ -114,6 +114,9 @@
     case 'refreshLogin':
         include($scriptDir . '/database_refreshlogin.inc.php');
         break;
+    case 'invalidateLogin':
+        include($scriptDir . '/database_invalidatelogin.inc.php');
+        break;
 
     case 'listUntranslatedUiStrings':
         include($scriptDir . '/database_listuntranslateduistrings.inc.php');

@@ -22,7 +22,8 @@
         $numDeletedLogins = $deleteLoginsStmt->rowCount();
 
         // update the actual login
-        $updateLoginSql = "update Logins set validUntilDateTime = date_add(now(), interval 30 day) where userId = ? and accessToken = ?";
+        $updateLoginSql = "update Logins set refreshes = refreshes + 1, lastRefreshedDateTime = now(), " .
+            "validUntilDateTime = date_add(now(), interval 30 day) where userId = ? and accessToken = ?";
         $updateLoginStmt = $database->prepare($updateLoginSql);
         $updateLoginStmt->bindValue(1, $userId, PDO::PARAM_INT);
         $updateLoginStmt->bindValue(2, $accessToken, PDO::PARAM_STR);

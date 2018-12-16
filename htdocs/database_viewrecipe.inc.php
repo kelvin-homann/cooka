@@ -3,8 +3,12 @@
         returnError(3, "the parameter recipeId was not specified", 0, "");
         return;
     }
-    if(!isset($_getpost['userAccessToken'])) {
-        returnError(4, "the parameter userAccessToken was not specified", 0, "");
+    if(!isset($_getpost['userId'])) {
+        returnError(4, "the parameter userId was not specified", 0, "");
+        return;
+    }
+    if(!isset($_getpost['accessToken'])) {
+        returnError(5, "the parameter accessToken was not specified", 0, "");
         return;
     }
 
@@ -14,7 +18,8 @@
     $usedStringIds = array();
 
     $recipeId = $_getpost['recipeId'];
-    $userAccessToken = $_getpost['userAccessToken'];
+    $userId = $_getpost['userId'];
+    $accessToken = $_getpost['accessToken'];
     $includeCategories = false;
     $includeTags = false;
     $includeSteps = false;
@@ -51,15 +56,16 @@
             "left join Languages originalLanguage on originalLanguage.languageId = titleString.originalLanguageId " .
             "left join Strings originalLanguageNameString on originalLanguage.nameStringId = originalLanguageNameString.stringId " .
             "left join Images mainImage on mainImage.imageId = recipe.mainImageId " .
+            "left join Logins login on login.userId = usr.userId " .
             "where recipe.recipeId = ? and (recipe.publicationType = 'public' or recipe.publicationType = 'unlisted' or " .
-            "(recipe.publicationType = 'private' and usr.userAccessToken = ?))";
+            "(recipe.publicationType = 'private' and login.accessToken = ?))";
         
         if($debug == true)
             $sqlqueries['selectRecipeSql'] = $selectRecipeSql;
 
         $selectRecipeStmt = $database->prepare($selectRecipeSql);
         $selectRecipeStmt->bindValue(1, $recipeId, PDO::PARAM_INT);
-        $selectRecipeStmt->bindValue(2, $userAccessToken, PDO::PARAM_STR);
+        $selectRecipeStmt->bindValue(2, $accessToken, PDO::PARAM_STR);
         $selectRecipeStmt->execute();
         $recipeRows = $selectRecipeStmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -230,7 +236,7 @@
     catch(PDOException $e) {
         // rollback uncommited changes
         $array = array(
-            'errcode' => 5,
+            'errcode' => 6,
             'pdo.code' => $e->getCode(), 
             'pdo.message' => $e->getMessage(), 
         );

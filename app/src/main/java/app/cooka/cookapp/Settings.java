@@ -2,7 +2,7 @@ package app.cooka.cookapp;
 
 public class Settings {
 
-    private long currentLanguageId;
+    private long currentLanguageId = 1031;
 
     private Settings() {
     }
