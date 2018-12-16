@@ -7,4 +7,5 @@
     <color name="primary_text_default_material_dark">#ffffff</color>
 
     <color name="black_overlay">#66000000</color>
+    <color name="cookModeBackground">#D9D9D9</color>
 </resources>
