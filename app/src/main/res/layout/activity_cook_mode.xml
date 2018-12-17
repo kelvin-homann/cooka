@@ -8,6 +8,22 @@
     tools:context=".CookModeActivity"
     android:id="@+id/fullscreen_content">
 
+    <android.support.v4.view.ViewPager
+        android:id="@+id/card_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:paddingEnd="8dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingStart="8dp"
+        android:layout_marginHorizontal="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/pageIndicatorView"
+        app:layout_constraintTop_toTopOf="@+id/frameLayout">
+    </android.support.v4.view.ViewPager>
+
+    <!-- Old card layout
     <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/card"
         android:layout_width="0dp"
@@ -44,6 +60,7 @@
         </LinearLayout>
 
     </android.support.v7.widget.CardView>
+    -->
 
     <com.rd.PageIndicatorView
         android:id="@+id/pageIndicatorView"
@@ -57,7 +74,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/frameLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:piv_animationType="scale"
+        app:piv_animationType="worm"
         app:piv_dynamicCount="true"
         app:piv_interactiveAnimation="true"
         app:piv_padding="12dp"
