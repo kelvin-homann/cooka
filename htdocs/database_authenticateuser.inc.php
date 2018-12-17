@@ -49,7 +49,8 @@
     
     try {
         // authenticate the user
-        $authenticateUserSql = "select userId, userName, emailAddress, userRights from Users where ${fn} = ? and hashedPassword = ?";
+        $authenticateUserSql = "select userId, userName, firstName, lastName, emailAddress, userRights " .
+            "from Users where ${fn} = ? and hashedPassword = ?";
         $authenticateUserStmt = $database->prepare($authenticateUserSql);
         $authenticateUserStmt->bindValue(1, $id, $pt);
         $authenticateUserStmt->bindValue(2, $hashedPassword, PDO::PARAM_STR);
@@ -69,6 +70,8 @@
             $userRow = $userRows[0];
             $userId = $userRow['userId'];
             $userName = $userRow['userName'];
+            $firstName = $userRow['firstName'];
+            $lastName = $userRow['lastName'];
             $emailAddress = $userRow['emailAddress'];
             $userRights = $userRow['userRights'];
 
@@ -103,12 +106,14 @@
         }
 
         $result = array(
-            'result' => $resultCode,
-            'userId' => $userId,
-            'userName' => $userName,
-            'emailAddress' => $emailAddress,
-            'userRights' => $userRights,
-            'loginId' => $insertedLoginId
+            'result' => isset($resultCode) ? $resultCode : 0,
+            'userId' => isset($userId) ? $userId : 0,
+            'userName' => isset($userName) ? $userName : "",
+            'firstName' => isset($firstName) ? $firstName : "",
+            'lastName' => isset($lastName) ? $lastName : "",
+            'emailAddress' => isset($emailAddress) ? $emailAddress : "",
+            'userRights' => isset($userRights) ? $userRights : 0,
+            'loginId' => isset($insertedLoginId) ? $insertedLoginId : 0
         );
     }
     catch(PDOException $e) {

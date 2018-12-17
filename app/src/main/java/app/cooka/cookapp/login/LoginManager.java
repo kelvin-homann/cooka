@@ -28,12 +28,14 @@ public class LoginManager {
     // shared preference keys
     public static final String SPK_USERID = "userId";
     public static final String SPK_USERNAME = "userName";
+    public static final String SPK_FIRSTNAME = "firstName";
+    public static final String SPK_LASTNAME = "lastName";
     public static final String SPK_ACCESSTOKEN = "accessToken";
     public static final String SPK_USERRIGHTS = "userRights";
     public static final String SPK_LANGUAGEID = "languageId";
     public static final String SPK_INVALID = "invalid";
 
-    public static SharedPreferences sharedPreferences;
+    private SharedPreferences sharedPreferences;
     private Context context;
 
     private LoginManager(Context context) {
@@ -51,6 +53,38 @@ public class LoginManager {
         }
     }
 
+    public long getUserId() {
+        return sharedPreferences.contains(SPK_USERID) ? sharedPreferences.getLong(SPK_USERID, 0L) : 0L;
+    }
+
+    public String getUserName() {
+        return sharedPreferences.contains(SPK_USERNAME) ? sharedPreferences.getString(SPK_USERNAME, null) : null;
+    }
+
+    public String getFirstName() {
+        return sharedPreferences.contains(SPK_FIRSTNAME) ? sharedPreferences.getString(SPK_FIRSTNAME, null) : null;
+    }
+
+    public String getLastName() {
+        return sharedPreferences.contains(SPK_LASTNAME) ? sharedPreferences.getString(SPK_LASTNAME, null) : null;
+    }
+
+    public String getAccessToken() {
+        return sharedPreferences.contains(SPK_ACCESSTOKEN) ? sharedPreferences.getString(SPK_ACCESSTOKEN, null) : null;
+    }
+
+    public long getUserRights() {
+        return sharedPreferences.contains(SPK_USERRIGHTS) ? sharedPreferences.getLong(SPK_USERRIGHTS, 0L) : 0L;
+    }
+
+    public long getLanguageId() {
+        return sharedPreferences.contains(SPK_LANGUAGEID) ? sharedPreferences.getLong(SPK_LANGUAGEID, 0L) : 0L;
+    }
+
+    public boolean isLoginInvalid() {
+        return sharedPreferences.contains(SPK_INVALID) ? sharedPreferences.getBoolean(SPK_INVALID, false) : false;
+    }
+
     /**
      * Logs in the user associated with the specified login ID and password. Calls the provided
      *      ILoginCallback on success or failure.
@@ -63,7 +97,7 @@ public class LoginManager {
         loginResultCallback)
     {
         // run user exists request
-        DatabaseClient.Factory.getInstance()
+        DatabaseClient.Factory.getInstance(context)
             .existsUser(loginId, null, null, true)
             .enqueue(new Callback<ExistsUserResult>() {
                 @Override
@@ -127,7 +161,7 @@ public class LoginManager {
         final String deviceId = SystemUtils.getAndroidId(context.getContentResolver());
 
         // run authentication request
-        DatabaseClient.Factory.getInstance()
+        DatabaseClient.Factory.getInstance(context)
             .authenticateUser(userId, null, null, hashedPassword, accessToken, deviceId)
             .enqueue(new Callback<AuthenticateUserResult>() {
                 @Override
@@ -142,6 +176,8 @@ public class LoginManager {
                             SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
                             sharedPreferencesEditor.putLong(SPK_USERID, authenticateUserResult.userId);
                             sharedPreferencesEditor.putString(SPK_USERNAME, authenticateUserResult.userName);
+                            sharedPreferencesEditor.putString(SPK_FIRSTNAME, authenticateUserResult.firstName);
+                            sharedPreferencesEditor.putString(SPK_LASTNAME, authenticateUserResult.lastName);
                             sharedPreferencesEditor.putString(SPK_ACCESSTOKEN, accessToken);
                             sharedPreferencesEditor.putLong(SPK_USERRIGHTS, authenticateUserResult.userRights);
                             sharedPreferencesEditor.putLong(SPK_LANGUAGEID, Settings.Factory.
@@ -171,9 +207,9 @@ public class LoginManager {
     /**
      * Logs the user out and removes the login associated with the stored access token. Hides any
      * authentication-required content panels and shows the login panel again.
-     * @param manual deletes the login from the database if set true (used when the user manually
-     *      chooses to log out); does not delete the login from the database and assumes it was
-     *      already removed (used in effect of automatic login invalidation).
+     * @param manual true: deletes the login from the database (used when the user manually
+     *      chooses to log out); false: does not delete the login from the database and assumes it
+     *      was already removed if set false (used in effect of automatic login invalidation).
      */
     public void logout(final boolean manual, final ILogoutCallback logoutResultCallback) {
 
@@ -187,7 +223,7 @@ public class LoginManager {
         if(sharedPreferences != null && manual) {
             final long userId = sharedPreferences.getLong(SPK_USERID, 0);
             final String accessToken = sharedPreferences.getString(SPK_ACCESSTOKEN, null);
-            DatabaseClient.Factory.getInstance()
+            DatabaseClient.Factory.getInstance(context)
                 .invalidateLogin(userId, accessToken)
                 .enqueue(new Callback<InvalidateLoginResult>() {
                     @Override
@@ -256,7 +292,7 @@ public class LoginManager {
             return;
 
         // run the refresh login request
-        DatabaseClient.Factory.getInstance()
+        DatabaseClient.Factory.getInstance(context)
             .refreshLogin(userId, accessToken)
             .enqueue(new Callback<RefreshLoginResult>() {
                 @Override
@@ -304,7 +340,7 @@ public class LoginManager {
     }
 
     /**
-     * Creates a new user account with the information provided in the create account panel.
+     * Creates a new user account with the provided information.
      */
     public void createAccount(final String userName, final String emailAddress,
         final String password, final ICreateAccountCallback createAccountCallback)
@@ -326,7 +362,7 @@ public class LoginManager {
 //        Log.d(LOGTAG, String.format("generated salt = %s", salt));
 //        Log.d(LOGTAG, String.format("generated access token = %s", accessToken));
 
-        User.Factory.createUser(userName, null, null, emailAddress, hashedPassword, salt,
+        User.Factory.createUser(context, userName, null, null, emailAddress, hashedPassword, salt,
             accessToken, null, null, userRights, deviceId, new ICreateUserCallback() {
             @Override public void onSucceeded(CreateUserResult createUserResult, User createdUser) {
                 Log.d(LOGTAG, String.format("successfully created user %s", createdUser.getUserName()));

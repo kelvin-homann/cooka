@@ -78,29 +78,50 @@
 
     // switch through all allowed actions
     switch($action) {
-    case 'listRecipes':
-        include($scriptDir . '/database_listrecipes.inc.php');
+
+    /* RECIPE ACTIONS */
+
+    case 'selectRecipe':
+        include($scriptDir . '/database_selectrecipe.inc.php');
         break;
-    case 'viewRecipe':
-        include($scriptDir . '/database_viewrecipe.inc.php');
+    case 'selectRecipes':
+        include($scriptDir . '/database_selectrecipes.inc.php');
         break;
-    case 'addRecipe':
-        include($scriptDir . '/database_addrecipe.inc.php');
+    case 'createRecipe':
+        include($scriptDir . '/database_createrecipe.inc.php');
         break;
 
-    case 'listCategories':
-        include($scriptDir . '/database_listcategories.inc.php');
+    /* CATEGORY ACTIONS */
+
+    case 'selectCategories':
+        include($scriptDir . '/database_selectcategories.inc.php');
         break;
     case 'updateCategory':
         include($scriptDir . '/database_updatecategory.inc.php');
         break;
-    
-    case 'listTags':
-        include($scriptDir . '/database_listtags.inc.php');
+
+    /* COLLECTION ACTIONS */
+
+    case 'selectCollectionFollowers':
+        include($scriptDir . '/database_selectcollectionfollowers.inc.php');
         break;
+
+    /* TAG ACTIONS */
+    
+    case 'selectTags':
+        include($scriptDir . '/database_selecttags.inc.php');
+        break;
+    case 'selectTagFollowers':
+        include($scriptDir . '/database_selecttagfollowers.inc.php');
+        break;
+
+    /* USER ACTIONS */
     
     case 'selectUser':
         include($scriptDir . '/database_selectuser.inc.php');
+        break;
+    case 'selectUsers':
+        include($scriptDir . '/database_selectusers.inc.php');
         break;
     case 'createUser':
         include($scriptDir . '/database_createuser.inc.php');
@@ -117,12 +138,23 @@
     case 'invalidateLogin':
         include($scriptDir . '/database_invalidatelogin.inc.php');
         break;
-
-    case 'listUntranslatedUiStrings':
-        include($scriptDir . '/database_listuntranslateduistrings.inc.php');
+    case 'selectUserFollowers':
+        include($scriptDir . '/database_selectuserfollowers.inc.php');
         break;
-    case 'listReportedStrings':
-        include($scriptDir . '/database_listreportedstrings.inc.php');
+    case 'selectUserFollowees':
+        include($scriptDir . '/database_selectuserfollowees.inc.php');
+        break;
+    case 'followUser':
+        include($scriptDir . '/database_followuser.inc.php');
+        break;
+
+    /* STRING ACTIONS */
+
+    case 'selectUntranslatedUiStrings':
+        include($scriptDir . '/database_selectuntranslateduistrings.inc.php');
+        break;
+    case 'selectReportedStrings':
+        include($scriptDir . '/database_selectreportedstrings.inc.php');
         break;
 
     default:

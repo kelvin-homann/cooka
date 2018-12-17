@@ -3,8 +3,8 @@
         returnError(3, "the parameter userId was not specified", 0, "");
         return;
     }
-    if(!isset($_getpost['userAccessToken'])) {
-        returnError(4, "the parameter userAccessToken was not specified", 0, "");
+    if(!isset($_getpost['accessToken'])) {
+        returnError(4, "the parameter accessToken was not specified", 0, "");
         return;
     }
     if(!isset($_getpost['selectUserId'])) {
@@ -18,7 +18,7 @@
     $usedStringIds = array();
 
     $userId = $_getpost['userId'];
-    $userAccessToken = $_getpost['userAccessToken'];
+    $accessToken = $_getpost['accessToken'];
     $selectUserId = $_getpost['selectUserId'];
     $includeCategories = false;
     $includeTags = false;
@@ -41,7 +41,7 @@
         $selectUserSql = "select user.userId, user.userName, user.firstName, user.lastName, user.emailAddress, user.confirmedEmailAddress, " .
             "user.profileImageId, profileImage.imageFileName as profileImageFileName, user.joinedDateTime, user.lastActiveDateTime, " .
             "user.lastRecipeCreatedDateTime, user.lastCollectionEditedDateTime, user.lastCookModeUsedDateTime, user.viewedCount, " .
-            "user.followedCount, user.followingCount, user.verifiedState, user.userRights, " .
+            "user.followerCount, user.followeeCount, user.verifiedState, user.userRights, " .
             "user.linkedProfileType, user.linkedProfileUserId " .
             "from Users user " .
             "left join Images profileImage on user.profileImageid = profileImage.imageid " .
@@ -52,7 +52,7 @@
 
         $selectUserStmt = $database->prepare($selectUserSql);
         $selectUserStmt->bindValue(1, $selectUserId, PDO::PARAM_INT);
-        //$selectUserStmt->bindValue(2, $userAccessToken, PDO::PARAM_INT);
+        //$selectUserStmt->bindValue(2, $accessToken, PDO::PARAM_INT);
         $selectUserStmt->execute();
         $userRows = $selectUserStmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -74,8 +74,8 @@
                 'lastCollectionEditedDateTime' => isset($userRow['lastCollectionEditedDateTime']) ? $userRow['lastCollectionEditedDateTime'] : "", 
                 'lastCookModeUsedDateTime' => isset($userRow['lastCookModeUsedDateTime']) ? $userRow['lastCookModeUsedDateTime'] : "", 
                 'viewedCount' => isset($userRow['viewedCount']) ? $userRow['viewedCount'] : 0, 
-                'followedCount' => isset($userRow['followedCount']) ? $userRow['followedCount'] : 0, 
-                'followingCount' => isset($userRow['followingCount']) ? $userRow['followingCount'] : 0, 
+                'followerCount' => isset($userRow['followerCount']) ? $userRow['followerCount'] : 0, 
+                'followeeCount' => isset($userRow['followeeCount']) ? $userRow['followeeCount'] : 0, 
                 'verifiedState' => isset($userRow['verifiedState']) ? $userRow['verifiedState'] : 0, 
                 'userRights' => isset($userRow['userRights']) ? $userRow['userRights'] : 0
             );

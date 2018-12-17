@@ -15,6 +15,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.appevents.UserDataStore;
+import com.facebook.login.Login;
+
 import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -45,6 +48,7 @@ import app.cooka.cookapp.model.CategoryListViewAdapter;
 import app.cooka.cookapp.model.CreateUserResult;
 import app.cooka.cookapp.model.DatabaseClient;
 import app.cooka.cookapp.model.ICreateUserCallback;
+import app.cooka.cookapp.model.IResultCallback;
 import app.cooka.cookapp.model.InvalidateLoginResult;
 import app.cooka.cookapp.model.RefreshLoginResult;
 import app.cooka.cookapp.model.User;
@@ -64,21 +68,12 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
     private static final String SSKH = "IxscGsjAYrkVPy2BF4EzhflkqZc=";
     private static final String PREFERENCES_NAME = "userdata";
 
-    // shared preference keys
-    public static final String SPK_USERID = "userId";
-    public static final String SPK_USERNAME = "userName";
-    public static final String SPK_ACCESSTOKEN = "accessToken";
-    public static final String SPK_USERRIGHTS = "userRights";
-    public static final String SPK_LANGUAGEID = "languageId";
-    public static final String SPK_INVALID = "invalid";
-
-    public static SharedPreferences sharedPreferences;
-
     private LinearLayout lltLoginPanel;
     private LinearLayout lltCreateAccountPanel;
     private LinearLayout lltWelcomePanel;
     private LinearLayout lltPollCategoriesPanel;
 
+    private LoginManager loginManager;
     private SSLContext sslContext;
     private DatabaseClient databaseClient;
     private CategoryListViewAdapter categoryListViewAdapter = new CategoryListViewAdapter();
@@ -94,9 +89,7 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         setTitle("Database Tests");
         findViewById(R.id.lvwCategories).setVisibility(View.GONE);
 
-        if(sharedPreferences == null) {
-            sharedPreferences = getApplicationContext().getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
-        }
+        loginManager = LoginManager.Factory.getInstance(getApplicationContext());
 
         lltLoginPanel = findViewById(R.id.lltLoginPanel);
         lltCreateAccountPanel = findViewById(R.id.lltCreateAccountPanel);
@@ -107,23 +100,24 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         hideAllPanels();
 
         // if the stored login information was declared invalid
-        if(sharedPreferences.contains(SPK_INVALID) && sharedPreferences.getBoolean(SPK_INVALID, false)) {
-            logout(false);
+        if(loginManager.isLoginInvalid()) {
             Log.d(LOGTAG, String.format("the login associated with the access token %s is now invalid",
-                sharedPreferences.getString(SPK_ACCESSTOKEN, "n/a")));
+                loginManager.getAccessToken() != null ? loginManager.getAccessToken() : "n/a"));
+            logout(false);
             Log.d(LOGTAG, "the user has been logged out");
         }
         else
             refreshLogin(true);
 
         // if there is currently a user logged in
-        if(sharedPreferences.contains(DatabaseTestActivity.SPK_USERID) &&
-            sharedPreferences.getLong(DatabaseTestActivity.SPK_USERID, 0L) != 0L)
-        {
+        if(loginManager.getUserId() != 0L) {
             // set welcome message
             TextView tvwWelcomeMessage = findViewById(R.id.tvwWelcomeMessage);
-            String userName = sharedPreferences.getString(SPK_USERNAME, null);
-            if(userName != null)
+            String firstName = loginManager.getFirstName();
+            String userName = loginManager.getUserName();
+            if(firstName != null)
+                tvwWelcomeMessage.setText(String.format("Welcome back %s", firstName));
+            else if(userName != null)
                 tvwWelcomeMessage.setText(String.format("Welcome back @%s", userName));
             else
                 tvwWelcomeMessage.setText("Welcome back!");
@@ -134,9 +128,9 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
 
             showAuthenticationRequiredPanels();
 
-            Log.d(LOGTAG, String.format("SPK_USERID = %d", sharedPreferences.getLong(DatabaseTestActivity.SPK_USERID, 0L)));
-            Log.d(LOGTAG, String.format("SPK_USERRIGHTS = 0x%08x", sharedPreferences.getLong(DatabaseTestActivity.SPK_USERRIGHTS, 0)));
-            Log.d(LOGTAG, String.format("SPK_LANGUAGEID = %d", sharedPreferences.getLong(DatabaseTestActivity.SPK_LANGUAGEID, 0L)));
+            Log.d(LOGTAG, String.format("SPK_USERID = %d", loginManager.getUserId()));
+            Log.d(LOGTAG, String.format("SPK_USERRIGHTS = 0x%08x", loginManager.getUserRights()));
+            Log.d(LOGTAG, String.format("SPK_LANGUAGEID = %d", loginManager.getLanguageId()));
         }
         // if there is no user logged in
         else {
@@ -157,7 +151,7 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         findViewById(R.id.btnCreateAccount).setOnClickListener(this);
         findViewById(R.id.btnPollCategories).setOnClickListener(this);
 
-        databaseClient = DatabaseClient.Factory.getInstance();
+        databaseClient = DatabaseClient.Factory.getInstance(this);
     }
 
     @Override
@@ -282,13 +276,15 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         final String loginId = etLoginId.getText().toString();
         final String password = etLoginPassword.getText().toString();
 
-        LoginManager.Factory.getInstance(getApplicationContext()).
-            login(loginId, password, new ILoginCallback() {
+        LoginManager.Factory.getInstance(getApplicationContext())
+            .login(loginId, password, new ILoginCallback() {
                 @Override
                 public void onSucceeded(AuthenticateUserResult result) {
                     // set welcome message
                     TextView tvwWelcomeMessage = findViewById(R.id.tvwWelcomeMessage);
-                    if(result.userName != null)
+                    if(result.firstName != null)
+                        tvwWelcomeMessage.setText(String.format("Welcome back %s", result.firstName));
+                    else if(result.userName != null)
                         tvwWelcomeMessage.setText(String.format("Welcome back @%s", result.userName));
                     else
                         tvwWelcomeMessage.setText("Welcome back!");
@@ -331,13 +327,6 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
 
             @Override public void onFailed(int errorCode, String errorMessage, Throwable t) {}
         });
-
-        // clear the shared preferences and remove any stored login information
-        if(sharedPreferences != null) {
-            SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-            sharedPreferencesEditor.clear();
-            sharedPreferencesEditor.apply();
-        }
 
         // make the create account button clickable again
         Button btnCreateAccount = findViewById(R.id.btnCreateAccount);

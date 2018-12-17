@@ -1,13 +1,13 @@
 <?php
-    if(!isset($_getpost['userAccessToken'])) {
-        returnError(4, "the parameter userAccessToken was not specified", 0, "");
+    if(!isset($_getpost['accessToken'])) {
+        returnError(4, "the parameter accessToken was not specified", 0, "");
         return;
     }
     
     $database = connect();
     if($database == null) return;
 
-    $userAccessToken = $_getpost['userAccessToken'];
+    $accessToken = $_getpost['accessToken'];
     $tags = $_getpost['tags'];
     $recipeId = null;
 

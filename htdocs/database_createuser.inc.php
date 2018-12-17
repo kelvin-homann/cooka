@@ -61,9 +61,9 @@
 
         // insert actual user
         $insertUserStmt = $database->prepare("insert into Users (userName, firstName, lastName, " .
-            "emailAddress, hashedPassword, salt, linkedProfileType, profileImageId, mainCollectionId, " .
-            "userRights, joinedDateTime, lastActiveDateTime) " .
-            "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now())");
+            "emailAddress, hashedPassword, salt, linkedProfileType, linkedProfileUserId, profileImageId, " .
+            "mainCollectionId, userRights, joinedDateTime, lastActiveDateTime) " .
+            "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now())");
         $insertUserStmt->bindValue(1, $userName, PDO::PARAM_STR);
         $insertUserStmt->bindValue(2, $firstName, PDO::PARAM_STR);
         $insertUserStmt->bindValue(3, $lastName, PDO::PARAM_STR);

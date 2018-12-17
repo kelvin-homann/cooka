@@ -1,21 +1,26 @@
 <?php
-    if(!isset($_getpost['userId'])) {
-        returnError(3, "the parameter userId was not specified", 0, "");
-        return;
-    }
-    if(!isset($_getpost['accessToken'])) {
-        returnError(4, "the parameter accessToken was not specified", 0, "");
-        return;
-    }
+    // if(!isset($_getpost['userId'])) {
+    //     returnError(3, "the parameter userId was not specified", 0, "");
+    //     return;
+    // }
+    // if(!isset($_getpost['accessToken'])) {
+    //     returnError(4, "the parameter accessToken was not specified", 0, "");
+    //     return;
+    // }
 
     $database = connect();
     if($database == null) return;
 
-    $userId = $_getpost['userId'];
-    $accessToken = $_getpost['accessToken'];
+    $userId = null;
+    $accessToken = null;
     $sortMode = 'title';
     $sortDirection = 'asc';
     $filterMode = null;
+
+    if(isset($_getpost['userId']))
+        $userId = $_getpost['userId'];
+    if(isset($_getpost['accessToken']))
+        $accessToken = $_getpost['accessToken'];
 
     $categories = array();
     $numCategories = 0;

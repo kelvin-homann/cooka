@@ -1,6 +1,8 @@
 package app.cooka.cookapp.model;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -20,17 +22,17 @@ import rx.Observable;
 
 public class DatabaseClient {
 
+    private static final String PREFERENCES_NAME = "userdata";
     private static final String DATABASE_BASE_URL = "https://www.sebastianzander.de/cooka/";
+    public static final SimpleDateFormat databaseDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public static SimpleDateFormat databaseDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
+    private SharedPreferences sharedPreferences;
     private IDatabase databaseInterface;
     private Category.JsonAdapter categoryJsonAdapter;
-    SharedPreferences sharedPreferences;
 
-    private DatabaseClient() {
+    private DatabaseClient(Context context) {
 
-        sharedPreferences = LoginManager.sharedPreferences;
+        sharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
         categoryJsonAdapter = new Category.JsonAdapter(Settings.getInstance().getCurrentLanguageId());
 
         final Gson gson = new GsonBuilder()
@@ -51,9 +53,9 @@ public class DatabaseClient {
     public static class Factory {
 
         private static DatabaseClient instance;
-        public static DatabaseClient getInstance() {
+        public static DatabaseClient getInstance(Context context) {
             if(instance == null)
-                instance = new DatabaseClient();
+                instance = new DatabaseClient(context);
             return instance;
         }
     }
@@ -64,23 +66,23 @@ public class DatabaseClient {
 
     public Observable<User> selectUser(final long selectUserId)
     {
-        return databaseInterface.selectUser(sharedPreferences.getLong(DatabaseTestActivity.SPK_USERID, 0L),
-            sharedPreferences.getString(DatabaseTestActivity.SPK_ACCESSTOKEN, ""),
-            sharedPreferences.getLong(DatabaseTestActivity.SPK_LANGUAGEID, 1031L), selectUserId);
+        return databaseInterface.selectUser(sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
+            sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L), selectUserId);
     }
 
     public Observable<List<User>> selectUsers()
     {
-        return databaseInterface.selectUsers(sharedPreferences.getLong(DatabaseTestActivity.SPK_USERID, 0L),
-            sharedPreferences.getString(DatabaseTestActivity.SPK_ACCESSTOKEN, ""),
-            sharedPreferences.getLong(DatabaseTestActivity.SPK_LANGUAGEID, 1031L));
+        return databaseInterface.selectUsers(sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
+            sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L));
     }
 
     public Observable<List<User>> selectUsers(final SelectModifier... modifiers)
     {
-        return databaseInterface.selectUsers(sharedPreferences.getLong(DatabaseTestActivity.SPK_USERID, 0L),
-            sharedPreferences.getString(DatabaseTestActivity.SPK_ACCESSTOKEN, ""),
-            sharedPreferences.getLong(DatabaseTestActivity.SPK_LANGUAGEID, 1031L));
+        return databaseInterface.selectUsers(sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
+            sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L));
     }
 
     public Call<CreateUserResult> createUser(final String userName, final String firstName,
@@ -88,7 +90,7 @@ public class DatabaseClient {
         final String salt, final String accessToken, final ELinkedProfileType linkedProfileType,
         final String linkedProfileUserId, final long userRights, final String deviceId)
     {
-        long languageId = sharedPreferences.getLong(DatabaseTestActivity.SPK_LANGUAGEID, 1031L);
+        long languageId = sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L);
         return databaseInterface.createUser(languageId, userName, firstName, lastName,
             emailAddress, hashedPassword, salt, accessToken,
             linkedProfileType != null ? linkedProfileType.toString() : null,
@@ -143,8 +145,8 @@ public class DatabaseClient {
      */
     public Call<RefreshLoginResult> refreshLogin() {
 
-        final long userId = sharedPreferences.getLong(DatabaseTestActivity.SPK_USERID, 0L);
-        final String accessToken = sharedPreferences.getString(DatabaseTestActivity.SPK_ACCESSTOKEN, "");
+        final long userId = sharedPreferences.getLong(LoginManager.SPK_USERID, 0L);
+        final String accessToken = sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, "");
         return userId != 0 && accessToken != null && accessToken.length() > 0 ?
             databaseInterface.refreshLogin(userId, accessToken) : null;
     }
@@ -160,10 +162,10 @@ public class DatabaseClient {
      * @return a InvalidateLoginResult object within a Call to it; null if an error occurred or
      *      there is currently no user logged in (user ID or access token in shared prefs not set)
      */
-    public Call<InvalidateLoginResult> invalidateLogin()  {
+    public Call<InvalidateLoginResult> invalidateLogin() {
 
-        final long userId = sharedPreferences.getLong(DatabaseTestActivity.SPK_USERID, 0L);
-        final String accessToken = sharedPreferences.getString(DatabaseTestActivity.SPK_ACCESSTOKEN, "");
+        final long userId = sharedPreferences.getLong(LoginManager.SPK_USERID, 0L);
+        final String accessToken = sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, "");
         return userId != 0 && accessToken != null && accessToken.length() > 0 ?
             databaseInterface.invalidateLogin(userId, accessToken) : null;
     }
@@ -180,9 +182,9 @@ public class DatabaseClient {
 
     public Observable<List<Category>> selectCategories()
     {
-        return databaseInterface.selectCategories(sharedPreferences.getLong(DatabaseTestActivity.SPK_USERID, 0L),
-            sharedPreferences.getString(DatabaseTestActivity.SPK_ACCESSTOKEN, ""),
-            sharedPreferences.getLong(DatabaseTestActivity.SPK_LANGUAGEID, 1031L));
+        return databaseInterface.selectCategories(sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
+            sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L));
     }
 
     /**
@@ -195,9 +197,9 @@ public class DatabaseClient {
         long changeState = 0;
         if(category == null || (changeState = category.getChangeState()) == 0)
             return null;
-        long languageId = sharedPreferences.getLong(DatabaseTestActivity.SPK_LANGUAGEID, 1031L);
-        return databaseInterface.updateCategory(sharedPreferences.getLong(DatabaseTestActivity.SPK_USERID, 0L),
-            sharedPreferences.getString(DatabaseTestActivity.SPK_ACCESSTOKEN, ""), languageId, category.getCategoryId(),
+        long languageId = sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L);
+        return databaseInterface.updateCategory(sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""), languageId, category.getCategoryId(),
             (changeState & Category.CHANGED_PARENTCATEGORYID) == Category.CHANGED_PARENTCATEGORYID ? category.getParentCategoryId() : 0,
             (changeState & Category.CHANGED_NAME) == Category.CHANGED_NAME ? category.getName(languageId) : null,
             (changeState & Category.CHANGED_DESCRIPTION) == Category.CHANGED_DESCRIPTION ? category.getDescription(languageId) : null,

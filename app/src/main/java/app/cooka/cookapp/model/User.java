@@ -1,5 +1,6 @@
 package app.cooka.cookapp.model;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -70,8 +71,8 @@ public class User extends java.util.Observable {
     private Date lastCookModeUsedDateTime = null;
 
     private int viewedCount = 0;
-    private int followedCount = 0;
-    private int followingCount = 0;
+    private int followerCount = 0;
+    private int followeeCount = 0;
 
     private User(final long userId, String userName, String emailAddress, long userRights) {
 
@@ -104,7 +105,7 @@ public class User extends java.util.Observable {
         String linkedProfileUserId, long profileImageId, String profileImageFileName,
         String joinedDateTime, String lastActiveDateTime, String lastRecipeCreatedDateTime,
         String lastCollectionEditedDateTime, String lastCookModeUsedDateTime, int viewedCount,
-        int followedCount, int followingCount, int verifiedState, long userRights)
+        int followerCount, int followeeCount, int verifiedState, long userRights)
     {
         this.userId = userId;
         this.userName = userName;
@@ -173,8 +174,8 @@ public class User extends java.util.Observable {
         }
 
         this.viewedCount = viewedCount;
-        this.followedCount = followedCount;
-        this.followingCount = followingCount;
+        this.followerCount = followerCount;
+        this.followeeCount = followeeCount;
         this.verifiedState = verifiedState;
         this.userRights = userRights;
     }
@@ -188,15 +189,15 @@ public class User extends java.util.Observable {
          * Creates a new user in the database and a new connected user object.
          * @return a subscription object to the create request; null if en error occurred.
          */
-        public static Subscription createUser(final String userName, final String emailAddress,
-            final long userRights)
+        public static Subscription createUser(final Context context, final String userName,
+            final String emailAddress, final long userRights)
         {
             // execute database insert and receive a valid user id
             // create and return user object
             return null;
         }
 
-        public static void createUser(final String userName, final String firstName,
+        public static void createUser(final Context context, final String userName, final String firstName,
             final String lastName, final String emailAddress, final String hashedPassword,
             final String salt, final String accessToken, final ELinkedProfileType linkedProfileType,
             final String linkedProfileUserId, final long userRights, final String deviceId,
@@ -205,7 +206,7 @@ public class User extends java.util.Observable {
             if(createUserCallback == null) {
                 throw new NullPointerException("create user callback is null");
             }
-            DatabaseClient.Factory.getInstance()
+            DatabaseClient.Factory.getInstance(context)
                 .createUser(userName, firstName, lastName, emailAddress, hashedPassword,
                     salt, accessToken, linkedProfileType, linkedProfileUserId, userRights,
                     deviceId)
@@ -232,13 +233,13 @@ public class User extends java.util.Observable {
          * Selects an existing user from the database and creates a connected user object.
          * @return a subscription object to the select request; null if en error occurred.
          */
-        public static Subscription selectUser(final long userId, final IResultCallback<User>
-            selectUserCallback)
+        public static Subscription selectUser(final Context context, final long userId,
+            final IResultCallback<User> selectUserCallback)
         {
             if(selectUserCallback == null) {
                 throw new NullPointerException("select user callback is null");
             }
-            return DatabaseClient.Factory.getInstance()
+            return DatabaseClient.Factory.getInstance(context)
                 .selectUser(userId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -262,12 +263,13 @@ public class User extends java.util.Observable {
          * succeeded and that will be given the list of user objects
          * @return a subscription object to the select request; null if an error occurred.
          */
-        public static Subscription selectUsers(final IResultCallback<List<User>> selectUsersCallback) {
-
+        public static Subscription selectUsers(final Context context,
+            final IResultCallback<List<User>> selectUsersCallback)
+        {
             if(selectUsersCallback == null) {
                 throw new NullPointerException("select users callback is null");
             }
-            return DatabaseClient.Factory.getInstance()
+            return DatabaseClient.Factory.getInstance(context)
                 .selectUsers()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -284,13 +286,13 @@ public class User extends java.util.Observable {
                 });
         }
 
-        public static Subscription selectUsers(final IResultCallback<List<User>> selectUsersCallback,
-            final SelectModifier... modifiers)
+        public static Subscription selectUsers(final Context context, final IResultCallback<List<User>>
+            selectUsersCallback, final SelectModifier... modifiers)
         {
             if(selectUsersCallback == null) {
                 throw new NullPointerException("select users callback is null");
             }
-            return DatabaseClient.Factory.getInstance()
+            return DatabaseClient.Factory.getInstance(context)
                 .selectUsers(modifiers)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -313,12 +315,13 @@ public class User extends java.util.Observable {
          * @param usersReceivingList the list that will receive the selected user objects
          * @return a subscription object to the select request; null if an error occurred.
          */
-        public static Subscription selectUsers(final List<User> usersReceivingList) {
-
+        public static Subscription selectUsers(final Context context, final List<User>
+            usersReceivingList)
+        {
             if(usersReceivingList == null) {
                 throw new NullPointerException("users receiving list is null");
             }
-            return DatabaseClient.Factory.getInstance()
+            return DatabaseClient.Factory.getInstance(context)
                 .selectUsers()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -588,22 +591,22 @@ public class User extends java.util.Observable {
         notifyObservers();
     }
 
-    public int getFollowedCount() {
-        return followedCount;
+    public int getFollowerCount() {
+        return followerCount;
     }
 
-    public void setFollowedCount(int followedCount) {
-        this.followedCount = followedCount;
+    public void setFollowerCount(int followerCount) {
+        this.followerCount = followerCount;
         setChanged();
         notifyObservers();
     }
 
-    public int getFollowingCount() {
-        return followingCount;
+    public int getFolloweeCount() {
+        return followeeCount;
     }
 
-    public void setFollowingCount(int followingCount) {
-        this.followingCount = followingCount;
+    public void setFolloweeCount(int followeeCount) {
+        this.followeeCount = followeeCount;
         setChanged();
         notifyObservers();
     }
@@ -705,11 +708,11 @@ public class User extends java.util.Observable {
             out.name("viewedCount");
             out.value(user.getViewedCount());
 
-            out.name("followedCount");
-            out.value(user.getFollowedCount());
+            out.name("followerCount");
+            out.value(user.getFollowerCount());
 
-            out.name("followingCount");
-            out.value(user.getFollowingCount());
+            out.name("followeeCount");
+            out.value(user.getFolloweeCount());
 
             out.name("verifiedState");
             out.value(user.getVerifiedState());
@@ -773,10 +776,10 @@ public class User extends java.util.Observable {
             int viewedCount= in.nextInt();
 
             in.nextName();
-            int followedCount = in.nextInt();
+            int followerCount = in.nextInt();
 
             in.nextName();
-            int followingCount = in.nextInt();
+            int followeeCount = in.nextInt();
 
             in.nextName();
             int verifiedState = in.nextInt();
@@ -790,7 +793,7 @@ public class User extends java.util.Observable {
                 linkedProfileType, linkedProfileUserId, profileImageId, profileImageFileName,
                 joinedDateTime, lastActiveDateTime, lastRecipeCreatedDateTime,
                 lastCollectionEditedDateTime, lastCookModeUsedDateTime, viewedCount,
-                followedCount, followingCount, verifiedState, userRights);
+                followerCount, followeeCount, verifiedState, userRights);
         }
     }
 }
