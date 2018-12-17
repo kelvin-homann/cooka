@@ -6,7 +6,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/cookModeBackground"
     tools:context=".CookModeActivity"
-    android:id="@+id/fullscreen_content">
+    android:id="@+id/fullscreen_content"
+    android:keepScreenOn="true">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/card_view_pager"
@@ -14,11 +15,6 @@
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:overScrollMode="never"
-        android:paddingEnd="8dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:paddingStart="8dp"
-        android:layout_marginHorizontal="8dp"
         app:layout_constraintBottom_toTopOf="@+id/pageIndicatorView"
         app:layout_constraintTop_toTopOf="@+id/frameLayout">
     </android.support.v4.view.ViewPager>
@@ -69,21 +65,49 @@
         android:layout_centerHorizontal="true"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         android:elevation="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/frameLayout"
+        app:layout_constraintBottom_toTopOf="@+id/fab"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:piv_animationType="worm"
+        app:piv_animationType="slide"
         app:piv_dynamicCount="true"
         app:piv_interactiveAnimation="true"
         app:piv_padding="12dp"
-        app:piv_radius="8dp"
-        app:piv_selectedColor="@android:color/white"
+        app:piv_radius="6dp"
+        app:piv_scaleFactor="0.75"
+        app:piv_selectedColor="@color/colorPrimary"
         app:piv_unselectedColor="@android:color/darker_gray" />
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
+
+    <android.support.design.button.MaterialButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="64dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:elevation="8dp"
+        android:onClick="fab_onClick"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:text="Details"
+        android:textAllCaps="true"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        android:theme="@style/AppTheme"
+        app:backgroundTint="?attr/colorAccent"
+        app:cornerRadius="32dp"
+        app:icon="@drawable/ic_expand_more_black_24dp"
+        app:iconPadding="12dp"
+        app:iconSize="24dp"
+        app:iconTint="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
@@ -102,6 +126,7 @@
 
 
         </LinearLayout>
+
     </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>

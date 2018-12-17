@@ -11,8 +11,11 @@ import java.util.ArrayList;
 
 public class CookModeCardAdapter extends PagerAdapter {
 
+    public static final float MAX_ELEVATION_FACTOR = 3f;
+
     private ArrayList<String> items;
     private ArrayList<View> views;
+    private float baseCardElevation;
 
     public CookModeCardAdapter() {
         items = new ArrayList<>();
@@ -45,11 +48,11 @@ public class CookModeCardAdapter extends PagerAdapter {
         bind(items.get(position), view);
         CardView cardView = (CardView) view.findViewById(R.id.card);
 
-//        if (mBaseElevation == 0) {
-//            mBaseElevation = cardView.getCardElevation();
-//        }
+        if (baseCardElevation == 0) {
+            baseCardElevation = cardView.getCardElevation();
+        }
 
-//        cardView.setMaxCardElevation(mBaseElevation * MAX_ELEVATION_FACTOR);
+        cardView.setMaxCardElevation(baseCardElevation * MAX_ELEVATION_FACTOR);
         views.set(position, cardView);
         return view;
     }
@@ -62,5 +65,9 @@ public class CookModeCardAdapter extends PagerAdapter {
 
     private void bind(String title, View view) {
         ((TextView)view.findViewById(R.id.card_title)).setText(title);
+    }
+
+    public float getBaseCardElevation() {
+        return baseCardElevation;
     }
 }

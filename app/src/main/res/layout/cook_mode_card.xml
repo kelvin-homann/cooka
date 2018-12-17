@@ -7,7 +7,7 @@
     android:layout_height="0dp"
     card_view:cardBackgroundColor="@android:color/white"
     card_view:cardCornerRadius="16dp"
-    card_view:cardElevation="8dp"
+    card_view:cardElevation="2dp"
     card_view:contentPadding="16dp">
 
     <!-- Contraints from old layout
