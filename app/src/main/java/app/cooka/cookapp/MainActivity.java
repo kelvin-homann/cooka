@@ -25,8 +25,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
         //Init fragments
         exploreFragment = new ExploreFragment();
         cookbookFragment = new CookbookFragment();
