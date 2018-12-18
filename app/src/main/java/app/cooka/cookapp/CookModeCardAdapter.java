@@ -45,7 +45,7 @@ public class CookModeCardAdapter extends PagerAdapter {
         View view = LayoutInflater.from(container.getContext())
                 .inflate(R.layout.cook_mode_card, container, false);
         container.addView(view);
-        bind(items.get(position), view);
+        bind(items.get(position), view, position);
         CardView cardView = (CardView) view.findViewById(R.id.card);
 
         if (baseCardElevation == 0) {
@@ -63,8 +63,9 @@ public class CookModeCardAdapter extends PagerAdapter {
         views.set(position, null);
     }
 
-    private void bind(String title, View view) {
+    private void bind(String title, View view, int position) {
         ((TextView)view.findViewById(R.id.card_title)).setText(title);
+        ((TextView)view.findViewById(R.id.card_step_title)).setText("Schritt " + (position+1));
     }
 
     public float getBaseCardElevation() {

@@ -43,11 +43,11 @@ public class CookModeActivity extends AppCompatActivity {
 
         //Adapter
         cardAdapter = new CookModeCardAdapter();
-        cardAdapter.addItem("SCHRITT 1");
-        cardAdapter.addItem("SCHRITT 2");
-        cardAdapter.addItem("SCHRITT 3");
-        cardAdapter.addItem("SCHRITT 4");
-        cardAdapter.addItem("SCHRITT 5");
+        cardAdapter.addItem("Fisch würzen");
+        cardAdapter.addItem("Fisch braten");
+        cardAdapter.addItem("Salat vorbereiten");
+        cardAdapter.addItem("Gericht anrichten");
+        cardAdapter.addItem("Fertig");
 
         //Setup view pager margins/paddings
 

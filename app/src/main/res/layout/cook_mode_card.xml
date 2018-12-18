@@ -8,7 +8,7 @@
     card_view:cardBackgroundColor="@android:color/white"
     card_view:cardCornerRadius="16dp"
     card_view:cardElevation="2dp"
-    card_view:contentPadding="16dp">
+    card_view:contentPadding="0dp">
 
     <!-- Contraints from old layout
     card_view:layout_constraintBottom_toTopOf="@+id/pageIndicatorView"
@@ -23,16 +23,40 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/card_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hello there!" />
-
-        <Button
-            android:id="@+id/card_button"
+            android:id="@+id/card_step_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nice Button!" />
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="2dp"
+            android:textSize="15sp"/>
+
+        <TextView
+            android:id="@+id/card_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="4dp"
+            android:textSize="20sp"/>
+
+        <View style="@style/Divider"/>
+
+        <TextView
+            android:id="@+id/card_body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Krasse Angaben zu diesem Step die so lang sind dass man eine neue Zeile braucht"
+            android:textAlignment="center"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:textSize="20sp"/>
 
     </LinearLayout>
 
