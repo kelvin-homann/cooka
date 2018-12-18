@@ -18,8 +18,9 @@
     $userId = $_getpost['userId'];
     $accessToken = $_getpost['accessToken'];
     $ofuserId = $_getpost['ofuserId'];
+
     $followees = array();
-    $sqlqueries = array();
+    $sqlQueries = array();
     
     try {
         // part select the followed users
@@ -57,20 +58,30 @@
 
         // order union results
         $selectFolloweesSql .= "order by lastActiveDateTime desc";
-        
-        if($debug == true)
-            $sqlqueries['selectUserSql'] = $selectFolloweesSql;
 
+        // build params map
+        $selectFolloweesParams = array(
+            1 => array($ofuserId, PDO::PARAM_INT),
+            2 => array($ofuserId, PDO::PARAM_INT),
+            3 => array($ofuserId, PDO::PARAM_INT),
+        );
+
+        // extend and log sql query
+        if($logdb || $logfile || $logscreen) {
+            $query = extendSqlQuery($selectFolloweesSql, $selectFolloweesParams);
+            $sqlQueries[] = $query;
+        }
+        
         $selectFolloweesStmt = $database->prepare($selectFolloweesSql);
-        $selectFolloweesStmt->bindValue(1, $ofuserId, PDO::PARAM_INT);
-        $selectFolloweesStmt->bindValue(2, $ofuserId, PDO::PARAM_INT);
-        $selectFolloweesStmt->bindValue(3, $ofuserId, PDO::PARAM_INT);
+        foreach($selectFolloweesParams as $index => $param)
+            $selectFolloweesStmt->bindValue($index, $param[0], $param[1]);
         $selectFolloweesStmt->execute();
         $followeeRows = $selectFolloweesStmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach($followeeRows as $followeeRow) {
             $followee = array(
                 'type' => isset($followeeRow['type']) ? $followeeRow['type'] : "", 
+                'ofuserId' => $ofuserId,
                 'id' => isset($followeeRow['id']) ? $followeeRow['id'] : "", 
                 'displayName' => isset($followeeRow['displayName']) ? $followeeRow['displayName'] : "", 
                 'detail1' => isset($followeeRow['detail1']) ? $followeeRow['detail1'] : "", 

@@ -47,12 +47,21 @@
             "left join Images profileImage on user.profileImageid = profileImage.imageid " .
             "where user.userId = ?";
         
-        if($debug == true)
-            $sqlqueries['selectUserSql'] = $selectUserSql;
+        // build params map
+        $selectUserParams = array(
+            1 => array($selectUserId, PDO::PARAM_INT),
+            // 2 => array($accessToken, PDO::PARAM_STR),
+        );
+
+        // extend and log sql query
+        if($logdb || $logfile || $logscreen) {
+            $query = extendSqlQuery($selectUserSql, $selectUserParams);
+            $sqlQueries[] = $query;
+        }
 
         $selectUserStmt = $database->prepare($selectUserSql);
-        $selectUserStmt->bindValue(1, $selectUserId, PDO::PARAM_INT);
-        //$selectUserStmt->bindValue(2, $accessToken, PDO::PARAM_INT);
+        foreach($selectUserParams as $index => $param)
+            $selectUserStmt->bindValue($index, $param[0], $param[1]);
         $selectUserStmt->execute();
         $userRows = $selectUserStmt->fetchAll(PDO::FETCH_ASSOC);
 

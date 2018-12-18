@@ -64,25 +64,38 @@ public class DatabaseClient {
      *  USER METHODS
      *  ************************************************************************************  */
 
-    public Observable<User> selectUser(final long selectUserId)
-    {
+    public Observable<User> selectUser(final long selectUserId) {
+
         return databaseInterface.selectUser(sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
             sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
             sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L), selectUserId);
     }
 
-    public Observable<List<User>> selectUsers()
-    {
+    public Observable<List<User>> selectUsers() {
+
         return databaseInterface.selectUsers(sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
             sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
             sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L));
     }
 
-    public Observable<List<User>> selectUsers(final SelectModifier... modifiers)
-    {
+    public Observable<List<User>> selectUsers(final SelectModifier... modifiers) {
+
         return databaseInterface.selectUsers(sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
             sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
             sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L));
+    }
+
+    public Observable<List<Follower>> selectUserFollowers(final long ofuserId) {
+
+        return databaseInterface.selectUserFollowers(sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""), ofuserId);
+    }
+
+    public Observable<List<Followee>> selectUserFollowees(final long ofuserId) {
+
+        return databaseInterface.selectUserFollowees(sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
+            sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L), ofuserId);
     }
 
     public Call<CreateUserResult> createUser(final String userName, final String firstName,

@@ -31,16 +31,26 @@
             "left join UserUserFollows uuf on uuf.userId = user.userId " .
             "where uuf.followUserId = ?";
 
-        if($debug == true)
-            $sqlqueries['selectUserSql'] = $selectFollowersSql;
+        // build params map
+        $selectFollowersParams = array(
+            1 => array($oftagId, PDO::PARAM_INT),
+        );
+
+        // extend and log sql query
+        if($logdb || $logfile || $logscreen) {
+            $query = extendSqlQuery($selectFollowersSql, $selectFollowersParams);
+            $sqlQueries[] = $query;
+        }
 
         $selectFollowersStmt = $database->prepare($selectFollowersSql);
-        $selectFollowersStmt->bindValue(1, $ofuserId, PDO::PARAM_INT);
+        foreach($selectFollowersParams as $index => $param)
+            $selectFollowersStmt->bindValue($index, $param[0], $param[1]);
         $selectFollowersStmt->execute();
         $followerRows = $selectFollowersStmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach($followerRows as $followerRow) {
             $follower = array(
+                'ofuserId' => $ofuserId,
                 'userId' => isset($followerRow['userId']) ? $followerRow['userId'] : 0, 
                 'userName' => isset($followerRow['userName']) ? $followerRow['userName'] : "", 
                 'firstName' => isset($followerRow['firstName']) ? $followerRow['firstName'] : "", 

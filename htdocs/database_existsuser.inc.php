@@ -27,16 +27,27 @@
         if(isset($_getpost['loginId'])) $existsUserSql .= "userName = ? or emailAddress = ?";
         else if(isset($_getpost['userName'])) $existsUserSql .= "userName = ?";
         else $existsUserSql .= "emailAddress = ?";
+
+        // build params map
+        $existsUserParams = array();
+        if(isset($_getpost['loginId'])) {
+            $existsUserParams[1] = array($loginId, PDO::PARAM_STR);
+            $existsUserParams[2] = array($loginId, PDO::PARAM_STR);
+        }
+        else if(isset($_getpost['userName'])) 
+            $existsUserParams[1] = array($userName, PDO::PARAM_STR);
+        else 
+            $existsUserParams[1] = array($emailAddress, PDO::PARAM_STR);
+
+        // extend and log sql query
+        if($logdb || $logfile || $logscreen) {
+            $query = extendSqlQuery($existsUserSql, $existsUserParams);
+            $sqlQueries[] = $query;
+        }
             
         $existsUserStmt = $database->prepare($existsUserSql);
-
-        if(isset($_getpost['loginId'])) {
-            $existsUserStmt->bindValue(1, $loginId, PDO::PARAM_STR);
-            $existsUserStmt->bindValue(2, $loginId, PDO::PARAM_STR);
-        }
-        else if(isset($_getpost['userName'])) $existsUserStmt->bindValue(1, $userName, PDO::PARAM_STR);
-        else $existsUserStmt->bindValue(1, $emailAddress, PDO::PARAM_STR);
-
+        foreach($existsUserParams as $index => $param)
+            $existsUserStmt->bindValue($index, $param[0], $param[1]);
         $existsUserStmt->execute();
         $userRows = $existsUserStmt->fetchAll(PDO::FETCH_ASSOC);
         $numExistsUser = $existsUserStmt->rowCount();
@@ -50,6 +61,7 @@
                 $resultCode |= 0x02;
         }
 
+        // build return json
         $result = array(
             'result' => $resultCode,
         );

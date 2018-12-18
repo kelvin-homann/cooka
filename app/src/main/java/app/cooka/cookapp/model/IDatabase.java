@@ -44,6 +44,21 @@ public interface IDatabase {
         @Query("deviceId") String deviceId
     );
 
+    @POST("database.php?action=selectUserFollowers")
+    Observable<List<Follower>> selectUserFollowers(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Query("ofuserId") long ofuserId
+    );
+
+    @POST("database.php?action=selectUserFollowees")
+    Observable<List<Followee>> selectUserFollowees(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Query("languageId") long languageId,
+        @Query("ofuserId") long ofuserId
+    );
+
     @POST("database.php?action=existsUser")
     Call<ExistsUserResult> existsUser(
         @Query("loginId") String loginId,

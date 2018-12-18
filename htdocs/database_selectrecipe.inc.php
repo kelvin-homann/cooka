@@ -60,12 +60,21 @@
             "where recipe.recipeId = ? and (recipe.publicationType = 'public' or recipe.publicationType = 'unlisted' or " .
             "(recipe.publicationType = 'private' and login.accessToken = ?))";
         
-        if($debug == true)
-            $sqlqueries['selectRecipeSql'] = $selectRecipeSql;
+        // build params map
+        $selectRecipeParams = array(
+            1 => array($recipeId, PDO::PARAM_INT),
+            2 => array($accessToken, PDO::PARAM_STR),
+        );
+
+        // extend and log sql query
+        if($logdb || $logfile || $logscreen) {
+            $query = extendSqlQuery($selectRecipeSql, $selectRecipeParams);
+            $sqlQueries[] = $query;
+        }
 
         $selectRecipeStmt = $database->prepare($selectRecipeSql);
-        $selectRecipeStmt->bindValue(1, $recipeId, PDO::PARAM_INT);
-        $selectRecipeStmt->bindValue(2, $accessToken, PDO::PARAM_STR);
+        foreach($selectRecipeParams as $index => $param)
+            $selectRecipeStmt->bindValue($index, $param[0], $param[1]);
         $selectRecipeStmt->execute();
         $recipeRows = $selectRecipeStmt->fetchAll(PDO::FETCH_ASSOC);
 

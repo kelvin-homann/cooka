@@ -24,9 +24,22 @@
         // update the actual login
         $updateLoginSql = "update Logins set refreshes = refreshes + 1, lastRefreshedDateTime = now(), " .
             "validUntilDateTime = date_add(now(), interval 30 day) where userId = ? and accessToken = ?";
+
+        // build params map
+        $updateLoginParams = array(
+            1 => array($userId, PDO::PARAM_INT),
+            2 => array($accessToken, PDO::PARAM_STR),
+        );
+
+        // extend and log sql query
+        if($logdb || $logfile || $logscreen) {
+            $query = extendSqlQuery($updateLoginSql, $updateLoginParams);
+            $sqlQueries[] = $query;
+        }
+
         $updateLoginStmt = $database->prepare($updateLoginSql);
-        $updateLoginStmt->bindValue(1, $userId, PDO::PARAM_INT);
-        $updateLoginStmt->bindValue(2, $accessToken, PDO::PARAM_STR);
+        foreach($updateLoginParams as $index => $param)
+            $updateLoginStmt->bindValue($index, $param[0], $param[1]);
         $updateLoginStmt->execute();
         $numUpdatedLogins = $updateLoginStmt->rowCount();
 

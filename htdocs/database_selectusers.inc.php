@@ -27,35 +27,30 @@
     
     try {
         // select the actual users
-        $selectUserSql = "select user.userId, user.userName, user.firstName, user.lastName, user.profileImageId, " .
-            "profileImage.imageFileName as profileImageFileName, " .
-            "user.followerCount, user.followeeCount, " .
+        $selectUsersSql = "select user.userId, user.userName, user.firstName, user.lastName, user.profileImageId, " .
+            "profileImage.imageFileName as profileImageFileName, user.followerCount, user.followeeCount, " .
             "user.verifiedState " .
             "from Users user " .
-            "left join Images profileImage on user.profileImageId = profileImage.imageId ";
+            "left join Images profileImage on user.profileImageId = profileImage.imageId";
 
-        if(isset($followersOfUserId))
-            $selectUserSql .= "left join UserUserFollows uuf on uuf.userId = user.userId " .
-                "where uuf.followUserId = ?";
-        else if(isset($followeesOfUserId))
-            $selectUserSql .= "left join UserUserFollows uuf on uuf.followUserId = user.userId " .
-                "where uuf.userId = ?";
+        // build params map
+        $selectUsersParams = array(
+            // 1 => array($sortField, PDO::PARAM_INT),
+            // 2 => array($sortMode, PDO::PARAM_INT),
+            // 3 => array($groupField, PDO::PARAM_INT),
+        );
 
-        // $selectUserSql .= "left join Images profileImage on user.profileImageId = profileImage.imageId ";
-
-        // if(isset($followersOfUserId) || isset($followeesOfUserId))
-        //     $selectUserSql .= "where ofUser.userId = ?";
+        // extend and log sql query
+        if($logdb || $logfile || $logscreen) {
+            $query = extendSqlQuery($selectUsersSql, $selectUsersParams);
+            $sqlQueries[] = $query;
+        }
         
-        if($debug == true)
-            $sqlqueries['selectUserSql'] = $selectUserSql;
-
-        $selectUserStmt = $database->prepare($selectUserSql);
-        if(isset($followersOfUserId))
-            $selectUserStmt->bindValue(1, $followersOfUserId, PDO::PARAM_INT);
-        else if(isset($followeesOfUserId))
-            $selectUserStmt->bindValue(1, $followeesOfUserId, PDO::PARAM_INT);
-        $selectUserStmt->execute();
-        $userRows = $selectUserStmt->fetchAll(PDO::FETCH_ASSOC);
+        $selectUsersStmt = $database->prepare($selectUsersSql);
+        // foreach($selectUsersParams as $index => $param)
+        //     $selectUsersStmt->bindValue($index, $param[0], $param[1]);
+        $selectUsersStmt->execute();
+        $userRows = $selectUsersStmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach($userRows as $userRow) {
             $user = array(

@@ -22,7 +22,7 @@
     $hashedPassword = null;
     $salt = null;
     $accessToken = $_getpost['accessToken'];
-    $linkedProfileType = null;
+    $linkedProfileType = 'unlinked';
     $linkedProfileUserId = null;
     $userRights = 1;
     $deviceId = null;
@@ -60,49 +60,90 @@
         $mainCollectionId = $database->lastInsertId();
 
         // insert actual user
-        $insertUserStmt = $database->prepare("insert into Users (userName, firstName, lastName, " .
+        $insertUserSql = "insert into Users (userName, firstName, lastName, " .
             "emailAddress, hashedPassword, salt, linkedProfileType, linkedProfileUserId, profileImageId, " .
             "mainCollectionId, userRights, joinedDateTime, lastActiveDateTime) " .
-            "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now())");
-        $insertUserStmt->bindValue(1, $userName, PDO::PARAM_STR);
-        $insertUserStmt->bindValue(2, $firstName, PDO::PARAM_STR);
-        $insertUserStmt->bindValue(3, $lastName, PDO::PARAM_STR);
-        $insertUserStmt->bindValue(4, $emailAddress, PDO::PARAM_STR);
-        $insertUserStmt->bindValue(5, $hashedPassword, PDO::PARAM_STR);
-        $insertUserStmt->bindValue(6, $salt, PDO::PARAM_STR);
-        $insertUserStmt->bindValue(7, $linkedProfileType, PDO::PARAM_INT);
-        $insertUserStmt->bindValue(8, $linkedProfileUserId, PDO::PARAM_STR);
-        $insertUserStmt->bindValue(9, $profileImageId, PDO::PARAM_INT);
-        $insertUserStmt->bindValue(10, $mainCollectionId, PDO::PARAM_INT);
-        $insertUserStmt->bindValue(11, $userRights, PDO::PARAM_INT);
+            "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now())";
+
+        // build params map
+        $insertUserParams = array(
+            1 => array($userName, PDO::PARAM_STR),
+            2 => array($firstName, PDO::PARAM_STR),
+            3 => array($lastName, PDO::PARAM_STR),
+            4 => array($emailAddress, PDO::PARAM_STR),
+            5 => array($hashedPassword, PDO::PARAM_STR),
+            6 => array($salt, PDO::PARAM_STR),
+            7 => array($linkedProfileType, PDO::PARAM_INT),
+            8 => array($linkedProfileUserId, PDO::PARAM_STR),
+            9 => array($profileImageId, PDO::PARAM_INT),
+            10 => array($mainCollectionId, PDO::PARAM_INT),
+            11 => array($userRights, PDO::PARAM_INT),
+        );
+
+        // extend and log sql query
+        if($logdb || $logfile || $logscreen) {
+            $query = extendSqlQuery($insertUserSql, $insertUserParams);
+            $sqlQueries[] = $query;
+        }
+
+        $insertUserStmt = $database->prepare($insertUserSql);
+        foreach($insertUserParams as $index => $param)
+            $insertUserStmt->bindValue($index, $param[0], $param[1]);
         $insertUserStmt->execute();
         $insertedUserId = $database->lastInsertId();
 
         // update collection and set owner id
-        $updateCollectionStmt = $database->prepare("update Collections set ownerId = ? where collectionId = ?");
-        $updateCollectionStmt->bindValue(1, $insertedUserId, PDO::PARAM_INT);
-        $updateCollectionStmt->bindValue(2, $mainCollectionId, PDO::PARAM_INT);
+        $updateCollectionSql = "update Collections set ownerId = ? where collectionId = ?";
+
+        // build params map
+        $updateCollectionParams = array(
+            1 => array($insertedUserId, PDO::PARAM_INT),
+            2 => array($mainCollectionId, PDO::PARAM_INT),
+        };
+
+        // extend and log sql query
+        if($logdb || $logfile || $logscreen) {
+            $query = extendSqlQuery($updateCollectionSql, $updateCollectionParams);
+            $sqlQueries[] = $query;
+        }
+
+        $updateCollectionStmt = $database->prepare($updateCollectionSql);
+        foreach($updateCollectionParams as $index => $param)
+            $updateCollectionStmt->bindValue($index, $param[0], $param[1]);
         $updateCollectionStmt->execute();
         $updateCollectionRowCount = $updateCollectionStmt->rowCount();
 
         // insert a new login
-        $insertLoginStmt = $database->prepare("insert into Logins (userId, accessToken, deviceId, refreshes, " .
+        $insertLoginSql = "insert into Logins (userId, accessToken, deviceId, refreshes, " .
             "loggedInDateTime, lastRefreshedDateTime, validUntilDateTime, expiresAtDateTime) " .
-            "values (?, ?, ?, 0, now(), null, date_add(now(), interval 30 day), date_add(now(), interval 4 month))");
-        $insertLoginStmt->bindValue(1, $insertedUserId, PDO::PARAM_INT);
-        $insertLoginStmt->bindValue(2, $accessToken, PDO::PARAM_STR);
-        $insertLoginStmt->bindValue(3, $deviceId, PDO::PARAM_STR);
+            "values (?, ?, ?, 0, now(), null, date_add(now(), interval 30 day), date_add(now(), interval 4 month))";
+
+        // build params map
+        $insertLoginParams = array(
+            1 => array($insertedUserId, PDO::PARAM_INT),
+            2 => array($accessToken, PDO::PARAM_STR),
+            3 => array($deviceId, PDO::PARAM_STR),
+        );
+
+        // extend and log sql query
+        if($logdb || $logfile || $logscreen) {
+            $query = extendSqlQuery($insertLoginSql, $insertLoginParams);
+            $sqlQueries[] = $query;
+        }
+
+        $insertLoginStmt = $database->prepare($insertLoginSql);
+        foreach($insertLoginParams as $index => $param)
+            $insertLoginStmt->bindValue($index, $param[0], $param[1]);
         $insertLoginStmt->execute();
         $insertedLoginId = $database->lastInsertId();
 
         // build return json
-        $result['userId'] = isset($insertedUserId) ? $insertedUserId : 0;
-        $result['loginId'] = isset($insertedLoginId) ? $insertedLoginId : 0;
-        $result['mainCollectionId'] = isset($mainCollectionId) ? $mainCollectionId : 0;
-        $result['profileImageId'] = isset($profileImageId) ? $profileImageId : 0;
-
-        // log the final prepared sql query string
-        //file_put_contents('./log_' . date("Ynj") . '.log', date("H:i:s") . ': ' . $substInsertUserSql . PHP_EOL, FILE_APPEND);
+        $result = array(
+            'userId' => isset($insertedUserId) ? $insertedUserId : 0,
+            'loginId' => isset($insertedLoginId) ? $insertedLoginId : 0,
+            'mainCollectionId' => isset($mainCollectionId) ? $mainCollectionId : 0,
+            'profileImageId' => isset($profileImageId) ? $profileImageId : 0,
+        );
     }
     catch(PDOException $e) {
         // rollback uncommited changes

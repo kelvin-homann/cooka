@@ -1,4 +1,8 @@
 <?php
+    if(!isset($_getpost['userId'])) {
+        returnError(3, "the parameter userId was not specified", 0, "");
+        return;
+    }
     if(!isset($_getpost['accessToken'])) {
         returnError(4, "the parameter accessToken was not specified", 0, "");
         return;
@@ -7,6 +11,7 @@
     $database = connect();
     if($database == null) return;
 
+    $userId = $_getpost['userId'];
     $accessToken = $_getpost['accessToken'];
     $tags = $_getpost['tags'];
     $recipeId = null;
@@ -35,64 +40,16 @@
     exit();
     
     try {
-        // select the actual recipe
-        $selectRecipeStmt = $database->prepare("select * from RecipesDetailed where recipeId = ?");
-        $selectRecipeStmt->bindValue(1, $recipeId, PDO::PARAM_INT);
-        $selectRecipeStmt->execute();
-        $recipeRows = $selectRecipeStmt->fetchAll(PDO::FETCH_ASSOC);
+        // insert the actual recipe
+        $insertRecipeSql = "";
 
-        foreach($recipeRows as $recipe) {
-            $recipe_1 = array(
-                'recipeId' => $recipe['recipeId'], 
-                'recipeTitle' => $recipe['recipeTitle'], 
-                'recipeDescription' => $recipe['recipeDescription'], 
-                'originalRecipeId' => $recipe['originalRecipeId'], 
-                'originalRecipeTitle' => $recipe['originalRecipeTitle'], 
-                'userId' => $recipe['userId'], 
-                'creatorName' => $recipe['creatorName'], 
-                'mainCategoryId' => $recipe['mainCategoryId'], 
-                'mainCategoryName' => $recipe['mainCategoryName'], 
-            );
+        // build params map
+        $insertRecipeParams = array(
+            1 => array($userId, PDO::PARAM_INT),
+            2 => array($accessToken, PDO::PARAM_STR),
+        );
 
-            // query categories
-            $categories = array();
-
-            $recipe_2 = array(
-                'categories' => $categories, 
-                'publicationType' => $recipe['publicationType'], 
-                'difficultyType' => $recipe['difficultyType'], 
-                'preparationTime' => $recipe['preparationTime'], 
-                'viewedCount' => $recipe['viewedCount'], 
-                'cookedCount' => $recipe['cookedCount'], 
-                'pinnedCount' => $recipe['pinnedCount'], 
-                'modifiedCount' => $recipe['modifiedCount'], 
-                'variedCount' => $recipe['variedCount'], 
-                'sharedCount' => $recipe['sharedCount'], 
-                'createdDateTime' => $recipe['createdDateTime'], 
-                'lastModifiedDateTime' => $recipe['lastModifiedDateTime'], 
-                'lastCookedDateTime' => $recipe['lastCookedDateTime']
-            );
-
-            // query tags
-            $selectRecipeTagsStmt = $database->prepare("select tag.tagId, tag.name from Tags tag left join RecipeTags recipeTag on recipeTag.tagId = tag.tagId left join Recipes recipe on recipeTag.recipeId = recipe.recipeId and recipeTag.recipeId = ?");
-            $selectRecipeTagsStmt->bindValue(1, $recipeId, PDO::PARAM_INT);
-            $selectRecipeTagsStmt->execute();
-            $recipeTagRows = $selectRecipeTagsStmt->fetchAll(PDO::FETCH_ASSOC);
-
-            $tags = array();
-
-            foreach($recipeTagRows as $tag) {
-                array_push($tags, '#' . $tag['name']);
-            }
-
-            $recipe_3 = array(
-                'tags' => $tags
-            );
-
-            $recipe = array_merge($recipe_1, $recipe_2, $recipe_3);
-
-            break; // there should be only one row anyway
-        }
+        // ...
     }
     catch(PDOException $e) {
         // rollback uncommited changes

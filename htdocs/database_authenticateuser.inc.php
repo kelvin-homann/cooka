@@ -51,9 +51,22 @@
         // authenticate the user
         $authenticateUserSql = "select userId, userName, firstName, lastName, emailAddress, userRights " .
             "from Users where ${fn} = ? and hashedPassword = ?";
+
+        // build params map
+        $authenticateUserParams = array(
+            1 => array($id, $pt),
+            2 => array($hashedPassword, PDO::PARAM_STR),
+        );
+
+        // extend and log sql query
+        if($logdb || $logfile || $logscreen) {
+            $query = extendSqlQuery($authenticateUserSql, $authenticateUserParams);
+            $sqlQueries[] = $query;
+        }
+
         $authenticateUserStmt = $database->prepare($authenticateUserSql);
-        $authenticateUserStmt->bindValue(1, $id, $pt);
-        $authenticateUserStmt->bindValue(2, $hashedPassword, PDO::PARAM_STR);
+        foreach($authenticateUserParams as $index => $param)
+            $authenticateUserStmt->bindValue($index, $param[0], $param[1]);
         $authenticateUserStmt->execute();
         $userRows = $authenticateUserStmt->fetchAll(PDO::FETCH_ASSOC);
         $numAuthenticatedUser = $authenticateUserStmt->rowCount();
@@ -79,20 +92,47 @@
                 // delete any old login on the same device
                 if(isset($deviceId)) {
                     $deleteLoginsSql = "delete from Logins where userId = ? and deviceId = ?";
+                    
+                    // build params map
+                    $deleteLoginsParams = array(
+                        1 => array($userId, PDO::PARAM_INT),
+                        2 => array($deviceId, PDO::PARAM_STR),
+                    );
+
+                    // extend and log sql query
+                    if($logdb || $logfile || $logscreen) {
+                        $query = extendSqlQuery($deleteLoginsSql, $deleteLoginsParams);
+                        $sqlQueries[] = $query;
+                    }
+                    
                     $deleteLoginsStmt = $database->prepare($deleteLoginsSql);
-                    $deleteLoginsStmt->bindValue(1, $userId, PDO::PARAM_INT);
-                    $deleteLoginsStmt->bindValue(2, $deviceId, PDO::PARAM_STR);
+                    foreach($deleteLoginsParams as $index => $param)
+                        $deleteLoginsStmt->bindValue($index, $param[0], $param[1]);
                     $deleteLoginsStmt->execute();
                     $numDeletedLogins = $deleteLoginsStmt->rowCount();
                 }
 
                 // insert the actual login
-                $insertLoginStmt = $database->prepare("insert into Logins (userId, accessToken, deviceId, loggedInDateTime, " .
+                $insertLoginSql = "insert into Logins (userId, accessToken, deviceId, loggedInDateTime, " .
                     "validUntilDateTime, expiresAtDateTime) " .
-                    "values (?, ?, ?, now(), date_add(now(), interval 30 day), date_add(now(), interval 4 month))");
-                $insertLoginStmt->bindValue(1, $userId, PDO::PARAM_INT);
-                $insertLoginStmt->bindValue(2, $accessToken, PDO::PARAM_STR);
-                $insertLoginStmt->bindValue(3, $deviceId, PDO::PARAM_STR);
+                    "values (?, ?, ?, now(), date_add(now(), interval 30 day), date_add(now(), interval 4 month))";
+
+                // build params map
+                $insertLoginParams = array(
+                    1 => array($userId, PDO::PARAM_INT),
+                    2 => array($accessToken, PDO::PARAM_STR),
+                    3 => array($deviceId, PDO::PARAM_STR),
+                );
+
+                // extend and log sql query
+                if($logdb || $logfile || $logscreen) {
+                    $query = extendSqlQuery($insertLoginSql, $insertLoginParams);
+                    $sqlQueries[] = $query;
+                }
+                
+                $insertLoginStmt = $database->prepare($insertLoginSql);
+                foreach($insertLoginParams as $index => $param)
+                    $insertLoginStmt->bindValue($index, $param[0], $param[1]);
                 $insertLoginStmt->execute();
                 $insertedLoginId = $database->lastInsertId();
 
@@ -105,6 +145,7 @@
             }
         }
 
+        // build return json
         $result = array(
             'result' => isset($resultCode) ? $resultCode : 0,
             'userId' => isset($userId) ? $userId : 0,

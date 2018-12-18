@@ -19,8 +19,28 @@
     if(!isset($_getpost['action']))
         exit();
 
-    $debug = false;
+    include($scriptDir . '/functions.inc.php');
+
     $action = $_getpost['action'];
+    $debug = false;
+    $allowLogfile = true;
+    $allowLogdb = true;
+    $logfile = true;
+    $logdb = true;
+    $logscreen = false;
+
+    if(isset($_getpost['logfile']) && trim($_getpost['logfile']) == 'true')
+        $logfile = true && $allowLogfile;
+    else if(isset($_getpost['logfile']) && trim($_getpost['logfile']) == 'false')
+        $logfile = false;
+
+    if(isset($_getpost['logdb']) && trim($_getpost['logdb']) == 'true')
+        $logdb = true && $allowLogdb;
+    else if(isset($_getpost['logdb']) && trim($_getpost['logdb']) == 'false')
+        $logdb = false;
+
+    if(isset($_getpost['sql']) && trim($_getpost['sql']) == 'true')
+        $logscreen = true;
 
     /**
      * connects to database
@@ -161,4 +181,22 @@
         returnError(1, 'unsupported action specified', 0, 0);
         exit();
     }
+
+    // do logging if enabled
+
+    if($logfile && isset($sqlQueries) && count($sqlQueries) > 0) {
+        foreach($sqlQueries as $query) {
+            $prefix = strlen($action) > 0 ? $action : 'unknown';
+            file_put_contents('./log/' . $prefix . '_' . date("Ynj") . '.log', 
+                date("Y-n-j H:i:s") . ';' . $userId . ';' . $accessToken. ';' . $query . ';' . $_SERVER['REQUEST_URI'] . ';' . 
+                $_SERVER['REQUEST_METHOD'] . ';' . $_SERVER['HTTP_USER_AGENT'] . PHP_EOL, FILE_APPEND);
+        }
+    }
+
+    if($logdb && isset($sqlQueries) && count($sqlQueries) > 0)
+        foreach($sqlQueries as $query)
+            logSqlQueryToDatabase($database, $userId, $accessToken, $query);
+
+    if($logscreen && count($sqlQueries) > 0)
+        echo json_encode($sqlQueries, JSON_PRETTY_PRINT);
 ?>

@@ -39,17 +39,32 @@
     
     try {
         // select the actual categories
-        $selectCategoryStmt = $database->prepare(
-            "select category.categoryId, category.parentCategoryId, " .
+        $selectCategoriesSql = "select category.categoryId, category.parentCategoryId, " .
             "categoryNameString.originalValue as name, categoryDescriptionString.originalValue as description, " .
             "category.imageId, categoryImage.imageFileName, category.sortPrefix, category.browsable " .
             "from Categories category " .
             "left join Images categoryImage on category.imageId = categoryImage.imageId " .
             "left join Strings categoryNameString on category.nameStringId = categoryNameString.stringId " .
-            "left join Strings categoryDescriptionString on category.descriptionStringId = categoryDescriptionString.stringId"
+            "left join Strings categoryDescriptionString on category.descriptionStringId = categoryDescriptionString.stringId";
+
+        // build params map
+        $selectCategoriesParams = array(
+            // 1 => array($sortField, PDO::PARAM_INT),
+            // 3 => array($sortMode, PDO::PARAM_INT),
+            // 3 => array($groupField, PDO::PARAM_INT),
         );
-        $selectCategoryStmt->execute();
-        $categoryRows = $selectCategoryStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // extend and log sql query
+        if($logdb || $logfile || $logscreen) {
+            $query = $selectCategoriesSql;//extendSqlQuery($selectCategoriesSql, $selectCategoriesParams);
+            $sqlQueries[] = $query;
+        }
+
+        $selectCategoriesStmt = $database->prepare($selectCategoriesSql);
+        // foreach($selectCategoriesParams as $index => $param)
+        //     $selectCategoriesStmt->bindValue($index, $param[0], $param[1]);
+        $selectCategoriesStmt->execute();
+        $categoryRows = $selectCategoriesStmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach($categoryRows as $categoryRow) {
             $category = array(

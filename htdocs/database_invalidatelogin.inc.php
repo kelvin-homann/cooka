@@ -17,9 +17,22 @@
     try {
         // delete all invalid or expired logins
         $deleteLoginsSql = "delete from Logins where userId = ? and accessToken = ?";
+
+        // build params map
+        $deleteLoginsParams = array(
+            1 => array($userId, PDO::PARAM_INT),
+            2 => array($accessToken, PDO::PARAM_STR),
+        );
+
+        // extend and log sql query
+        if($logdb || $logfile || $logscreen) {
+            $query = extendSqlQuery($deleteLoginsSql, $deleteLoginsParams);
+            $sqlQueries[] = $query;
+        }
+
         $deleteLoginsStmt = $database->prepare($deleteLoginsSql);
-        $deleteLoginsStmt->bindValue(1, $userId, PDO::PARAM_INT);
-        $deleteLoginsStmt->bindValue(2, $accessToken, PDO::PARAM_STR);
+        foreach($deleteLoginsParams as $index => $param)
+            $deleteLoginsStmt->bindValue($index, $param[0], $param[1]);
         $deleteLoginsStmt->execute();
         $numDeletedLogins = $deleteLoginsStmt->rowCount();
 

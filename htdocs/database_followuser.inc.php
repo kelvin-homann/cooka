@@ -22,38 +22,31 @@
     $sqlqueries = array();
     
     try {
-        // select the follower users
-        $selectFollowersSql = "select user.userId, user.userName, " .
-            "user.firstName, user.lastName, user.profileImageId, " .
-            "profileImage.imageFileName as profileImageFileName, user.followerCount, user.followeeCount, user.verifiedState " .
-            "from Users user " .
-            "left join Images profileImage on user.profileImageId = profileImage.imageId " .
-            "left join UserUserFollows uuf on uuf.userId = user.userId " .
-            "where uuf.followUserId = ?";
+        // insert a user-user follow relation
+        $insertUserUserFollowSql = "insert into UserUserFollows (userId, followUserId) values (?, ?)";
 
-        if($debug == true)
-            $sqlqueries['selectUserSql'] = $selectFollowersSql;
+        // build params map
+        $insertUserUserFollowParams = array(
+            1 => array($userId, PDO::PARAM_INT),
+            2 => array($followUserId, PDO::PARAM_INT),
+        );
 
-        $selectFollowersStmt = $database->prepare($selectFollowersSql);
-        $selectFollowersStmt->bindValue(1, $followUserId, PDO::PARAM_INT);
-        $selectFollowersStmt->execute();
-        $followerRows = $selectFollowersStmt->fetchAll(PDO::FETCH_ASSOC);
-
-        foreach($followerRows as $followerRow) {
-            $follower = array(
-                'userId' => isset($followerRow['userId']) ? $followerRow['userId'] : 0, 
-                'userName' => isset($followerRow['userName']) ? $followerRow['userName'] : "", 
-                'firstName' => isset($followerRow['firstName']) ? $followerRow['firstName'] : "", 
-                'lastName' => isset($followerRow['lastName']) ? $followerRow['lastName'] : "", 
-                'profileImageId' => isset($followerRow['profileImageId']) ? $followerRow['profileImageId'] : 0, 
-                'profileImageFileName' => isset($followerRow['profileImageFileName']) ? $followerRow['profileImageFileName'] : "", 
-                'followerCount' => isset($followerRow['followerCount']) ? $followerRow['followerCount'] : 0, 
-                'followeeCount' => isset($followerRow['followeeCount']) ? $followerRow['followeeCount'] : 0, 
-                'verifiedState' => isset($followerRow['verifiedState']) ? $followerRow['verifiedState'] : 0, 
-            );
-
-            $followers[] = $follower;
+        // extend and log sql query
+        if($logdb || $logfile || $logscreen) {
+            $query = extendSqlQuery($insertUserUserFollowSql, $insertUserUserFollowParams);
+            $sqlQueries[] = $query;
         }
+
+        $insertUserUserFollowStmt = $database->prepare($insertUserUserFollowSql);
+        foreach($insertUserUserFollowParams as $index => $param)
+            $insertUserUserFollowStmt->bindValue($index, $param[0], $param[1]);
+        $insertUserUserFollowStmt->execute();
+        $numInsertedUserUserFollows = $insertUserUserFollowStmt->rowCount();
+
+        // build return json
+        $result = array(
+            'result' => isset($numInsertedUserUserFollows) && $numInsertedUserUserFollows == 1 ? 1 : 0,
+        );
     }
     catch(PDOException $e) {
         // rollback uncommited changes
@@ -66,5 +59,5 @@
         exit();
     }
 
-    echo json_encode($followers, JSON_PRETTY_PRINT);
+    echo json_encode($result, JSON_PRETTY_PRINT);
 ?>

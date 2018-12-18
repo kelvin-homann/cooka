@@ -3,8 +3,8 @@
         returnError(3, "the parameter userId was not specified", 0, "");
         return;
     }
-    if(!isset($_getpost['userAccessToken'])) {
-        returnError(4, "the parameter userAccessToken was not specified", 0, "");
+    if(!isset($_getpost['accessToken'])) {
+        returnError(4, "the parameter accessToken was not specified", 0, "");
         return;
     }
 
@@ -12,7 +12,8 @@
     if($database == null) return;
 
     $userId = $_getpost['userId'];
-    $userAccessToken = $_getpost['userAccessToken'];
+    $accessToken = $_getpost['accessToken'];
+
     $sortMode = 'title';
     $sortDirection = 'asc';
     $filterMode = null;
@@ -34,10 +35,10 @@
     
     try {
         // select the actual recipes
-        $selectRecipeStmt = $database->prepare(
-            "select recipe.recipeId, titleString.originalValue as recipeTitle, usr.userId as creatorId, usr.userName as creatorName, " .
-            "recipe.mainImageId, mainImage.imageFileName as mainImageFileName, recipe.mainCategoryId, categoryNameString.originalValue as mainCategoryName, " .
-            "recipe.difficultyType, recipe.preparationTime, recipe.cookedCount, recipe.pinnedCount, recipe.rating " .
+        $selectRecipesSql = "select recipe.recipeId, titleString.originalValue as recipeTitle, recipe.creatorId, " .
+            "usr.userName as creatorName, recipe.mainImageId, mainImage.imageFileName as mainImageFileName, " .
+            "recipe.mainCategoryId, categoryNameString.originalValue as mainCategoryName, recipe.difficultyType, " .
+            "recipe.preparationTime, recipe.cookedCount, recipe.pinnedCount, recipe.rating " .
             "from Recipes recipe " .
             "left join Recipes originalRecipe on recipe.originalRecipeId = originalRecipe.recipeId " .
             "left join Users usr on recipe.creatorId = usr.userId " .
@@ -45,10 +46,104 @@
             "left join Strings titleString on recipe.titleStringId = titleString.stringId " .
             "left join Strings categoryNameString on category.nameStringId = categoryNameString.stringId " .
             "left join Images mainImage on mainImage.imageId = recipe.mainImageId " .
-            "where recipe.publicationType = 'public'"
-        );
-        $selectRecipeStmt->execute();
-        $recipeRows = $selectRecipeStmt->fetchAll(PDO::FETCH_ASSOC);
+            "where recipe.publicationType = ? ";
+
+        $p = 1;
+        $selectRecipesParams = array();
+        $selectRecipesParams[$p++] = array('public', PDO::PARAM_STR);
+
+        /* FILTERING */
+
+        if(isset($_getpost['filterKey'])) {
+            $filterKey = $_getpost['filterKey'];
+            if(!is_array($filterKey)) $filterKey = array($filterKey);
+            $selectRecipesFilterSql = "";
+            $selectRecipesFilterParams = array();
+            $fp = $p;
+            for($i = 0; $i < count($filterKey); $i++) {
+                list($key, $value) = explode(':', $filterKey[$i]);
+                switch($key) {
+                case 'contains':
+                    $value = '%' . trim($value) . '%';
+                    $selectRecipesFilterSql .= "and (titleString.originalValue like ? or categoryNameString.originalValue like ?) ";
+                    $selectRecipesFilterParams[$fp++] = array($value, PDO::PARAM_STR);
+                    $selectRecipesFilterParams[$fp++] = array($value, PDO::PARAM_STR);
+                    break;
+
+                case 'creatorId':
+                    if(isset($value) && is_numeric($value)) {
+                        $selectRecipesFilterSql .= "and recipe.creatorId = ? ";
+                        $selectRecipesFilterParams[$fp++] = array($value, PDO::PARAM_INT);
+                    }
+                    break;
+
+                case 'hasImage':
+                    if($value == 'true') $selectRecipesFilterSql .= "and recipe.mainImageId is not null ";
+                    else if($value == 'false') $selectRecipesFilterSql .= "and recipe.mainImageId is null ";
+                    break;
+                }
+            }
+
+            // save adding
+            if(count($selectRecipesFilterParams) > 0) {
+                $selectRecipesSql .= $selectRecipesFilterSql;
+                $selectRecipesParams = $selectRecipesParams + $selectRecipesFilterParams;
+                $p = $fp;
+            }
+        }
+
+        /* ORDERING */
+
+        if(isset($_getpost['sortKey'])) {
+            $sortKey = $_getpost['sortKey'];
+            $allowedSortKeys = array(
+                'title' => 'recipeTitle', 
+                'difficultyType' => 'difficultyType', 
+                'preparationTime' => 'preparationTime', 
+                'cookedCount' => 'cookedCount', 
+                'pinnedCount' => 'pinnedCount', 
+                'rating' => 'rating'
+            );
+            $selectRecipesOrderSql = "";
+            if(is_array($sortKey)) {
+                for($i = 0; $i < count($sortKey); $i++) {
+                    list($k, $d) = explode(':', $sortKey[$i]);
+                    if(!array_key_exists($k, $allowedSortKeys)) continue;
+                    if(!isset($d) || $d != 'desc') $d = 'asc';
+                    if($i > 0) $selectRecipesOrderSql .= ', ' . $allowedSortKeys[$k] . ' ' . $d;
+                    else $selectRecipesOrderSql .= $allowedSortKeys[$k] . ' ' . $d;
+                }
+            }
+            else {
+                list($k, $d) = explode(':', $sortKey);
+                if(array_key_exists($k, $allowedSortKeys)) {
+                    if(!isset($d) || $d != 'desc') $d = 'asc';
+                    $selectRecipesOrderSql .= $allowedSortKeys[$k] . ' ' . $d;
+                }
+            }
+
+            // save adding
+            if(strlen($selectRecipesOrderSql) > 0)
+                $selectRecipesSql .= "order by " . $selectRecipesOrderSql;
+        }
+
+        // extend and log sql query
+        if($logdb || $logfile || $logscreen) {
+            $query = count($selectRecipesParams) > 0 ? extendSqlQuery($selectRecipesSql, $selectRecipesParams) : $selectRecipesSql;
+            $sqlQueries[] = $query;
+
+            // if($logscreen) {
+            //     echo '### ' . $query . ' ###';
+            //     foreach($selectRecipesParams as $key => $value)
+            //         echo ' < ' . $key . ': ' . $value[0] . ' > ';
+            // }
+        }
+
+        $selectRecipesStmt = $database->prepare($selectRecipesSql);
+        foreach($selectRecipesParams as $index => $param)
+            $selectRecipesStmt->bindValue($index, $param[0], $param[1]);
+        $selectRecipesStmt->execute();
+        $recipeRows = $selectRecipesStmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach($recipeRows as $recipeRow) {
             $recipe = array(

@@ -123,27 +123,11 @@
         $updateCategorySqlWheres = "where category.categoryId = ?";
         $updateCategorySql = $updateCategorySqlTables . "set " . $updateCategorySqlSets . " " . $updateCategorySqlWheres;
 
-        $substUpdateCategorySql = $updateCategorySql;
-        $pos = 0;
-        $p = 1;
-        while(($pos = strpos($substUpdateCategorySql, "?")) !== false) {
-            if($p == count($params) + 1)
-                $value = $categoryId;
-            else {
-                $param = $params[$p];
-                $value = $param[0];
-                if($param[1] == PDO::PARAM_STR)
-                    $value = "'{$value}'";
-            }
-            $valen = strlen($value);
-            $substUpdateCategorySql = substr_replace($substUpdateCategorySql, $value, $pos, 1);
-            if($p == count($params) + 1)
-                break;
-            $p++;
+        // extend and log sql query
+        if($logdb || $logfile || $logscreen) {
+            $query = extendSqlQuery($updateCategorySql, $params);
+            $sqlQueries[] = $query;
         }
-
-        // log the final prepared sql query string
-        file_put_contents('./log_' . date("Ynj") . '.log', date("H:i:s") . ': ' . $substUpdateCategorySql . PHP_EOL, FILE_APPEND);
 
         // prepare the sql statement and bind parameters
         $updateCategoryStmt = $database->prepare($updateCategorySql);

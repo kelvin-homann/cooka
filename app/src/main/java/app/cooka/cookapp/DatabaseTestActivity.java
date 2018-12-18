@@ -47,6 +47,7 @@ import app.cooka.cookapp.model.CategoryGridViewAdapter;
 import app.cooka.cookapp.model.CategoryListViewAdapter;
 import app.cooka.cookapp.model.CreateUserResult;
 import app.cooka.cookapp.model.DatabaseClient;
+import app.cooka.cookapp.model.Followee;
 import app.cooka.cookapp.model.ICreateUserCallback;
 import app.cooka.cookapp.model.IResultCallback;
 import app.cooka.cookapp.model.InvalidateLoginResult;
@@ -152,6 +153,15 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         findViewById(R.id.btnPollCategories).setOnClickListener(this);
 
         databaseClient = DatabaseClient.Factory.getInstance(this);
+
+        User.Factory.selectUserFollowees(this, 4, new IResultCallback<List<Followee>>() {
+            @Override
+            public void onSucceeded(List<Followee> followees) {
+                for(Followee followee : followees) {
+                    Log.d(LOGTAG, String.format("followee: %s", followee.getDisplayName()));
+                }
+            }
+        });
     }
 
     @Override
