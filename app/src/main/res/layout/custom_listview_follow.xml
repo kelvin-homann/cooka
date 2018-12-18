@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/customListView"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="wrap_content"
+    android:layout_height="75dp">
 
     <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/ivwProfilePicFollower"
@@ -11,7 +12,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="35dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="15dp"
         android:src="@drawable/default_avatar"
         app:civ_border_color="@color/colorPrimary"
         app:civ_border_width="0dp"
@@ -21,23 +22,50 @@
 
     <TextView
         android:id="@+id/tvwNameFollower"
-        android:layout_width="244dp"
-        android:layout_height="wrap_content"
+        android:layout_width="168dp"
+        android:layout_height="25dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginStart="96dp"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="17dp"
+        android:layout_marginEnd="120dp"
+        android:layout_marginBottom="33dp"
         android:text="@string/text_name_customlvw"
         android:textSize="18sp" />
 
     <TextView
         android:id="@+id/tvwUsernameFollower"
-        android:layout_width="244dp"
+        android:layout_width="168dp"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/tvwNameFollower"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="60dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="120dp"
         android:text="@string/text_username_customlvw"
         android:textColor="@color/colorPrimary" />
+
+    <ImageView
+        android:id="@+id/ivwAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tvwUsernameFollower"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="101dp"
+        android:layout_marginBottom="8dp"
+        app:srcCompat="@drawable/ic_add_circle" />
+
+    <ImageView
+        android:id="@+id/ivwRmv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tvwUsernameFollower"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="75dp"
+        android:layout_marginBottom="8dp"
+        app:srcCompat="@drawable/ic_remove" />
 
 </RelativeLayout>

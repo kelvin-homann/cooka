@@ -12,16 +12,5 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
-        ProfileFragment profileFragment = new ProfileFragment();
-        loadFragment(profileFragment);
-    }
-
-
-    private void loadFragment(Fragment fragment) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_frame_profile, fragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
     }
 }

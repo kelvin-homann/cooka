@@ -49,11 +49,6 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/lsvFollower"
         android:layout_width="match_parent"
-        android:layout_height="494dp" />
-
-    <Space
-        android:id="@+id/space_Follower3"
-        android:layout_width="match_parent"
-        android:layout_height="20dp" />
+        android:layout_height="match_parent" />
 
 </LinearLayout>

@@ -2,22 +2,15 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/ProfileLayout"
+    android:id="@+id/fragment_frame_profile"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ProfileActivity">
 
-    <FrameLayout
-        android:id="@+id/fragment_frame_profile"
+    <fragment
+        android:id="@+id/fragment"
+        android:name="app.cooka.cookapp.ProfileFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="0dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginBottom="0dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" >
+        android:layout_height="match_parent" />
 
-    </FrameLayout>
 </RelativeLayout>
