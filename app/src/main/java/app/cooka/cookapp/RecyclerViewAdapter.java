@@ -3,6 +3,7 @@ package app.cooka.cookapp;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import com.bumptech.glide.Glide;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
+import app.cooka.cookapp.model.IResultCallback;
+import app.cooka.cookapp.model.User;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
@@ -60,7 +63,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public int getItemCount() {
-        return mUsernames.size();
+        return mNames.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{

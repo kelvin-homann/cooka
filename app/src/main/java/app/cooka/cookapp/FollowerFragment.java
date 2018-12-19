@@ -36,7 +36,7 @@ public class FollowerFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        initImages();
+        initList();
         View v = inflater.inflate(R.layout.fragment_follower, container, false);
         RecyclerView recyclerView = v.findViewById(R.id.lsvFollower);
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(usernames, imgUrls, names, getActivity());
@@ -45,7 +45,7 @@ public class FollowerFragment extends Fragment {
 
         final TextView followerNr = (TextView) v.findViewById(R.id.tvwFollowerNr);
 
-        User.Factory.selectUser(25, new IResultCallback<User>() {
+        User.Factory.selectUser(4, new IResultCallback<User>() {
             @Override
             public void onSucceeded(User result) {
                 if (result != null){
@@ -57,7 +57,7 @@ public class FollowerFragment extends Fragment {
         return v;
     }
 
-    private void initImages(){
+    private void initList(){
         imgUrls.add("https://images.pexels.com/photos/846741/pexels-photo-846741.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260");
         imgUrls.add("https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260");
         imgUrls.add("https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260");

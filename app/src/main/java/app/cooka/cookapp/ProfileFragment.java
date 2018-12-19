@@ -9,8 +9,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 
 import org.w3c.dom.Text;
 
@@ -40,10 +43,12 @@ public class ProfileFragment extends Fragment {
         final TextView following = (TextView) view.findViewById(R.id.tvwFollowing);
         final TextView followerNr = (TextView) view.findViewById(R.id.tvwFollowernr);
         final TextView followingNr = (TextView) view.findViewById(R.id.tvwFollowingnr);
+        final ImageView profilePicture = (ImageView) view.findViewById(R.id.ivwProfilePicFollower);
+        final ImageView addButton = (ImageView) view.findViewById(R.id.ivwAdd);
 
         LoginManager.Factory.getInstance(getActivity());
 
-        User.Factory.selectUser(25, new IResultCallback<User>() {
+        User.Factory.selectUser(4, new IResultCallback<User>() {
             @Override
             public void onSucceeded(User result) {
                 if (result != null){
@@ -55,7 +60,20 @@ public class ProfileFragment extends Fragment {
                     userName.setText(userNameText);
                     followerNr.setText(followerNrText);
                     followingNr.setText(followingNrText);
+                    if (result.getProfileImageId() != 0){
+                        Glide.with(getContext())
+                                .asBitmap()
+                                .load("https://www.sebastianzander.de/cooka/img/" + result.getProfileImageFileName())
+                                .into(profilePicture);
+                    }
                 }
+            }
+        });
+
+        addButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Toast.makeText(getActivity(), "Add User", Toast.LENGTH_LONG).show();
             }
         });
 
