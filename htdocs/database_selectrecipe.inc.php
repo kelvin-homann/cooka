@@ -38,9 +38,9 @@
     
     try {
         // select the actual recipe
-        $selectRecipeSql = "select recipe.recipeId, titleString.originalValue as recipeTitle, descriptionString.originalValue as recipeDescription, " .
-            "titleString.originalLanguageId, originalLanguageNameString.originalValue as originalLanguageName, " .
-            "recipe.originalRecipeId, originalRecipeTitleString.originalValue as originalRecipeTitle, usr.userId as creatorId, " .
+        $selectRecipeSql = "select recipe.recipeId, titleString.originalValue as title, descriptionString.originalValue as description, " .
+            // "titleString.originalLanguageId as languageId, languageNameString.originalValue as languageName, " .
+            "recipe.originalRecipeId, originalRecipeTitleString.originalValue as originalTitle, usr.userId as creatorId, " .
             "usr.userName as creatorName, recipe.mainImageId, mainImage.imageFileName as mainImageFileName, recipe.mainCategoryId, " .
             "categoryNameString.originalValue as mainCategoryName, recipe.publicationType, recipe.difficultyType, recipe.preparationTime, " .
             "recipe.viewedCount, recipe.cookedCount, recipe.pinnedCount, recipe.modifiedCount, recipe.variedCount, recipe.sharedCount, " .
@@ -53,8 +53,8 @@
             "left join Strings descriptionString on recipe.descriptionStringId = descriptionString.stringId " .
             "left join Strings originalRecipeTitleString on originalRecipe.titleStringId = originalRecipeTitleString.stringId " .
             "left join Strings categoryNameString on category.nameStringId = categoryNameString.stringId " .
-            "left join Languages originalLanguage on originalLanguage.languageId = titleString.originalLanguageId " .
-            "left join Strings originalLanguageNameString on originalLanguage.nameStringId = originalLanguageNameString.stringId " .
+            // "left join Languages language on language.languageId = titleString.originalLanguageId " .
+            // "left join Strings languageNameString on language.nameStringId = languageNameString.stringId " .
             "left join Images mainImage on mainImage.imageId = recipe.mainImageId " .
             "left join Logins login on login.userId = usr.userId " .
             "where recipe.recipeId = ? and (recipe.publicationType = 'public' or recipe.publicationType = 'unlisted' or " .
@@ -81,12 +81,12 @@
         foreach($recipeRows as $recipeRow) {
             $recipe = array(
                 'recipeId' => isset($recipeRow['recipeId']) ? $recipeRow['recipeId'] : 0, 
-                'recipeTitle' => isset($recipeRow['recipeTitle']) ? $recipeRow['recipeTitle'] : "", 
-                'recipeDescription' => isset($recipeRow['recipeDescription']) ? $recipeRow['recipeDescription'] : "", 
-                'originalLanguageId' => isset($recipeRow['originalLanguageId']) ? $recipeRow['originalLanguageId'] : 0, 
-                'originalLanguageName' => isset($recipeRow['originalLanguageName']) ? $recipeRow['originalLanguageName'] : "", 
+                'title' => isset($recipeRow['title']) ? $recipeRow['title'] : "", 
+                'description' => isset($recipeRow['description']) ? $recipeRow['description'] : "", 
                 'originalRecipeId' => isset($recipeRow['originalRecipeId']) ? $recipeRow['originalRecipeId'] : 0, 
-                'originalRecipeTitle' => isset($recipeRow['originalRecipeTitle']) ? $recipeRow['originalRecipeTitle'] : "", 
+                'originalTitle' => isset($recipeRow['originalTitle']) ? $recipeRow['originalTitle'] : "", 
+                // 'languageId' => isset($recipeRow['languageId']) ? $recipeRow['languageId'] : 0, 
+                // 'languageName' => isset($recipeRow['languageName']) ? $recipeRow['languageName'] : "", 
                 'creatorId' => isset($recipeRow['creatorId']) ? $recipeRow['creatorId'] : 0, 
                 'creatorName' => isset($recipeRow['creatorName']) ? $recipeRow['creatorName'] : "", 
                 'mainImageId' => isset($recipeRow['mainImageId']) ? $recipeRow['mainImageId'] : 0, 

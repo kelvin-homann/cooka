@@ -1,4 +1,4 @@
-package app.cooka.cookapp.model;
+package app.cooka.cookapp.view;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,6 +25,7 @@ import java.util.List;
 
 import app.cooka.cookapp.R;
 import app.cooka.cookapp.Settings;
+import app.cooka.cookapp.model.Category;
 
 public class CategoryGridViewAdapter extends BaseAdapter {
 

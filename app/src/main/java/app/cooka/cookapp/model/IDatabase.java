@@ -90,6 +90,21 @@ public interface IDatabase {
     );
 
     /*  ************************************************************************************  *
+     *  RECIPE METHODS
+     *  ************************************************************************************  */
+
+    @POST("database.php?action=selectRecipes")
+    Observable<List<Recipe>> selectRecipes(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Query("languageId") long languageId,
+        @Query("filterKey") List<String> filterKeys,
+        @Query("sortKey") List<String> sortKeys,
+        @Query("limit") long limit,
+        @Query("offset") long offset
+    );
+
+    /*  ************************************************************************************  *
      *  CATEGORY METHODS
      *  ************************************************************************************  */
 
@@ -101,7 +116,7 @@ public interface IDatabase {
         @Query("categoryId") long categoryId
     );
 
-    @POST("database.php?action=listCategories")
+    @POST("database.php?action=selectCategories")
     Observable<List<Category>> selectCategories(
         @Query("userId") long userId,
         @Query("accessToken") String accessToken,

@@ -1,4 +1,4 @@
-package app.cooka.cookapp.model;
+package app.cooka.cookapp.view;
 
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -13,6 +13,7 @@ import java.util.List;
 
 import app.cooka.cookapp.R;
 import app.cooka.cookapp.Settings;
+import app.cooka.cookapp.model.Category;
 
 public class CategoryListViewAdapter extends BaseAdapter {
 
@@ -67,11 +68,11 @@ public class CategoryListViewAdapter extends BaseAdapter {
         private TextView tvCategoryName;
 
         public CategoryListViewItem(View view) {
-            tvCategoryName = view.findViewById(R.id.tvCategoryName);
+            //tvCategoryName = view.findViewById(R.id.tvCategoryName);
         }
 
         public void setCategory(Category category) {
-            tvCategoryName.setText(category.getName(Settings.Factory.getInstance().getCurrentLanguageId()));
+            //tvCategoryName.setText(category.getName(Settings.Factory.getInstance().getCurrentLanguageId()));
         }
     }
 }

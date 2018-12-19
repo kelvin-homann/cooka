@@ -189,13 +189,52 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/lltPollRecipesPanel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:elevation="2dp"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:id="@+id/tvPollRecipesTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp"
+                android:text="Poll Recipes"
+                android:textColor="#44aa22"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnPollRecipes"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="16dp"
+                android:clickable="false"
+                android:text="Poll Recipes" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvwRecipesList"
+                android:layout_width="match_parent"
+                android:layout_height="600dp"
+                android:paddingBottom="16dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/lltPollCategoriesPanel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:elevation="2dp"
             android:orientation="vertical"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp">
+            android:paddingRight="16dp"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/tvPollCategoriesTitle"
@@ -218,18 +257,10 @@
                 android:clickable="false"
                 android:text="Poll Categories" />
 
-            <ListView
-                android:id="@+id/lvwCategories"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:layout_marginBottom="16dp"
-                android:background="#f6f6f6"
-                android:elevation="3dp" />
-
             <GridView
                 android:id="@+id/gvwCategories"
                 android:layout_width="match_parent"
-                android:layout_height="800dp"
+                android:layout_height="600dp"
                 android:layout_marginBottom="16dp"
                 android:alignmentMode="alignMargins"
                 android:columnWidth="150dp"

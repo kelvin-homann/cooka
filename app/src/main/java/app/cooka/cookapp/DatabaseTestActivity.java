@@ -1,9 +1,9 @@
 package app.cooka.cookapp;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,9 +14,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.facebook.appevents.UserDataStore;
-import com.facebook.login.Login;
 
 import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
@@ -43,21 +40,18 @@ import app.cooka.cookapp.login.ILogoutCallback;
 import app.cooka.cookapp.model.ArrayListObserver;
 import app.cooka.cookapp.model.AuthenticateUserResult;
 import app.cooka.cookapp.model.Category;
-import app.cooka.cookapp.model.CategoryGridViewAdapter;
-import app.cooka.cookapp.model.CategoryListViewAdapter;
+import app.cooka.cookapp.model.Recipe;
+import app.cooka.cookapp.view.CategoryGridViewAdapter;
+import app.cooka.cookapp.view.CategoryListViewAdapter;
 import app.cooka.cookapp.model.CreateUserResult;
 import app.cooka.cookapp.model.DatabaseClient;
 import app.cooka.cookapp.model.Followee;
-import app.cooka.cookapp.model.ICreateUserCallback;
 import app.cooka.cookapp.model.IResultCallback;
 import app.cooka.cookapp.model.InvalidateLoginResult;
 import app.cooka.cookapp.model.RefreshLoginResult;
 import app.cooka.cookapp.model.User;
-import app.cooka.cookapp.utils.SecurityUtils;
 import app.cooka.cookapp.utils.SystemUtils;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import app.cooka.cookapp.view.RecipeFeedCardItemAdapter;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -73,6 +67,7 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
     private LinearLayout lltCreateAccountPanel;
     private LinearLayout lltWelcomePanel;
     private LinearLayout lltPollCategoriesPanel;
+    private LinearLayout lltPollRecipesPanel;
 
     private LoginManager loginManager;
     private SSLContext sslContext;
@@ -80,7 +75,9 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
     private CategoryListViewAdapter categoryListViewAdapter = new CategoryListViewAdapter();
     private CategoryGridViewAdapter categoryGridViewAdapter = new CategoryGridViewAdapter();
     private ArrayListObserver categoryListObserver;
+    private ArrayListObserver recipeListObserver;
     private Subscription categorySubscription;
+    private Subscription recipeSubscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +85,6 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_database_test);
         setTitle("Database Tests");
-        findViewById(R.id.lvwCategories).setVisibility(View.GONE);
 
         loginManager = LoginManager.Factory.getInstance(getApplicationContext());
 
@@ -96,6 +92,7 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         lltCreateAccountPanel = findViewById(R.id.lltCreateAccountPanel);
         lltWelcomePanel = findViewById(R.id.lltWelcomePanel);
         lltPollCategoriesPanel = findViewById(R.id.lltPollCategoriesPanel);
+        lltPollRecipesPanel = findViewById(R.id.lltPollRecipesPanel);
 
         // hide all panels until the login state is known
         hideAllPanels();
@@ -151,17 +148,9 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         findViewById(R.id.btnIHaveAnAccount).setOnClickListener(this);
         findViewById(R.id.btnCreateAccount).setOnClickListener(this);
         findViewById(R.id.btnPollCategories).setOnClickListener(this);
+        findViewById(R.id.btnPollRecipes).setOnClickListener(this);
 
         databaseClient = DatabaseClient.Factory.getInstance(this);
-
-        User.Factory.selectUserFollowees(this, 4, new IResultCallback<List<Followee>>() {
-            @Override
-            public void onSucceeded(List<Followee> followees) {
-                for(Followee followee : followees) {
-                    Log.d(LOGTAG, String.format("followee: %s", followee.getDisplayName()));
-                }
-            }
-        });
     }
 
     @Override
@@ -171,6 +160,10 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         if(categorySubscription != null && categorySubscription.isUnsubscribed()) {
             categorySubscription.unsubscribe();
             categorySubscription = null;
+        }
+        if(recipeSubscription != null && recipeSubscription.isUnsubscribed()) {
+            recipeSubscription.unsubscribe();
+            recipeSubscription = null;
         }
     }
 
@@ -201,6 +194,10 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
             case R.id.btnPollCategories:
                 pollCategoriesAsync();
                 break;
+
+            case R.id.btnPollRecipes:
+                pollRecipes();
+                break;
         }
     }
 
@@ -209,7 +206,8 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         lltLoginPanel.setVisibility(View.GONE);
         lltCreateAccountPanel.setVisibility(View.GONE);
         lltWelcomePanel.setVisibility(View.GONE);
-        lltPollCategoriesPanel.setVisibility(View.GONE);
+        lltPollRecipesPanel.setVisibility(View.GONE);
+        //lltPollCategoriesPanel.setVisibility(View.GONE);
     }
 
     /**
@@ -254,7 +252,8 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         lltLoginPanel.setVisibility(View.GONE);
         lltCreateAccountPanel.setVisibility(View.GONE);
         lltWelcomePanel.setVisibility(View.VISIBLE);
-        lltPollCategoriesPanel.setVisibility(View.VISIBLE);
+        lltPollRecipesPanel.setVisibility(View.VISIBLE);
+        //lltPollCategoriesPanel.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -264,6 +263,7 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
 
         lltWelcomePanel.setVisibility(View.GONE);
         lltPollCategoriesPanel.setVisibility(View.GONE);
+        lltPollRecipesPanel.setVisibility(View.GONE);
         lltLoginPanel.setVisibility(View.VISIBLE);
     }
 
@@ -469,7 +469,7 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
 
                     @Override
                     public void onNext(List<Category> categories) {
-                        categoryListObserver = new ArrayListObserver(categoryGridViewAdapter);
+                        categoryListObserver = new ArrayListObserver(categoryGridViewAdapter, null);
                         for(Category category : categories) {
                             category.addObserver(categoryListObserver);
                         }
@@ -477,20 +477,6 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
                         int numCategoriesPolled = categories.size();
                         Toast.makeText(getApplicationContext(), String.format("%d %s polled", numCategoriesPolled,
                             numCategoriesPolled == 1 ? "category" : "categories"), Toast.LENGTH_SHORT).show();
-
-                        ListView lvwCategories = findViewById(R.id.lvwCategories);
-                        lvwCategories.setAdapter(categoryListViewAdapter);
-                        categoryListViewAdapter.setCategories(categories);
-
-                        lvwCategories.setOnTouchListener(new View.OnTouchListener() {
-                            // Setting on Touch Listener for handling the touch inside ScrollView
-                            @Override
-                            public boolean onTouch(View v, MotionEvent event) {
-                                // Disallow the touch request for parent scroll on touch of child view
-                                v.getParent().requestDisallowInterceptTouchEvent(true);
-                                return false;
-                            }
-                        });
 
                         GridView gvwCategories = findViewById(R.id.gvwCategories);
                         gvwCategories.setAdapter(categoryGridViewAdapter);
@@ -513,6 +499,47 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         catch(Exception e) {
             e.printStackTrace();
             btnPollCategories.setClickable(true);
+        }
+    }
+
+    private void pollRecipes() {
+
+        if(databaseClient == null)
+            return;
+
+        final Button btnPollRecipes = findViewById(R.id.btnPollRecipes);
+        btnPollRecipes.setClickable(false);
+
+        try {
+            recipeSubscription = Recipe.Factory
+                .selectRecipes(this, null, null, 0, 0,
+                    new IResultCallback<List<Recipe>>() {
+                        @Override
+                        public void onSucceeded(List<Recipe> recipes) {
+
+                            int numRecipesPolled = recipes.size();
+                            Toast.makeText(getApplicationContext(), String.format("%d %s polled", numRecipesPolled,
+                                numRecipesPolled == 1 ? "recipe" : "recipes"), Toast.LENGTH_SHORT).show();
+
+                            RecyclerView rvwRecipesList = findViewById(R.id.rvwRecipesList);
+                            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                            rvwRecipesList.setLayoutManager(layoutManager);
+
+                            RecyclerView.Adapter adapter = new RecipeFeedCardItemAdapter(recipes);
+                            rvwRecipesList.setAdapter(adapter);
+
+                            recipeListObserver = new ArrayListObserver(null, adapter);
+                            for(Recipe recipe : recipes) {
+                                recipe.addObserver(recipeListObserver);
+                            }
+
+                            btnPollRecipes.setClickable(true);
+                        }
+                    });
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            btnPollRecipes.setClickable(true);
         }
     }
 

@@ -1,5 +1,6 @@
 package app.cooka.cookapp.model;
 
+import android.support.v7.widget.RecyclerView;
 import android.widget.BaseAdapter;
 
 import java.util.Observable;
@@ -14,16 +15,21 @@ import java.util.Observer;
 public class ArrayListObserver implements Observer {
 
     private BaseAdapter baseAdapter;
+    private RecyclerView.Adapter recyclerAdapter;
 
     /**
      * @param baseAdapter the BaseAdapter that is attached to the observed ArrayList
      */
-    public ArrayListObserver(BaseAdapter baseAdapter) {
+    public ArrayListObserver(BaseAdapter baseAdapter, RecyclerView.Adapter recyclerAdapter) {
         this.baseAdapter = baseAdapter;
+        this.recyclerAdapter = recyclerAdapter;
     }
 
     @Override
     public void update(Observable observable, Object arg) {
-        this.baseAdapter.notifyDataSetChanged();
+        if(baseAdapter != null)
+            this.baseAdapter.notifyDataSetChanged();
+        if(recyclerAdapter != null)
+            this.recyclerAdapter.notifyDataSetChanged();
     }
 }

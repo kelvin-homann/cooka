@@ -1,4 +1,4 @@
-package app.cooka.cookapp.model;
+package app.cooka.cookapp.view;
 
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.cooka.cookapp.R;
+import app.cooka.cookapp.model.User;
 
 public class UserListViewAdapter extends BaseAdapter {
 

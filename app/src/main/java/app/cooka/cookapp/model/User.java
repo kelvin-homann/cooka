@@ -404,7 +404,7 @@ public class User extends java.util.Observable {
     /**
      * Gets the change state of this category instance that reflects what fields have changed
      * since the last synchronization. Basically an extended dirty flag.
-     * @return
+     * @return the change state bit field
      */
     public long getChangeState() {
         return changeState;

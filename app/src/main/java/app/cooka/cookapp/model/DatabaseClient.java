@@ -29,14 +29,17 @@ public class DatabaseClient {
     private SharedPreferences sharedPreferences;
     private IDatabase databaseInterface;
     private Category.JsonAdapter categoryJsonAdapter;
+    private Recipe.JsonAdapter recipeJsonAdapter;
 
     private DatabaseClient(Context context) {
 
         sharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
         categoryJsonAdapter = new Category.JsonAdapter(Settings.getInstance().getCurrentLanguageId());
+        recipeJsonAdapter = new Recipe.JsonAdapter();
 
         final Gson gson = new GsonBuilder()
             .registerTypeAdapter(Category.class, categoryJsonAdapter)
+            .registerTypeAdapter(Recipe.class, new Recipe.CompactFormatAdapter())
             .setDateFormat("yyyy-MM-dd HH:mm:ss")
             .setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
             .create();
@@ -187,6 +190,20 @@ public class DatabaseClient {
 
         return userId != 0 && accessToken != null && accessToken.length() > 0 ?
             databaseInterface.invalidateLogin(userId, accessToken) : null;
+    }
+
+    /*  ************************************************************************************  *
+     *  RECIPE METHODS
+     *  ************************************************************************************  */
+
+    public Observable<List<Recipe>> selectRecipes(final List<String> filterKeys,
+        final List<String> sortKeys, final long limit, final long offset)
+    {
+        final long userId = sharedPreferences.getLong(LoginManager.SPK_USERID, 0L);
+        final String accessToken = sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, "");
+        final long languageId = sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L);
+        return databaseInterface.selectRecipes(userId, accessToken, languageId, filterKeys,
+            sortKeys, limit, offset);
     }
 
     /*  ************************************************************************************  *

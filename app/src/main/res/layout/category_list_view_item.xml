@@ -3,20 +3,81 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:paddingBottom="8dp">
+
+    <ImageView
+        android:id="@+id/ivwRecipeMainImage"
+        android:layout_width="0dp"
+        android:layout_height="150dp"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@tools:sample/backgrounds/scenic[5]" />
 
     <TextView
-        android:id="@+id/tvCategoryName"
+        android:id="@+id/tvwCategoryName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:elevation="2dp"
-        android:fontFamily="sans-serif"
-        android:padding="8dp"
-        android:text="TextView"
+        android:fontFamily="@font/catamaran_bold"
+        android:includeFontPadding="false"
+        android:lineSpacingMultiplier="0.75"
+        android:paddingTop="6dp"
+        android:paddingBottom="0dp"
+        android:text="Feine Kartoffelsuppe mit Croûtons und Baconaroma"
+        android:textAllCaps="true"
         android:textAppearance="@style/TextAppearance.AppCompat"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/ivwRecipeMainImage" />
+
+    <TextView
+        android:id="@+id/tvwCreatorUserName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:elevation="2dp"
+        android:includeFontPadding="false"
+        android:text="\@username"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textColor="#999999"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvwCategoryName" />
+
+    <TextView
+        android:id="@+id/tvwPinnedCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#44000000"
+        android:padding="4dp"
+        android:text="278 PINNED"
+        android:textAllCaps="true"
+        android:textColor="#ffffff"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/ivwRecipeMainImage"
+        app:layout_constraintEnd_toEndOf="@+id/ivwRecipeMainImage" />
+
+    <TextView
+        android:id="@+id/tvwCookedCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#44000000"
+        android:paddingLeft="6dp"
+        android:paddingTop="4dp"
+        android:paddingRight="8dp"
+        android:paddingBottom="4dp"
+        android:text="51 COOKED"
+        android:textAllCaps="true"
+        android:textColor="#ffffff"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/ivwRecipeMainImage"
+        app:layout_constraintEnd_toStartOf="@+id/tvwPinnedCount" />
 </android.support.constraint.ConstraintLayout>

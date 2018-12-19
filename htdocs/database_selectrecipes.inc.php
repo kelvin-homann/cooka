@@ -35,57 +35,112 @@
     
     try {
         // select the actual recipes
-        $selectRecipesSql = "select recipe.recipeId, titleString.originalValue as recipeTitle, recipe.creatorId, " .
+        $selectRecipesSql = "select recipe.recipeId, titleString.originalValue as title, recipe.creatorId, " .
             "usr.userName as creatorName, recipe.mainImageId, mainImage.imageFileName as mainImageFileName, " .
             "recipe.mainCategoryId, categoryNameString.originalValue as mainCategoryName, recipe.difficultyType, " .
-            "recipe.preparationTime, recipe.cookedCount, recipe.pinnedCount, recipe.rating " .
+            "recipe.preparationTime, recipe.cookedCount, recipe.pinnedCount, recipe.variedCount, recipe.rating, " .
+            "floor(recipe.rating * 2) / 2 as fairRating " .
             "from Recipes recipe " .
             "left join Recipes originalRecipe on recipe.originalRecipeId = originalRecipe.recipeId " .
             "left join Users usr on recipe.creatorId = usr.userId " .
             "left join Categories category on recipe.mainCategoryId = category.categoryId " .
             "left join Strings titleString on recipe.titleStringId = titleString.stringId " .
+            "left join Strings descriptionString on recipe.descriptionStringId = descriptionString.stringId " .
             "left join Strings categoryNameString on category.nameStringId = categoryNameString.stringId " .
-            "left join Images mainImage on mainImage.imageId = recipe.mainImageId " .
-            "where recipe.publicationType = ? ";
+            "left join Images mainImage on mainImage.imageId = recipe.mainImageId ";
 
         $p = 1;
         $selectRecipesParams = array();
-        $selectRecipesParams[$p++] = array('public', PDO::PARAM_STR);
-
-        /* FILTERING */
 
         if(isset($_getpost['filterKey'])) {
             $filterKey = $_getpost['filterKey'];
             if(!is_array($filterKey)) $filterKey = array($filterKey);
+        }
+
+        /* FILTERING: JOINS */
+
+        if(isset($_getpost['filterKey'])) {
+            $selectRecipesJoinsSql = "";
+            //$selectRecipesFilterParams = array();
+            $fp = $p;
+            for($i = 0; $i < count($filterKey); $i++) {
+                list($key, $value) = explode(':', $filterKey[$i]);
+                $value = trim($value);
+
+                if($key == 'tag') {
+                    $selectRecipesFilterSql .= "left join RecipeTags rt on rt.recipeId = recipe.recipeId " .
+                        "left join Tags tag on tag.tagId = rt.tagId ";
+                }
+
+                else if($key == 'category') {
+                    $selectRecipesFilterSql .= "left join RecipeCategories rc on rc.recipeId = recipe.recipeId " .
+                        "left join Categories category on category.categoryId = rc.categoryId ";
+                }
+            }
+
+            // save adding
+            if(strlen($selectRecipesJoinsSql) > 0) {
+                $selectRecipesSql .= $selectRecipesJoinsSql;
+                //$selectRecipesParams = $selectRecipesParams + $selectRecipesFilterParams;
+                $p = $fp;
+            }
+        }
+
+        /* FILTERING: WHERES */
+
+        $selectRecipesSql .= "where recipe.publicationType = ? ";
+        $selectRecipesParams[$p++] = array('public', PDO::PARAM_STR);
+
+        if(isset($_getpost['filterKey'])) {
             $selectRecipesFilterSql = "";
             $selectRecipesFilterParams = array();
             $fp = $p;
             for($i = 0; $i < count($filterKey); $i++) {
                 list($key, $value) = explode(':', $filterKey[$i]);
-                switch($key) {
-                case 'contains':
-                    $value = '%' . trim($value) . '%';
-                    $selectRecipesFilterSql .= "and (titleString.originalValue like ? or categoryNameString.originalValue like ?) ";
-                    $selectRecipesFilterParams[$fp++] = array($value, PDO::PARAM_STR);
-                    $selectRecipesFilterParams[$fp++] = array($value, PDO::PARAM_STR);
-                    break;
+                $value = trim($value);
 
-                case 'creatorId':
+                if($key == 'contains') {
+                    $value = '%' . $value . '%';
+                    $selectRecipesFilterSql .= "and (titleString.originalValue like ? or descriptionString.originalValue like ? or categoryNameString.originalValue like ?) ";
+                    $selectRecipesFilterParams[$fp++] = array($value, PDO::PARAM_STR);
+                    $selectRecipesFilterParams[$fp++] = array($value, PDO::PARAM_STR);
+                    $selectRecipesFilterParams[$fp++] = array($value, PDO::PARAM_STR);
+                }
+
+                else if($key == 'creatorId') {
                     if(isset($value) && is_numeric($value)) {
                         $selectRecipesFilterSql .= "and recipe.creatorId = ? ";
                         $selectRecipesFilterParams[$fp++] = array($value, PDO::PARAM_INT);
                     }
-                    break;
+                }
 
-                case 'hasImage':
-                    if($value == 'true') $selectRecipesFilterSql .= "and recipe.mainImageId is not null ";
-                    else if($value == 'false') $selectRecipesFilterSql .= "and recipe.mainImageId is null ";
-                    break;
+                else if($key == 'difficulty') {
+                    switch($value) {
+                    case 'simple':
+                        $selectRecipesFilterSql .= "and recipe.difficultyType = 'simple' ";
+                        break;
+                    case 'moderate':
+                        $selectRecipesFilterSql .= "and recipe.difficultyType = 'moderate' ";
+                        break;
+                    case 'demanding':
+                        $selectRecipesFilterSql .= "and recipe.difficultyType = 'demanding' ";
+                        break;
+                    }
+                }
+
+                else if($key == 'hasImage') {
+                    if($value == 'true' || $value == true) $selectRecipesFilterSql .= "and recipe.mainImageId is not null ";
+                    else if($value == 'false' || $value == false) $selectRecipesFilterSql .= "and recipe.mainImageId is null ";
+                }
+
+                else if($key == 'wasVaried') {
+                    if($value == 'true' || $value == true) $selectRecipesFilterSql .= "and recipe.variedCount > 0 ";
+                    else if($value == 'false' || $value == false) $selectRecipesFilterSql .= "and recipe.variedCount = 0 ";
                 }
             }
 
             // save adding
-            if(count($selectRecipesFilterParams) > 0) {
+            if(strlen($selectRecipesFilterSql) > 0) {
                 $selectRecipesSql .= $selectRecipesFilterSql;
                 $selectRecipesParams = $selectRecipesParams + $selectRecipesFilterParams;
                 $p = $fp;
@@ -98,11 +153,12 @@
             $sortKey = $_getpost['sortKey'];
             $allowedSortKeys = array(
                 'title' => 'recipeTitle', 
-                'difficultyType' => 'difficultyType', 
+                'difficulty' => 'difficultyType', 
                 'preparationTime' => 'preparationTime', 
-                'cookedCount' => 'cookedCount', 
-                'pinnedCount' => 'pinnedCount', 
-                'rating' => 'rating'
+                'cooked' => 'cookedCount', 
+                'pinned' => 'pinnedCount', 
+                'rating' => 'rating',
+                'fairRating' => 'fairRating'
             );
             $selectRecipesOrderSql = "";
             if(is_array($sortKey)) {
@@ -112,6 +168,9 @@
                     if(!isset($d) || $d != 'desc') $d = 'asc';
                     if($i > 0) $selectRecipesOrderSql .= ', ' . $allowedSortKeys[$k] . ' ' . $d;
                     else $selectRecipesOrderSql .= $allowedSortKeys[$k] . ' ' . $d;
+
+                    //if($k == 'fairRating') $selectRecipesOrderSql .= ', recipe.lastCookedDateTime desc';
+                    if($k == 'fairRating') $selectRecipesOrderSql .= ', rand()';
                 }
             }
             else {
@@ -148,7 +207,7 @@
         foreach($recipeRows as $recipeRow) {
             $recipe = array(
                 'recipeId' => isset($recipeRow['recipeId']) ? $recipeRow['recipeId'] : 0, 
-                'recipeTitle' => isset($recipeRow['recipeTitle']) ? $recipeRow['recipeTitle'] : "", 
+                'title' => isset($recipeRow['title']) ? $recipeRow['title'] : "", 
                 'creatorId' => isset($recipeRow['creatorId']) ? $recipeRow['creatorId'] : 0, 
                 'creatorName' => isset($recipeRow['creatorName']) ? $recipeRow['creatorName'] : "", 
                 'mainImageId' => isset($recipeRow['mainImageId']) ? $recipeRow['mainImageId'] : 0, 
