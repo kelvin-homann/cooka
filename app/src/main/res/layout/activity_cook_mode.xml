@@ -1,132 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/cookModeBackground"
     tools:context=".CookModeActivity"
     android:id="@+id/fullscreen_content"
     android:keepScreenOn="true">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/card_view_pager"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:overScrollMode="never"
-        app:layout_constraintBottom_toTopOf="@+id/pageIndicatorView"
-        app:layout_constraintTop_toTopOf="@+id/frameLayout">
-    </android.support.v4.view.ViewPager>
+        android:layout_height="match_parent">
 
-    <!-- Old card layout
-    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/card"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="20dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        card_view:cardBackgroundColor="@android:color/white"
-        card_view:cardCornerRadius="16dp"
-        card_view:cardElevation="8dp"
-        card_view:contentPadding="8dp"
-        card_view:layout_constraintBottom_toTopOf="@+id/pageIndicatorView"
-        card_view:layout_constraintEnd_toEndOf="parent"
-        card_view:layout_constraintStart_toStartOf="parent"
-        card_view:layout_constraintTop_toTopOf="@+id/frameLayout">
-
-        <LinearLayout
+        <android.support.v4.view.ViewPager
+            android:id="@+id/card_view_pager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            app:layout_constraintBottom_toTopOf="@+id/pageIndicatorView"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            tools:layout_editor_absoluteX="0dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hello there!" />
+        <com.rd.PageIndicatorView
+            android:id="@+id/pageIndicatorView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="80dp"
+            android:elevation="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:piv_animationType="slide"
+            app:piv_dynamicCount="true"
+            app:piv_interactiveAnimation="true"
+            app:piv_padding="12dp"
+            app:piv_radius="6dp"
+            app:piv_scaleFactor="0.75"
+            app:piv_selectedColor="@android:color/white"
+            app:piv_unselectedColor="@android:color/darker_gray" />
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Nice Button!" />
 
-        </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
 
-    </android.support.v7.widget.CardView>
-    -->
-
-    <com.rd.PageIndicatorView
-        android:id="@+id/pageIndicatorView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:elevation="4dp"
-        app:layout_constraintBottom_toTopOf="@+id/fab"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:piv_animationType="slide"
-        app:piv_dynamicCount="true"
-        app:piv_interactiveAnimation="true"
-        app:piv_padding="12dp"
-        app:piv_radius="6dp"
-        app:piv_scaleFactor="0.75"
-        app:piv_selectedColor="@color/colorPrimary"
-        app:piv_unselectedColor="@android:color/darker_gray" />
-
-    <!-- This FrameLayout insets its children based on system windows using
-         android:fitsSystemWindows. -->
-
-    <android.support.design.button.MaterialButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="64dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="16dp"
-        android:elevation="8dp"
-        android:onClick="fab_onClick"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:text="Details"
-        android:textAllCaps="true"
-        android:textColor="@android:color/white"
-        android:textSize="14sp"
-        android:theme="@style/AppTheme"
-        app:backgroundTint="?attr/colorAccent"
-        app:cornerRadius="32dp"
-        app:icon="@drawable/ic_expand_more_black_24dp"
-        app:iconPadding="12dp"
-        app:iconSize="24dp"
-        app:iconTint="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <FrameLayout
-        android:id="@+id/frameLayout"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/details_sheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:padding="0dp"
+        app:behavior_peekHeight="70dp"
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+
+        <android.support.design.button.MaterialButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="64dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:elevation="8dp"
+            android:onClick="fab_onClick"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:text="@string/overview_fab_text"
+            android:textAllCaps="true"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:theme="@style/AppTheme"
+            app:backgroundTint="?attr/colorAccent"
+            app:cornerRadius="32dp"
+            app:icon="@drawable/ic_expand_more_black_24dp"
+            app:iconPadding="12dp"
+            app:iconSize="24dp"
+            app:iconTint="@android:color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
 
         <LinearLayout
-            android:id="@+id/fullscreen_content_controls"
-            style="?metaButtonBarStyle"
+            android:id="@+id/details_sheet_content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:background="@color/black_overlay"
-            android:orientation="horizontal"
-            tools:ignore="UselessParent">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@android:color/white"
+            app:layout_constraintTop_toTopOf="@id/fab"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="32dp"
+            android:paddingTop="70dp">
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textAllCaps="true"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="2dp"
+                android:textSize="15sp"
+                android:text="Details"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Hello there from the details sheet my dear friend."
+                android:textAlignment="center"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:textSize="20sp"/>
 
         </LinearLayout>
 
-    </FrameLayout>
 
-</android.support.constraint.ConstraintLayout>
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.design.widget.CoordinatorLayout>

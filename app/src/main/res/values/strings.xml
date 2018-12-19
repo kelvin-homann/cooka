@@ -59,5 +59,8 @@
     <string name="title_activity_cook_mode">Cook Mode</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="database_test">Database Test</string>
+    <string name="overview_fab_text">Overview</string>
+    <string name="steps_fab_text">Steps</string>
 
 </resources>
