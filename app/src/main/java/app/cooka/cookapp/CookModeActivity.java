@@ -7,6 +7,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.button.MaterialButton;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.rd.PageIndicatorView;
@@ -198,5 +200,11 @@ public class CookModeActivity extends AppCompatActivity {
     private void detailsSheet_onSlide(View view, float v) {
         interpolateDetailsSheetMargin(v);
         interpolateDetailsFab(v);
+
+        //if the user starts to collapse the sheet...
+        if(v < 0.5f) {
+            //Make the content of the details sheet scroll back to the beginning
+            ((NestedScrollView)detailsSheetContentContainer).smoothScrollTo(0, 0);
+        }
     }
 }
