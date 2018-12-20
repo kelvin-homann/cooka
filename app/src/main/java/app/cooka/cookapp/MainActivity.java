@@ -9,6 +9,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import app.cooka.cookapp.view.LoadingScreenView;
+
 public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener {
 
     //Bottom navigation bar ui component
@@ -19,6 +21,9 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private CookbookFragment cookbookFragment;
     private PlanFragment planFragment;
     private CookFragment cookFragment;
+
+    //Generic loading screen
+    private LoadingScreenView loadingScreen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +49,10 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                 return MainActivity.this.onNavigationItemSelected(menuItem);
             }
         });
+
+        //Loading screen
+        loadingScreen = findViewById(R.id.loading_screen);
+        loadingScreen.hide();
     }
 
     //Change out the current fragment

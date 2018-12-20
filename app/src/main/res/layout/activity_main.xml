@@ -7,6 +7,12 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <app.cooka.cookapp.view.LoadingScreenView
+        android:id="@+id/loading_screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"/>
+
     <FrameLayout
         android:id="@+id/fragment_frame"
         android:layout_width="match_parent"
