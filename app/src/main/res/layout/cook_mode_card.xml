@@ -50,7 +50,7 @@
             android:id="@+id/card_body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Krasse Angaben zu diesem Step die so lang sind dass man eine neue Zeile braucht"
+            android:text="Hier könnte ihr Schritt stehen. TODO: Anzeigen der Schrittbeschreibung und der Zutaten/Timer für den Schritt."
             android:textAlignment="center"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"

@@ -23,8 +23,8 @@
             android:overScrollMode="never"
             app:layout_constraintBottom_toTopOf="@+id/pageIndicatorView"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
-            tools:layout_editor_absoluteX="0dp" />
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
 
         <com.rd.PageIndicatorView
             android:id="@+id/pageIndicatorView"
@@ -68,7 +68,7 @@
             android:onClick="fab_onClick"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
-            android:text="@string/overview_fab_text"
+            android:text="@string/steps_fab_text"
             android:textAllCaps="true"
             android:textColor="@android:color/white"
             android:textSize="14sp"
@@ -79,9 +79,9 @@
             app:iconPadding="12dp"
             app:iconSize="24dp"
             app:iconTint="@android:color/white"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:id="@+id/details_sheet_content"
@@ -97,20 +97,18 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"
                 android:textAllCaps="true"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:paddingTop="4dp"
                 android:paddingBottom="2dp"
                 android:textSize="15sp"
-                android:text="Details"/>
+                android:text="@string/overview_fab_text"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Hello there from the details sheet my dear friend."
-                android:textAlignment="center"
+                android:text="TODO: Anzeigen von allen Zutaten und einer Schrittübersicht."
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:paddingTop="4dp"

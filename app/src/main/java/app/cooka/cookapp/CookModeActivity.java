@@ -39,6 +39,9 @@ public class CookModeActivity extends AppCompatActivity {
     private PageIndicatorView pageIndicatorView;
 
     private MaterialButton detailsFab;
+    private int fabOverviewWidth;
+    private int fabStepsWidth;
+
     private int detailsFabState = BottomSheetBehavior.STATE_COLLAPSED;
     private View detailsSheet;
     private BottomSheetBehavior detailsSheetBehavior;
@@ -46,6 +49,9 @@ public class CookModeActivity extends AppCompatActivity {
 
     private static final int DETAILS_COLLAPSED_MARGIN = DensityUtils.dpToPx(32);
     private static final int DETAILS_EXPANDED_MARGIN = DensityUtils.dpToPx(0);
+
+    private static final int FAB_OVERVIEW_WIDTH = DensityUtils.dpToPx(155);
+    private static final int FAB_STEPS_WIDTH = DensityUtils.dpToPx(125);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +97,8 @@ public class CookModeActivity extends AppCompatActivity {
 
         //Details Sheet
         detailsFab = findViewById(R.id.fab);
+        detailsFab.setText(R.string.overview_fab_text);
+
         detailsSheet = findViewById(R.id.details_sheet);
         detailsSheetBehavior = BottomSheetBehavior.from(detailsSheet);
         detailsSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -111,6 +119,7 @@ public class CookModeActivity extends AppCompatActivity {
             public void onSlide(@NonNull View view, float v) {
                 int margin = (int)((DETAILS_EXPANDED_MARGIN * v) + (DETAILS_COLLAPSED_MARGIN * (1-v)));
                 setMargin(margin);
+                interpolateDetailsFab(v);
             }
         });
 
@@ -199,14 +208,21 @@ public class CookModeActivity extends AppCompatActivity {
     }
 
     private void setDetailsFabState(int state) {
-        if(state == detailsFabState) return;
-        detailsFabState = state;
+//        if(state == detailsFabState) return;
+//        detailsFabState = state;
+//
+//        //TransitionManager.beginDelayedTransition((ViewGroup)detailsSheet);
+//        int newText = (
+//                state == BottomSheetBehavior.STATE_EXPANDED ?
+//                        R.string.steps_fab_text :
+//                        R.string.overview_fab_text);
+//        detailsFab.setText(getString(newText));
 
-        //TransitionManager.beginDelayedTransition((ViewGroup)detailsSheet);
-        int newText = (
-                state == BottomSheetBehavior.STATE_EXPANDED ?
-                        R.string.steps_fab_text :
-                        R.string.overview_fab_text);
-        detailsFab.setText(getString(newText));
+    }
+
+    private void interpolateDetailsFab(float value) {
+        detailsFab.setText(value < 0.2f ? R.string.overview_fab_text : R.string.steps_fab_text);
+        int width = (int)(FAB_STEPS_WIDTH * value + FAB_OVERVIEW_WIDTH * (1 - value));
+        detailsFab.setWidth(width);
     }
 }
