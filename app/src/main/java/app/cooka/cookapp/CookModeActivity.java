@@ -22,27 +22,23 @@ import android.widget.Toast;
 import com.rd.PageIndicatorView;
 import com.rd.utils.DensityUtils;
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- */
 public class CookModeActivity extends AppCompatActivity {
 
+    //Tag used for debug logs
     private static final String LOG_TAG = "Cook Mode";
 
+    //Main view group
     private View activityContentView;
 
+    //View pager and page indicator
     private ViewPager cardViewPager;
     private CookModeCardAdapter cardAdapter;
     private CookModeCardTransformer cardTransformer;
 
     private PageIndicatorView pageIndicatorView;
 
+    //Details Sheet and fab
     private MaterialButton detailsFab;
-    private int fabOverviewWidth;
-    private int fabStepsWidth;
-
-    private int detailsFabState = BottomSheetBehavior.STATE_COLLAPSED;
     private View detailsSheet;
     private BottomSheetBehavior detailsSheetBehavior;
     private View detailsSheetContentContainer;
@@ -73,7 +69,7 @@ public class CookModeActivity extends AppCompatActivity {
         cardAdapter.addItem("Gericht anrichten");
         cardAdapter.addItem("Fertig");
 
-        //Setup view pager margins/paddings
+        //Setup view pager margin/padding
 
         //TODO: Remove hardcoded values
         int topPadding = DensityUtils.dpToPx(18);
@@ -105,21 +101,12 @@ public class CookModeActivity extends AppCompatActivity {
         detailsSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View view, int state) {
-                if(state == BottomSheetBehavior.STATE_COLLAPSED) {
-                    setMargin(DETAILS_COLLAPSED_MARGIN);
-                    setDetailsFabState(BottomSheetBehavior.STATE_COLLAPSED);
-                }
-                else if(state == BottomSheetBehavior.STATE_EXPANDED) {
-                    setMargin(DETAILS_EXPANDED_MARGIN);
-                    setDetailsFabState(BottomSheetBehavior.STATE_EXPANDED);
-                }
+                detailsSheet_onStateChanged(view, state);
             }
 
             @Override
             public void onSlide(@NonNull View view, float v) {
-                int margin = (int)((DETAILS_EXPANDED_MARGIN * v) + (DETAILS_COLLAPSED_MARGIN * (1-v)));
-                setMargin(margin);
-                interpolateDetailsFab(v);
+                detailsSheet_onSlide(view, v);
             }
         });
 
@@ -169,7 +156,6 @@ public class CookModeActivity extends AppCompatActivity {
                 BottomSheetBehavior.STATE_COLLAPSED :
                 BottomSheetBehavior.STATE_EXPANDED);
         detailsSheetBehavior.setState(newState);
-        setDetailsFabState(newState);
     }
 
     //TODO: Move method to utility class
@@ -178,28 +164,13 @@ public class CookModeActivity extends AppCompatActivity {
         return (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, context.getResources().getDisplayMetrics());
     }
 
-    private void animateMargin(final int newMargin) {
+    //Set the details sheet background margin based on a value between 0 and 1
+    //(used to sync the background margin with the details sheet state)
+    private void interpolateDetailsSheetMargin(float value) {
+        //Calculate new margin
+        int newMargin = (int)((DETAILS_EXPANDED_MARGIN * value) + (DETAILS_COLLAPSED_MARGIN * (1-value)));
 
-        ConstraintLayout.LayoutParams oldParams =
-                (ConstraintLayout.LayoutParams)detailsSheetContentContainer.getLayoutParams();
-
-        final int oldMargin = oldParams.topMargin;
-
-        Animation anim = new Animation() {
-            @Override
-            protected void applyTransformation(float interpolatedTime, Transformation t) {
-                ConstraintLayout.LayoutParams params =
-                        (ConstraintLayout.LayoutParams)detailsSheetContentContainer.getLayoutParams();
-
-                params.topMargin = (int)((oldMargin * (1-interpolatedTime)) + (newMargin * interpolatedTime));
-                detailsSheetContentContainer.setLayoutParams(params);
-            }
-        };
-        anim.setDuration(500);
-        detailsSheetContentContainer.startAnimation(anim);
-    }
-
-    private void setMargin(final int newMargin) {
+        //Set margin
         ConstraintLayout.LayoutParams params =
                 (ConstraintLayout.LayoutParams)detailsSheetContentContainer.getLayoutParams();
 
@@ -207,22 +178,25 @@ public class CookModeActivity extends AppCompatActivity {
         detailsSheetContentContainer.setLayoutParams(params);
     }
 
-    private void setDetailsFabState(int state) {
-//        if(state == detailsFabState) return;
-//        detailsFabState = state;
-//
-//        //TransitionManager.beginDelayedTransition((ViewGroup)detailsSheet);
-//        int newText = (
-//                state == BottomSheetBehavior.STATE_EXPANDED ?
-//                        R.string.steps_fab_text :
-//                        R.string.overview_fab_text);
-//        detailsFab.setText(getString(newText));
+    //Set the details fab width/text based on a value between 0 and 1
+    //(used to sync the fab with the details sheet state)
+    private void interpolateDetailsFab(float value) {
+        //Set text
+        detailsFab.setText(value < 0.2f ? R.string.overview_fab_text : R.string.steps_fab_text);
+
+        //Set new width
+        int width = (int)(FAB_STEPS_WIDTH * value + FAB_OVERVIEW_WIDTH * (1 - value));
+        detailsFab.setWidth(width);
+    }
+
+    //Called when the state of the details sheet is changed
+    private void detailsSheet_onStateChanged(View view, int state) {
 
     }
 
-    private void interpolateDetailsFab(float value) {
-        detailsFab.setText(value < 0.2f ? R.string.overview_fab_text : R.string.steps_fab_text);
-        int width = (int)(FAB_STEPS_WIDTH * value + FAB_OVERVIEW_WIDTH * (1 - value));
-        detailsFab.setWidth(width);
+    //Called when the details sheet slides (i.e. is moved in/out of view)
+    private void detailsSheet_onSlide(View view, float v) {
+        interpolateDetailsSheetMargin(v);
+        interpolateDetailsFab(v);
     }
 }
