@@ -45,11 +45,11 @@ public class FollowerFragment extends Fragment {
 
         final TextView followerNr = (TextView) v.findViewById(R.id.tvwFollowerNr);
 
-        User.Factory.selectUser(4, new IResultCallback<User>() {
+        User.Factory.selectUser(getActivity(),4, new IResultCallback<User>() {
             @Override
             public void onSucceeded(User result) {
                 if (result != null){
-                    String followerNrText = getString(R.string.headertextnr_follower, result.getFollowedCount());
+                    String followerNrText = getString(R.string.headertextnr_follower, result.getFollowerCount());
                     followerNr.setText(followerNrText);
                 }
             }

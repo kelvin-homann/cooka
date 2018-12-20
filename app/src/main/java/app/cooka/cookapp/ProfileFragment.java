@@ -48,14 +48,14 @@ public class ProfileFragment extends Fragment {
 
         LoginManager.Factory.getInstance(getActivity());
 
-        User.Factory.selectUser(4, new IResultCallback<User>() {
+        User.Factory.selectUser(getActivity(),4, new IResultCallback<User>() {
             @Override
             public void onSucceeded(User result) {
                 if (result != null){
                     String nameText = getString(R.string.profile_name, (result.getFirstName() + " " + result.getLastName()));
                     String userNameText = getString(R.string.profile_username, (result.getUserName()));
-                    String followingNrText = getString(R.string.profile_following_nr, result.getFollowingCount());
-                    String followerNrText = getString(R.string.profile_follower_nr, result.getFollowedCount());
+                    String followingNrText = getString(R.string.profile_following_nr, result.getFolloweeCount());
+                    String followerNrText = getString(R.string.profile_follower_nr, result.getFollowerCount());
                     name.setText(nameText);
                     userName.setText(userNameText);
                     followerNr.setText(followerNrText);
