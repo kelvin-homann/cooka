@@ -14,6 +14,7 @@ public class LoadingScreenView extends FrameLayout {
 
     private ProgressBar progressBar;
     private boolean visible;
+    private View[] hiddenViews;
 
     private Runnable hideRunnable = new Runnable() {
         @Override
@@ -64,6 +65,13 @@ public class LoadingScreenView extends FrameLayout {
         this.visible = visible;
         this.setVisibility(visible ? VISIBLE : INVISIBLE);
         if(visible) this.bringToFront();
+
+        //Unhide hidden views
+        if(!visible && hiddenViews != null) {
+            for(int i = 0; i < hiddenViews.length; i++){
+                hiddenViews[i].setVisibility(VISIBLE);
+            }
+        }
     }
 
     public boolean isVisible() {
@@ -74,12 +82,27 @@ public class LoadingScreenView extends FrameLayout {
         setVisible(true);
     }
 
+    public void show(View... viewsToHide) {
+        //Hide extra views
+        for (int i = 0; i < viewsToHide.length; i++) {
+            viewsToHide[i].setVisibility(INVISIBLE);
+        }
+        hiddenViews = viewsToHide;
+        show();
+    }
+
     public void hide() {
         setVisible(false);
     }
 
     public void showFor(long milliseconds) {
         show();
+        Handler handler = new Handler();
+        handler.postDelayed(hideRunnable, milliseconds);
+    }
+
+    public void showFor(long milliseconds, View... viewsToHide) {
+        show(viewsToHide);
         Handler handler = new Handler();
         handler.postDelayed(hideRunnable, milliseconds);
     }
