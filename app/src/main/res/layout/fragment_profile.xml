@@ -8,6 +8,13 @@
     android:background="@android:color/white"
     tools:context=".ProfileFragment">
 
+    <app.cooka.cookapp.view.LoadingScreenView
+        android:id="@+id/loading_screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white">
+
+    </app.cooka.cookapp.view.LoadingScreenView>
 
     <ImageView
         android:id="@+id/ivwProfileheader"
@@ -141,22 +148,6 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/ivwCookbook"
-        android:layout_width="330dp"
-        android:layout_height="214dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="60dp"
-        android:alpha="0.8"
-        android:contentDescription="@string/profile_cookbook_ivw"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vwProfileGreybar"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/default_header" />
 
     <View
         android:id="@+id/vwProfileGreybar"

@@ -1,34 +1,31 @@
-package app.cooka.cookapp;
+package app.cooka.cookapp.view;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
-import app.cooka.cookapp.model.IResultCallback;
-import app.cooka.cookapp.model.User;
+import app.cooka.cookapp.GlideApp;
+import app.cooka.cookapp.R;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
-    private static final String TAG = "RecyclerViewAdapter";
+public class FolloweeListViewAdapter extends RecyclerView.Adapter<FolloweeListViewAdapter.ViewHolder>{
+
     private ArrayList<String> mUsernames = new ArrayList<>();
     private ArrayList<String> mNames = new ArrayList<>();
     private ArrayList<String> mImages = new ArrayList<>();
     private Context mContext;
 
-    public RecyclerViewAdapter(ArrayList<String> userNames, ArrayList<String> images, ArrayList<String> names, Context context){
+    public FolloweeListViewAdapter(ArrayList<String> userNames, ArrayList<String> images, ArrayList<String> names, Context context){
         mUsernames = userNames;
         mImages = images;
         mNames = names;
@@ -38,17 +35,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.custom_listview_follow, viewGroup, false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.custom_listview_followees, viewGroup, false);
         ViewHolder holder = new ViewHolder(view);
         return holder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        Glide.with(mContext)
-                .asBitmap()
-                .load(mImages.get(i))
-                .into(viewHolder.imageView);
+//        GlideApp.with(mContext)
+//                .asBitmap()
+//                .load(mImages.get(i))
+//                .placeholder(R.drawable.default_avatar)
+//                .error(R.drawable.default_avatar)
+//                .into(viewHolder.imageView);
 
         viewHolder.name.setText(mNames.get(i));
         viewHolder.userName.setText(mUsernames.get(i));
@@ -59,6 +58,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 Toast.makeText(mContext, "Click", Toast.LENGTH_LONG).show();
             }
         });
+
     }
 
     @Override
@@ -67,6 +67,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{
+
         CircleImageView imageView;
         TextView name;
         TextView userName;
@@ -74,10 +75,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.ivwProfilePicFollower);
-            name = itemView.findViewById(R.id.tvwNameFollower);
-            userName = itemView.findViewById(R.id.tvwUsernameFollower);
-            parentLayout = itemView.findViewById(R.id.customListView);
+            imageView = itemView.findViewById(R.id.ivwfolloweecustomlistview);
+            name = itemView.findViewById(R.id.tvwNameFollowee);
+            userName = itemView.findViewById(R.id.tvwUsernameFollowee);
+            parentLayout = itemView.findViewById(R.id.customListViewFollowee);
         }
     }
 }

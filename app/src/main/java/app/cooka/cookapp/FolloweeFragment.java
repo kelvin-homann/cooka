@@ -13,14 +13,14 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.cooka.cookapp.model.Follower;
+import app.cooka.cookapp.model.Followee;
 import app.cooka.cookapp.model.IResultCallback;
 import app.cooka.cookapp.model.User;
-import app.cooka.cookapp.view.FollowerListViewAdapter;
+import app.cooka.cookapp.view.FolloweeListViewAdapter;
 import app.cooka.cookapp.view.LoadingScreenView;
 
 
-public class FollowerFragment extends Fragment {
+public class FolloweeFragment extends Fragment {
 
     ArrayList<String> names = new ArrayList<String>();
     ArrayList<String> usernames = new ArrayList<String>();
@@ -34,17 +34,17 @@ public class FollowerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LoadingScreenView loadingScreen = new LoadingScreenView(getContext());
-        View v = inflater.inflate(R.layout.fragment_follower, container, false);
+        View v = inflater.inflate(R.layout.fragment_followee, container, false);
         loadingScreen = v.findViewById(R.id.loading_screen);
         loadingScreen.setVisible(true);
         initList();
 
-        RecyclerView recyclerView = v.findViewById(R.id.lsvFollower);
-        FollowerListViewAdapter adapter = new FollowerListViewAdapter(usernames, imgUrls, names, getActivity());
+        RecyclerView recyclerView = v.findViewById(R.id.lsvFollowee);
+        FolloweeListViewAdapter adapter = new FolloweeListViewAdapter(usernames, imgUrls, names, getActivity());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        final TextView followerNr = (TextView) v.findViewById(R.id.tvwFollowerNr);
+        final TextView followerNr = (TextView) v.findViewById(R.id.tvwFolloweeNr);
 
         final LoadingScreenView finalLoadingScreen = loadingScreen;
         User.Factory.selectUser(getActivity(),4, new IResultCallback<User>() {
@@ -61,15 +61,19 @@ public class FollowerFragment extends Fragment {
     }
 
     private void initList(){
-        User.Factory.selectUserFollowers(getActivity(), 4, new IResultCallback<List<Follower>>() {
+        User.Factory.selectUserFollowees(getActivity(), 4, new IResultCallback<List<Followee>>() {
             @Override
-            public void onSucceeded(List<Follower> result) {
+            public void onSucceeded(List<Followee> result) {
+                names.clear();
+                usernames.clear();
+                imgUrls.clear();
                 for (int i = 0; i < result.size();i++){
-                    names.add(result.get(i).getFirstName());
-                    usernames.add(result.get(i).getUserName());
-                    imgUrls.add("https://www.sebastianzander.de/cooka/img/" + result.get(i).getProfileImageFileName());
+                    names.add(result.get(i).getDisplayName());
+                    usernames.add(result.get(i).getDetail1());
+//                    imgUrls.add("https://www.sebastianzander.de/cooka/img/" + result.get(i).getImageFileName());
                 }
                 Log.d("COOKALOG", String.valueOf(result.size()));
+
             }
         });
     }

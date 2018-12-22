@@ -5,6 +5,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import app.cooka.cookapp.view.LoadingScreenView;
+
 
 public class ProfileActivity extends AppCompatActivity {
 

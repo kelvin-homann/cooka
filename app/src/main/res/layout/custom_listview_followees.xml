@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/customListViewFollowee"
+    android:layout_width="match_parent"
+    android:layout_height="75dp">
+
+    <TextView
+        android:id="@+id/tvwUsernameFollowee"
+        android:layout_width="168dp"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/tvwNameFollowee"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="120dp"
+        android:text="@string/text_username_customlvw"
+        android:textColor="@color/colorPrimary" />
+
+    <TextView
+        android:id="@+id/tvwNameFollowee"
+        android:layout_width="168dp"
+        android:layout_height="25dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="96dp"
+        android:layout_marginTop="17dp"
+        android:layout_marginEnd="120dp"
+        android:layout_marginBottom="33dp"
+        android:text="@string/text_name_customlvw"
+        android:textSize="18sp" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/ivwfolloweecustomlistview"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="15dp"
+        android:layout_toStartOf="@+id/tvwUsernameFollowee"
+        android:src="@drawable/default_avatar"
+        app:civ_border_color="@color/colorPrimary"
+        app:civ_border_width="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</RelativeLayout>

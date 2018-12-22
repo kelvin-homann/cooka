@@ -14,17 +14,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.module.AppGlideModule;
 
-import org.w3c.dom.Text;
 
 import app.cooka.cookapp.login.LoginManager;
 import app.cooka.cookapp.model.IResultCallback;
 import app.cooka.cookapp.model.ISelectCallback;
 import app.cooka.cookapp.model.User;
+import app.cooka.cookapp.view.LoadingScreenView;
 
 public class ProfileFragment extends Fragment {
 
     private FollowerFragment followerFragment;
+    private FolloweeFragment followeeFragment;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -36,6 +39,13 @@ public class ProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
         followerFragment = new FollowerFragment();
+        followeeFragment = new FolloweeFragment();
+
+
+        LoadingScreenView loadingScreen = new LoadingScreenView(getContext());
+        //loading Screen
+        loadingScreen = view.findViewById(R.id.loading_screen);
+        loadingScreen.setVisible(true);
 
         final TextView name = (TextView) view.findViewById(R.id.tvwName);
         final TextView userName = (TextView) view.findViewById(R.id.tvwUsername);
@@ -48,7 +58,8 @@ public class ProfileFragment extends Fragment {
 
         LoginManager.Factory.getInstance(getActivity());
 
-        User.Factory.selectUser(getActivity(),4, new IResultCallback<User>() {
+        final LoadingScreenView finalLoadingScreen = loadingScreen;
+        User.Factory.selectUser(getActivity(),25, new IResultCallback<User>() {
             @Override
             public void onSucceeded(User result) {
                 if (result != null){
@@ -60,10 +71,16 @@ public class ProfileFragment extends Fragment {
                     userName.setText(userNameText);
                     followerNr.setText(followerNrText);
                     followingNr.setText(followingNrText);
+
                     if (result.getProfileImageId() != 0){
-                        Glide.with(getContext())
+                        finalLoadingScreen.setVisible(false);
+                        GlideApp.with(getContext())
                                 .asBitmap()
                                 .load("https://www.sebastianzander.de/cooka/img/" + result.getProfileImageFileName())
+                                .apply(new RequestOptions()
+                                .placeholder(R.drawable.default_avatar)
+                                .error(R.drawable.default_avatar)
+                                .centerCrop())
                                 .into(profilePicture);
                     }
                 }
@@ -94,7 +111,13 @@ public class ProfileFragment extends Fragment {
         following.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "FollowerFragment", Toast.LENGTH_LONG).show();
+                FragmentTransaction transaction = null;
+                if (getFragmentManager() != null) {
+                    transaction = getFragmentManager().beginTransaction();
+                    transaction.replace(R.id.fragment_frame_profile, followeeFragment);
+                    transaction.addToBackStack(null);
+                    transaction.commit();
+                }
             }
         });
         return view;

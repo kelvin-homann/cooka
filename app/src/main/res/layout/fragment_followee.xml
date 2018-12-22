@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/lltFollower"
+    android:id="@+id/followeeListlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@android:color/white"
-    tools:context=".FollowerFragment">
+    tools:context=".FolloweeFragment">
 
     <app.cooka.cookapp.view.LoadingScreenView
         android:id="@+id/loading_screen"
@@ -18,19 +17,25 @@
     </app.cooka.cookapp.view.LoadingScreenView>
 
     <Space
-        android:id="@+id/space_Follower"
+        android:id="@+id/space_Followee"
         android:layout_width="match_parent"
         android:layout_height="20dp" />
 
     <LinearLayout
-        android:id="@+id/lltFollower2"
+        android:id="@+id/lltFollowee2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:background="@android:color/white"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/tvwFollowerNr"
+            android:id="@+id/tvwFolloweeNr"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -41,7 +46,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tvwFollower"
+            android:id="@+id/tvwFollowee"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -49,14 +54,15 @@
             android:textSize="16sp" />
     </LinearLayout>
 
-    <Space
-        android:id="@+id/space_Follower2"
-        android:layout_width="match_parent"
-        android:layout_height="20dp" />
-
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/lsvFollower"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:id="@+id/lsvFollowee"
+        android:layout_width="388dp"
+        android:layout_height="1042dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/loading_screen" />
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

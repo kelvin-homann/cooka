@@ -178,8 +178,8 @@
     <string name="text_name_customlvw">Name</string>
     <string name="text_username_customlvw">\@%1$s</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="custom_followees_name">Name</string>
+    <string name="custom_followees_username">\@%1$s</string>
 
 
     <string name="title_activity_cook_mode">Cook Mode</string>
