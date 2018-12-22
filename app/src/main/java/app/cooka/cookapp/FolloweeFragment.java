@@ -13,6 +13,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.cooka.cookapp.model.EFolloweeType;
 import app.cooka.cookapp.model.Followee;
 import app.cooka.cookapp.model.IResultCallback;
 import app.cooka.cookapp.model.User;
@@ -61,19 +62,38 @@ public class FolloweeFragment extends Fragment {
     }
 
     private void initList(){
-        User.Factory.selectUserFollowees(getActivity(), 4, new IResultCallback<List<Followee>>() {
+        User.Factory.selectUserFollowees(getActivity(), 25, new IResultCallback<List<Followee>>() {
             @Override
             public void onSucceeded(List<Followee> result) {
                 names.clear();
                 usernames.clear();
                 imgUrls.clear();
                 for (int i = 0; i < result.size();i++){
-                    names.add(result.get(i).getDisplayName());
-                    usernames.add(result.get(i).getDetail1());
-//                    imgUrls.add("https://www.sebastianzander.de/cooka/img/" + result.get(i).getImageFileName());
+                    if (result.get(i).getType() == EFolloweeType.user){
+                        names.add(result.get(i).getDetail1() + " " + result.get(i).getDetail2());
+                        usernames.add("@" + result.get(i).getDisplayName());
+                        if(result.get(i).getImageId() == 0)
+                            imgUrls.add("https://i.imgur.com/PHpDSVb.jpg"); // Placeholder Image
+                        else
+                            imgUrls.add("https://www.sebastianzander.de/cooka/img/" + result.get(i).getImageFileName());
+                    }
+                    else if (result.get(i).getType() == EFolloweeType.collection){
+                        names.add("#" + result.get(i).getDisplayName());
+                        usernames.add(null);
+                        if(result.get(i).getImageId() == 0)
+                            imgUrls.add("https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260"); // Placeholder Image
+                        else
+                            imgUrls.add("https://www.sebastianzander.de/cooka/img/" + result.get(i).getImageFileName());
+                    }
+                    else if (result.get(i).getType() == EFolloweeType.tag){
+                        names.add("#" + result.get(i).getDisplayName());
+                        usernames.add(null);
+                        if(result.get(i).getImageId() == 0)
+                            imgUrls.add("https://images.pexels.com/photos/46239/salmon-dish-food-meal-46239.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260"); // Placeholder Image
+                        else
+                            imgUrls.add("https://www.sebastianzander.de/cooka/img/" + result.get(i).getImageFileName());
+                    }
                 }
-                Log.d("COOKALOG", String.valueOf(result.size()));
-
             }
         });
     }
