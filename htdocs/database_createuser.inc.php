@@ -3,10 +3,6 @@
         returnError(3, "the parameter userName was not specified", 0, "");
         return;
     }
-    if(!isset($_getpost['accessToken'])) {
-        returnError(4, "the parameter accessToken was not specified", 0, "");
-        return;
-    }
     if(!isset($_getpost['emailAddress']) && !isset($_getpost['linkedProfileUserId'])) {
         returnError(5, "either the parameter emailAddress or linkedProfileUserId has to be specified", 0, "");
         return;
@@ -21,7 +17,7 @@
     $emailAddress = null;
     $hashedPassword = null;
     $salt = null;
-    $accessToken = $_getpost['accessToken'];
+    $accessToken = null;
     $linkedProfileType = 'unlinked';
     $linkedProfileUserId = null;
     $userRights = 1;
@@ -43,6 +39,8 @@
         $linkedProfileUserId = $_getpost['linkedProfileUserId'];
     if(isset($_getpost['userRights']))
         $userRights = $_getpost['userRights'];
+    if(isset($_getpost['accessToken']))
+        $accessToken = $_getpost['accessToken'];
     if(isset($_getpost['deviceId']))
         $deviceId = $_getpost['deviceId'];
 
@@ -92,14 +90,14 @@
         $insertUserStmt->execute();
         $insertedUserId = $database->lastInsertId();
 
-        // update collection and set owner id
-        $updateCollectionSql = "update Collections set ownerId = ? where collectionId = ?";
+        // update collection and set creator id
+        $updateCollectionSql = "update Collections set creatorId = ? where collectionId = ?";
 
         // build params map
         $updateCollectionParams = array(
             1 => array($insertedUserId, PDO::PARAM_INT),
             2 => array($mainCollectionId, PDO::PARAM_INT),
-        };
+        );
 
         // extend and log sql query
         if($logdb || $logfile || $logscreen) {
@@ -113,29 +111,33 @@
         $updateCollectionStmt->execute();
         $updateCollectionRowCount = $updateCollectionStmt->rowCount();
 
+        $insertedLoginId = 0;
+
         // insert a new login
-        $insertLoginSql = "insert into Logins (userId, accessToken, deviceId, refreshes, " .
-            "loggedInDateTime, lastRefreshedDateTime, validUntilDateTime, expiresAtDateTime) " .
-            "values (?, ?, ?, 0, now(), null, date_add(now(), interval 30 day), date_add(now(), interval 4 month))";
+        if(isset($accessToken) && isset($deviceId)) {
+            $insertLoginSql = "insert into Logins (userId, accessToken, deviceId, refreshes, " .
+                "loggedInDateTime, lastRefreshedDateTime, validUntilDateTime, expiresAtDateTime) " .
+                "values (?, ?, ?, 0, now(), null, date_add(now(), interval 30 day), date_add(now(), interval 4 month))";
 
-        // build params map
-        $insertLoginParams = array(
-            1 => array($insertedUserId, PDO::PARAM_INT),
-            2 => array($accessToken, PDO::PARAM_STR),
-            3 => array($deviceId, PDO::PARAM_STR),
-        );
+            // build params map
+            $insertLoginParams = array(
+                1 => array($insertedUserId, PDO::PARAM_INT),
+                2 => array($accessToken, PDO::PARAM_STR),
+                3 => array($deviceId, PDO::PARAM_STR),
+            );
 
-        // extend and log sql query
-        if($logdb || $logfile || $logscreen) {
-            $query = extendSqlQuery($insertLoginSql, $insertLoginParams);
-            $sqlQueries[] = $query;
+            // extend and log sql query
+            if($logdb || $logfile || $logscreen) {
+                $query = extendSqlQuery($insertLoginSql, $insertLoginParams);
+                $sqlQueries[] = $query;
+            }
+
+            $insertLoginStmt = $database->prepare($insertLoginSql);
+            foreach($insertLoginParams as $index => $param)
+                $insertLoginStmt->bindValue($index, $param[0], $param[1]);
+            $insertLoginStmt->execute();
+            $insertedLoginId = $database->lastInsertId();
         }
-
-        $insertLoginStmt = $database->prepare($insertLoginSql);
-        foreach($insertLoginParams as $index => $param)
-            $insertLoginStmt->bindValue($index, $param[0], $param[1]);
-        $insertLoginStmt->execute();
-        $insertedLoginId = $database->lastInsertId();
 
         // build return json
         $result = array(

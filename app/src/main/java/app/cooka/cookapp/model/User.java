@@ -231,16 +231,19 @@ public class User extends java.util.Observable {
 
         /**
          * Selects an existing user from the database and creates a connected user object.
+         * @param context the Android context to the run the method on.
+         * @param selectUserId the identifier of the user to get the user object of.
+         * @param selectUserCallback
          * @return a subscription object to the select request; null if en error occurred.
          */
-        public static Subscription selectUser(final Context context, final long userId,
+        public static Subscription selectUser(final Context context, final long selectUserId,
             final IResultCallback<User> selectUserCallback)
         {
             if(selectUserCallback == null) {
                 throw new NullPointerException("select user callback is null");
             }
             return DatabaseClient.Factory.getInstance(context)
-                .selectUser(userId)
+                .selectUser(selectUserId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<User>() {
@@ -259,6 +262,7 @@ public class User extends java.util.Observable {
         /**
          * Selects multiple existing users from the database, creates connected user objects and
          * puts them into a list.
+         * @param context the Android context to the run the method on.
          * @param selectUsersCallback the select callback that will be called when the selection
          * succeeded and that will be given the list of user objects
          * @return a subscription object to the select request; null if an error occurred.
@@ -310,65 +314,35 @@ public class User extends java.util.Observable {
         }
 
         /**
-         * Selects multiple user followers from the database, creates connected Follower objects
-         * and puts them into a list.
+         * Selects user followers of the given user id and calls the specified callback method on
+         * success or failure.
          * @param context the Android context to the run the method on.
-         * @param selectFollowersCallback the select callback that will be called when the selection
-         * succeeded and that will be given the list of Follower objects
-         * @return a subscription object to the select request; null if an error occurred.
+         * @param ofuserId the identifier of the user to get the user followers of.
+         * @param selectUserFollowersCallback the callback interface to be called on success or
+         *      failure.
+         * @return a subscription object to the select request; null if en error occurred.
          */
         public static Subscription selectUserFollowers(final Context context,
-            final long ofuserId, final IResultCallback<List<Follower>> selectFollowersCallback)
+            final long ofuserId, final IResultCallback<List<Follower>> selectUserFollowersCallback)
         {
-            if(selectFollowersCallback == null) {
-                throw new NullPointerException("select followers callback is null");
-            }
-            return DatabaseClient.Factory.getInstance(context)
-                .selectUserFollowers(ofuserId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<Follower>>() {
-                    @Override public void onCompleted() {}
-                    @Override public void onError(Throwable e) {
-                        Log.e(LOGTAG, "User.Factory.selectUsers() failed");
-                        Log.e(LOGTAG, e.getMessage());
-                    }
-                    @Override public void onNext(List<Follower> followers) {
-                        // todo: register all users at the update observer
-                        selectFollowersCallback.onSucceeded(followers);
-                    }
-                });
+            return Follower.Factory.selectUserFollowers(context, ofuserId,
+                selectUserFollowersCallback);
         }
 
         /**
-         * Selects multiple user followees from the database, creates connected Followee objects
-         * and puts them into a list.
+         * Selects the user, tag and collection followees of the given user id and calls the
+         * specified callback method on success or failure.
          * @param context the Android context to the run the method on.
-         * @param selectFolloweeCallback the select callback that will be called when the selection
-         * succeeded and that will be given the list of Followee objects
-         * @return a subscription object to the select request; null if an error occurred.
+         * @param ofuserId the identifier of the user to get the followees of.
+         * @param selectUserFolloweesCallback the callback interface to be called on success or
+         *      failure.
+         * @return a subscription object to the select request; null if en error occurred.
          */
         public static Subscription selectUserFollowees(final Context context,
-            final long ofuserId, final IResultCallback<List<Followee>> selectFolloweeCallback)
+            final long ofuserId, final IResultCallback<List<Followee>> selectUserFolloweesCallback)
         {
-            if(selectFolloweeCallback == null) {
-                throw new NullPointerException("select followees callback is null");
-            }
-            return DatabaseClient.Factory.getInstance(context)
-                .selectUserFollowees(ofuserId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<Followee>>() {
-                    @Override public void onCompleted() {}
-                    @Override public void onError(Throwable e) {
-                        Log.e(LOGTAG, "User.Factory.selectUsers() failed");
-                        Log.e(LOGTAG, e.getMessage());
-                    }
-                    @Override public void onNext(List<Followee> followees) {
-                        // todo: register all users at the update observer
-                        selectFolloweeCallback.onSucceeded(followees);
-                    }
-                });
+            return Followee.Factory.selectUserFollowees(context, ofuserId,
+                selectUserFolloweesCallback);
         }
 
         /**

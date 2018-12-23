@@ -33,7 +33,7 @@
 
         // build params map
         $selectFollowersParams = array(
-            1 => array($oftagId, PDO::PARAM_INT),
+            1 => array($ofuserId, PDO::PARAM_INT),
         );
 
         // extend and log sql query

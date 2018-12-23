@@ -26,7 +26,7 @@
     $allowLogfile = true;
     $allowLogdb = true;
     $logfile = true;
-    $logdb = true;
+    $logdb = false;
     $logscreen = false;
 
     if(isset($_getpost['logfile']) && trim($_getpost['logfile']) == 'true')
@@ -98,6 +98,12 @@
 
     // switch through all allowed actions
     switch($action) {
+
+    /* FEED ACTIONS */
+
+    case 'selectFeedMessages':
+        include($scriptDir . '/database_selectfeedmessages.inc.php');
+        break;
 
     /* RECIPE ACTIONS */
 

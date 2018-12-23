@@ -15,9 +15,9 @@
     $database = connect();
     if($database == null) return;
 
-    $userId = $_getpost['userId'];
+    $userId = $_getpost['userId'] + 0;
     $accessToken = $_getpost['accessToken'];
-    $ofuserId = $_getpost['ofuserId'];
+    $ofuserId = $_getpost['ofuserId'] + 0;
 
     $followees = array();
     $sqlQueries = array();
@@ -45,14 +45,14 @@
             "union ";
 
         // part select the followed collections
-        $selectFolloweesSql .= "select 'collection', collection.collectionId as id, collectionNameString.originalValue as displayName, " .
+        $selectFolloweesSql .= "select 'collection', collection.collectionId as id, collectionTitle.originalValue as displayName, " .
             "owner.userName as detail1, " .
             "(select count(*) from CollectionRecipes cr where cr.collectionId = collection.collectionId) as detail2, " .
             "null as imageId, null as imageFileName, collection.followerCount, null as followeeCount, null as verifiedState, " .
             "collection.lastActiveDateTime as lastActiveDateTime " .
             "from Collections collection " .
-            "left join Users owner on owner.userId = collection.ownerId " .
-            "left join Strings collectionNameString on collectionNameString.stringId = collection.nameStringId " .
+            "left join Users owner on owner.userId = collection.creatorId " .
+            "left join Strings collectionTitle on collectionTitle.stringId = collection.titleStringId " .
             "left join UserCollectionFollows ucf on ucf.followCollectionId = collection.collectionId " .
             "where ucf.userId = ? ";
 

@@ -40,6 +40,8 @@ import app.cooka.cookapp.login.ILogoutCallback;
 import app.cooka.cookapp.model.ArrayListObserver;
 import app.cooka.cookapp.model.AuthenticateUserResult;
 import app.cooka.cookapp.model.Category;
+import app.cooka.cookapp.model.FeedMessage;
+import app.cooka.cookapp.model.Follower;
 import app.cooka.cookapp.model.Recipe;
 import app.cooka.cookapp.view.CategoryGridViewAdapter;
 import app.cooka.cookapp.view.CategoryListViewAdapter;

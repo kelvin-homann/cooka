@@ -10,6 +10,20 @@ import rx.Observable;
 public interface IDatabase {
 
     /*  ************************************************************************************  *
+     *  FEED MESSAGE METHODS
+     *  ************************************************************************************  */
+
+    @POST("database.php?action=selectFeedMessages")
+    Observable<List<FeedMessage>> selectFeedMessages(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Query("languageId") long languageId,
+        @Query("ofuserId") long ofuserId,
+        @Query("selectedTypes") int selectedTypes,
+        @Query("onlyOwnMessages") boolean onlyOwnMessages
+    );
+
+    /*  ************************************************************************************  *
      *  USER METHODS
      *  ************************************************************************************  */
 
@@ -49,6 +63,20 @@ public interface IDatabase {
         @Query("userId") long userId,
         @Query("accessToken") String accessToken,
         @Query("ofuserId") long ofuserId
+    );
+
+    @POST("database.php?action=selectTagFollowers")
+    Observable<List<Follower>> selectTagFollowers(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Query("oftagId") long oftagId
+    );
+
+    @POST("database.php?action=selectCollectionFollowers")
+    Observable<List<Follower>> selectCollectionFollowers(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Query("ofcollectionId") long ofcollectionId
     );
 
     @POST("database.php?action=selectUserFollowees")

@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
@@ -21,6 +22,12 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+/**
+ * A class that represents a recipe and that is an app model representation of the corresponding
+ * database entity called Recipes. Used to serialize between app and database and to cache its
+ * state without needing to repeatedly query the same unchanged object from the database.
+ */
+@JsonAdapter(Recipe.JsonAdapter.class)
 public class Recipe extends java.util.Observable {
 
     public static final String LOGTAG = "COOKALOG";

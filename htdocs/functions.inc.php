@@ -1,31 +1,47 @@
 <?php
     function extendSqlQuery($sql, $params) {
 
-        if(!isset($sql) || !isset($params))
+        if(!isset($sql) || !isset($params) || count($params) == 0)
             return $sql;
 
         $extendedSql = $sql;
 
         $pos = 0;
-        $p = 1;
+        $i = 1;
+
+        // unnamed parameters designated with a question mark
         while(($pos = strpos($extendedSql, "?")) !== false) {
-            if($p == count($params) + 1)
-                $value = $categoryId;
-            else {
-                $param = $params[$p];
+            if($i >= count($params))
+                break;
+
+            $param = $params[$i];
+            $value = $param[0];
+            if(!isset($param[0]) || $param[0] == null)
+                $value = 'null';
+            else if($param[1] == PDO::PARAM_STR)
+                $value = "'{$value}'";
+
+            $valen = strlen($value);
+            $extendedSql = substr_replace($extendedSql, $value, $pos, 1);
+            if($i == count($params) + 1)
+                break;
+            $i++;
+        }
+
+        // named parameters introduced by a semicolon
+        foreach($params as $key => $param) {
+            while(($pos = strpos($extendedSql, $key, $pos)) !== false) {
                 $value = $param[0];
                 if(!isset($param[0]) || $param[0] == null)
                     $value = 'null';
                 else if($param[1] == PDO::PARAM_STR)
                     $value = "'{$value}'";
 
-                //$value = $p . ':' . $value;
+                $keylen = strlen($key);
+                $insert = $key . '=' . $value;
+                $extendedSql = substr_replace($extendedSql, $insert, $pos, $keylen);
+                $pos += strlen($insert);
             }
-            $valen = strlen($value);
-            $extendedSql = substr_replace($extendedSql, $value, $pos, 1);
-            if($p == count($params) + 1)
-                break;
-            $p++;
         }
 
         return $extendedSql;
@@ -39,6 +55,11 @@
 
         if(!isset($database) || !isset($sql) || $logdb == false)
             return false;
+
+        if(isset($originatorId) && $originatorId == '')
+            $originatorId = null;
+        if(isset($accessToken) && $accessToken == '')
+            $accessToken = null;
 
         $insertLoggedQueryParams = array(
             1 => array($originatorId, PDO::PARAM_INT),

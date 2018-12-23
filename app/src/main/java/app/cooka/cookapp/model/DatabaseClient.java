@@ -64,39 +64,77 @@ public class DatabaseClient {
     }
 
     /*  ************************************************************************************  *
+     *  FEED MESSAGE METHODS
+     *  ************************************************************************************  */
+
+    /**
+     * Selects all feed messages for the specified
+     * @param ofuserId
+     * @return
+     */
+    public Observable<List<FeedMessage>> selectFeedMessages(final long ofuserId,
+        final int selectedTypes, final boolean onlyOwnMessages)
+    {
+        return databaseInterface.selectFeedMessages(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
+            sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L), ofuserId,
+            selectedTypes, onlyOwnMessages);
+    }
+
+    /*  ************************************************************************************  *
      *  USER METHODS
      *  ************************************************************************************  */
 
     public Observable<User> selectUser(final long selectUserId) {
 
-        return databaseInterface.selectUser(sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+        return databaseInterface.selectUser(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
             sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
             sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L), selectUserId);
     }
 
     public Observable<List<User>> selectUsers() {
 
-        return databaseInterface.selectUsers(sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+        return databaseInterface.selectUsers(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
             sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
             sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L));
     }
 
     public Observable<List<User>> selectUsers(final SelectModifier... modifiers) {
 
-        return databaseInterface.selectUsers(sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+        return databaseInterface.selectUsers(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
             sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
             sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L));
     }
 
     public Observable<List<Follower>> selectUserFollowers(final long ofuserId) {
 
-        return databaseInterface.selectUserFollowers(sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+        return databaseInterface.selectUserFollowers(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
             sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""), ofuserId);
+    }
+
+    public Observable<List<Follower>> selectTagFollowers(final long oftagId) {
+
+        return databaseInterface.selectTagFollowers(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""), oftagId);
+    }
+
+    public Observable<List<Follower>> selectCollectionFollowers(final long ofcollectionId) {
+
+        return databaseInterface.selectCollectionFollowers(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""), ofcollectionId);
     }
 
     public Observable<List<Followee>> selectUserFollowees(final long ofuserId) {
 
-        return databaseInterface.selectUserFollowees(sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+        return databaseInterface.selectUserFollowees(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
             sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
             sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L), ofuserId);
     }
@@ -186,8 +224,9 @@ public class DatabaseClient {
             databaseInterface.invalidateLogin(userId, accessToken) : null;
     }
 
-    public Call<InvalidateLoginResult> invalidateLogin(final long userId, final String accessToken) {
-
+    public Call<InvalidateLoginResult> invalidateLogin(final long userId, final String
+        accessToken)
+    {
         return userId != 0 && accessToken != null && accessToken.length() > 0 ?
             databaseInterface.invalidateLogin(userId, accessToken) : null;
     }
@@ -212,7 +251,8 @@ public class DatabaseClient {
 
     public Observable<List<Category>> selectCategories()
     {
-        return databaseInterface.selectCategories(sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+        return databaseInterface.selectCategories(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
             sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
             sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L));
     }
@@ -228,7 +268,8 @@ public class DatabaseClient {
         if(category == null || (changeState = category.getChangeState()) == 0)
             return null;
         long languageId = sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L);
-        return databaseInterface.updateCategory(sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+        return databaseInterface.updateCategory(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
             sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""), languageId, category.getCategoryId(),
             (changeState & Category.CHANGED_PARENTCATEGORYID) == Category.CHANGED_PARENTCATEGORYID ? category.getParentCategoryId() : 0,
             (changeState & Category.CHANGED_NAME) == Category.CHANGED_NAME ? category.getName(languageId) : null,
