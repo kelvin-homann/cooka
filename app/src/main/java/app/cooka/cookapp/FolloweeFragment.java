@@ -1,5 +1,6 @@
 package app.cooka.cookapp;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,25 +35,25 @@ public class FolloweeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        initList();
         LoadingScreenView loadingScreen = new LoadingScreenView(getContext());
         View v = inflater.inflate(R.layout.fragment_followee, container, false);
         loadingScreen = v.findViewById(R.id.loading_screen);
         loadingScreen.setVisible(true);
-        initList();
 
         RecyclerView recyclerView = v.findViewById(R.id.lsvFollowee);
         FolloweeListViewAdapter adapter = new FolloweeListViewAdapter(usernames, imgUrls, names, getActivity());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        final TextView followerNr = (TextView) v.findViewById(R.id.tvwFolloweeNr);
+        final TextView followerNr = v.findViewById(R.id.tvwFolloweeNr);
 
         final LoadingScreenView finalLoadingScreen = loadingScreen;
-        User.Factory.selectUser(getActivity(),4, new IResultCallback<User>() {
+        User.Factory.selectUser(getActivity(),25, new IResultCallback<User>() {
             @Override
             public void onSucceeded(User result) {
                 if (result != null){
-                    String followerNrText = getString(R.string.headertextnr_follower, result.getFollowerCount());
+                    String followerNrText = getString(R.string.headertextnr_follower, result.getFolloweeCount());
                     followerNr.setText(followerNrText);
                     finalLoadingScreen.setVisible(false);
                 }

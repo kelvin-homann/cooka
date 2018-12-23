@@ -1,26 +1,15 @@
 package app.cooka.cookapp.view;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
-
 import java.util.ArrayList;
-
 import app.cooka.cookapp.GlideApp;
 import app.cooka.cookapp.R;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -51,7 +40,7 @@ public class FolloweeListViewAdapter extends RecyclerView.Adapter<FolloweeListVi
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         GlideApp.with(mContext)
                 .asBitmap()
-                .load(mImages.get(i))                
+                .load(mImages.get(i))
                 .placeholder(R.drawable.default_avatar)
                 .error(R.drawable.default_avatar)
                 .into(viewHolder.imageView);
@@ -74,15 +63,14 @@ public class FolloweeListViewAdapter extends RecyclerView.Adapter<FolloweeListVi
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{
-
         CircleImageView imageView;
         TextView name;
         TextView userName;
-        RelativeLayout parentLayout;
+        ConstraintLayout parentLayout;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.ivwfolloweecustomlistview);
+            imageView = itemView.findViewById(R.id.ivwFolloweeCustomListProfileAvatar);
             name = itemView.findViewById(R.id.tvwNameFollowee);
             userName = itemView.findViewById(R.id.tvwUsernameFollowee);
             parentLayout = itemView.findViewById(R.id.customListViewFollowee);

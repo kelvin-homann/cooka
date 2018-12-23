@@ -173,6 +173,8 @@
 
     <!-- FollowerFragment -->
     <string name="headertext_follower">Follower</string>
+    <string name="headertext_following">Following</string>
+
     <string name="headertextnr_follower">"%1$d "</string>
 
     <string name="text_name_customlvw">Name</string>

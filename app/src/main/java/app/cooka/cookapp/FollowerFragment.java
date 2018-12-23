@@ -33,11 +33,11 @@ public class FollowerFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        initList();
         LoadingScreenView loadingScreen = new LoadingScreenView(getContext());
         View v = inflater.inflate(R.layout.fragment_follower, container, false);
         loadingScreen = v.findViewById(R.id.loading_screen);
         loadingScreen.setVisible(true);
-        initList();
 
         RecyclerView recyclerView = v.findViewById(R.id.lsvFollower);
         FollowerListViewAdapter adapter = new FollowerListViewAdapter(usernames, imgUrls, names, getActivity());
@@ -47,7 +47,7 @@ public class FollowerFragment extends Fragment {
         final TextView followerNr = (TextView) v.findViewById(R.id.tvwFollowerNr);
 
         final LoadingScreenView finalLoadingScreen = loadingScreen;
-        User.Factory.selectUser(getActivity(),4, new IResultCallback<User>() {
+        User.Factory.selectUser(getActivity(),25, new IResultCallback<User>() {
             @Override
             public void onSucceeded(User result) {
                 if (result != null){
@@ -61,7 +61,7 @@ public class FollowerFragment extends Fragment {
     }
 
     private void initList(){
-        User.Factory.selectUserFollowers(getActivity(), 4, new IResultCallback<List<Follower>>() {
+        User.Factory.selectUserFollowers(getActivity(), 25, new IResultCallback<List<Follower>>() {
             @Override
             public void onSucceeded(List<Follower> result) {
                 for (int i = 0; i < result.size();i++){

@@ -3,6 +3,7 @@ package app.cooka.cookapp;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -29,13 +30,8 @@ public class ProfileFragment extends Fragment {
     private FollowerFragment followerFragment;
     private FolloweeFragment followeeFragment;
 
-    public ProfileFragment() {
-        // Required empty public constructor
-    }
-
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
         followerFragment = new FollowerFragment();
@@ -47,14 +43,14 @@ public class ProfileFragment extends Fragment {
         loadingScreen = view.findViewById(R.id.loading_screen);
         loadingScreen.setVisible(true);
 
-        final TextView name = (TextView) view.findViewById(R.id.tvwName);
-        final TextView userName = (TextView) view.findViewById(R.id.tvwUsername);
-        final TextView followers = (TextView) view.findViewById(R.id.tvwFollower);
-        final TextView following = (TextView) view.findViewById(R.id.tvwFollowing);
-        final TextView followerNr = (TextView) view.findViewById(R.id.tvwFollowernr);
-        final TextView followingNr = (TextView) view.findViewById(R.id.tvwFollowingnr);
-        final ImageView profilePicture = (ImageView) view.findViewById(R.id.ivwProfilePicFollower);
-        final ImageView addButton = (ImageView) view.findViewById(R.id.ivwAdd);
+        final TextView name = view.findViewById(R.id.tvwName);
+        final TextView userName = view.findViewById(R.id.tvwUsername);
+        final TextView followers = view.findViewById(R.id.tvwFollower);
+        final TextView following = view.findViewById(R.id.tvwFollowing);
+        final TextView followerNr = view.findViewById(R.id.tvwFollowernr);
+        final TextView followingNr = view.findViewById(R.id.tvwFollowingnr);
+        final ImageView profilePicture = view.findViewById(R.id.ivwProfilePicFollower);
+        final CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.ctlProfileBar);
 
         LoginManager.Factory.getInstance(getActivity());
 
@@ -65,12 +61,13 @@ public class ProfileFragment extends Fragment {
                 if (result != null){
                     String nameText = getString(R.string.profile_name, (result.getFirstName() + " " + result.getLastName()));
                     String userNameText = getString(R.string.profile_username, (result.getUserName()));
-                    String followingNrText = getString(R.string.profile_following_nr, result.getFolloweeCount());
-                    String followerNrText = getString(R.string.profile_follower_nr, result.getFollowerCount());
+                    String followingNrText = getString(R.string.profile_following_nr, result.getFollowerCount());
+                    String followerNrText = getString(R.string.profile_follower_nr, result.getFolloweeCount());
                     name.setText(nameText);
                     userName.setText(userNameText);
                     followerNr.setText(followerNrText);
                     followingNr.setText(followingNrText);
+                    collapsingToolbarLayout.setTitle(nameText);
 
                     if (result.getProfileImageId() != 0){
                         finalLoadingScreen.setVisible(false);
@@ -84,13 +81,6 @@ public class ProfileFragment extends Fragment {
                                 .into(profilePicture);
                     }
                 }
-            }
-        });
-
-        addButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                Toast.makeText(getActivity(), "Add User", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -121,5 +111,9 @@ public class ProfileFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    private void initFeed(){
+
     }
 }

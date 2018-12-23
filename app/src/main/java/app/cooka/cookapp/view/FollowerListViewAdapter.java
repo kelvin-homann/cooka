@@ -2,11 +2,11 @@ package app.cooka.cookapp.view;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,7 +34,7 @@ public class FollowerListViewAdapter extends RecyclerView.Adapter<FollowerListVi
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.custom_listview_follow, viewGroup, false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.custom_listview_follower, viewGroup, false);
         ViewHolder holder = new ViewHolder(view);
         return holder;
     }
@@ -66,14 +66,14 @@ public class FollowerListViewAdapter extends RecyclerView.Adapter<FollowerListVi
         CircleImageView imageView;
         TextView name;
         TextView userName;
-        RelativeLayout parentLayout;
+        ConstraintLayout parentLayout;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.ivwProfilePicFollower);
             name = itemView.findViewById(R.id.tvwNameFollower);
             userName = itemView.findViewById(R.id.tvwUsernameFollower);
-            parentLayout = itemView.findViewById(R.id.customListView);
+            parentLayout = itemView.findViewById(R.id.customListViewFollower);
         }
     }
 }
