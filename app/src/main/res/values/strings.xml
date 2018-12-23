@@ -48,7 +48,6 @@
     <string name="headertext_follower">Follower</string>
     <string name="headertextnr_follower">"%1$d "</string>
 
-    <string name="database_test">Database Test</string>
     <string name="text_name_customlvw">Name</string>
     <string name="text_username_customlvw">\@%1$s</string>
 
