@@ -24,6 +24,8 @@ import android.widget.Toast;
 import com.rd.PageIndicatorView;
 import com.rd.utils.DensityUtils;
 
+import app.cooka.cookapp.view.IngredientsView;
+
 public class CookModeActivity extends AppCompatActivity {
 
     //Tag used for debug logs
@@ -44,6 +46,7 @@ public class CookModeActivity extends AppCompatActivity {
     private View detailsSheet;
     private BottomSheetBehavior detailsSheetBehavior;
     private View detailsSheetContentContainer;
+    private IngredientsView ingredientsView;
 
     private static final int DETAILS_COLLAPSED_MARGIN = DensityUtils.dpToPx(32);
     private static final int DETAILS_EXPANDED_MARGIN = DensityUtils.dpToPx(0);
@@ -113,6 +116,9 @@ public class CookModeActivity extends AppCompatActivity {
         });
 
         detailsSheetContentContainer = findViewById(R.id.details_sheet_content);
+        ingredientsView = (IngredientsView)findViewById(R.id.ingredients_view);
+
+        ingredientsView.setIngredients(new String[]{"300 g", "1", "1 halbe Scheibe", "1", "", "5 t", "1 Prise", "lel", "500 ml", "1 Glas", "1 Päckchen", "1 Dose", "20 g", "1", "", "5 t", "1 Prise"}, new String[]{"Salat mit gaaaaaaaanz viel geilem Shiiiiiit", "Fisch", "Zitrone", "Apfel", "Pfeffer", "Käse", "Salz", "Nichts", "Milch", "Gurken", "Backpulver", "Ananas", "Whatever", "Fisch", "Zitrone", "Apfel", "Pfeffer"});
 
         //Hide the default system ui for this activity
         hideSystemUI();

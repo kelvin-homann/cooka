@@ -9,4 +9,9 @@
         <attr name="metaButtonBarButtonStyle" format="reference" />
     </declare-styleable>
 
+    <declare-styleable name="IngredientsView">
+        <attr name="showDivider" format="boolean"/>
+        <attr name="amountIsBold" format="boolean"/>
+    </declare-styleable>
+
 </resources>

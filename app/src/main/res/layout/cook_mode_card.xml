@@ -32,7 +32,8 @@
             android:paddingEnd="16dp"
             android:paddingTop="4dp"
             android:paddingBottom="2dp"
-            android:textSize="15sp"/>
+            android:textSize="15sp"
+            android:letterSpacing="0.15"/>
 
         <TextView
             android:id="@+id/card_title"
@@ -49,7 +50,8 @@
         <TextView
             android:id="@+id/card_body"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:text="Hier könnte ihr Schritt stehen. TODO: Anzeigen der Schrittbeschreibung und der Zutaten/Timer für den Schritt."
             android:textAlignment="center"
             android:paddingStart="16dp"
@@ -57,6 +59,36 @@
             android:paddingTop="4dp"
             android:paddingBottom="4dp"
             android:textSize="20sp"/>
+
+        <LinearLayout
+            android:id="@+id/ingredients_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View style="@style/Divider"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textAllCaps="true"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="2dp"
+                android:textSize="15sp"
+                android:letterSpacing="0.15"
+                android:text="@string/ingredients_section_title"/>
+
+            <app.cooka.cookapp.view.IngredientsView
+                android:id="@+id/ingredients_section_ingredients"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                card_view:amountIsBold="false"
+                card_view:showDivider="false"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 
