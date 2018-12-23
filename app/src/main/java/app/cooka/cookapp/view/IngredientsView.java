@@ -19,6 +19,7 @@ public class IngredientsView extends FrameLayout {
 
     private TableLayout table;
     private boolean amountIsBold = false;
+    private int minimumItemCount = 0;
 
     //Constructors
     public IngredientsView(@NonNull Context context) {
@@ -53,6 +54,7 @@ public class IngredientsView extends FrameLayout {
             TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.IngredientsView);
             boolean showDivider = array.getBoolean(R.styleable.IngredientsView_showDivider, true);
             amountIsBold = array.getBoolean(R.styleable.IngredientsView_amountIsBold, true);
+            minimumItemCount = array.getInt(R.styleable.IngredientsView_minimumItemCount, 0);
 
             if(!showDivider) table.setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
         }
@@ -64,18 +66,25 @@ public class IngredientsView extends FrameLayout {
             return;
         }
 
-        LayoutInflater inflater = LayoutInflater.from(getContext());
+        //LayoutInflater inflater = LayoutInflater.from(getContext());
 
-        for (int i = 0; i < amounts.length; i++) {
-            View row = inflater.inflate(R.layout.ingredients_row, table, false);
-
-            TextView amount = (TextView)row.findViewById(R.id.ingredient_amount);
-            amount.setText(amounts[i]);
-            amount.setTypeface(amount.getTypeface(), amountIsBold ? Typeface.BOLD : Typeface.NORMAL);
-            Log.d("IngredientsView", "Amount is bold: " + amountIsBold);
-
-            ((TextView)row.findViewById(R.id.ingredient_name)).setText(names[i]);
-            table.addView(row);
+        for (int i = 0; i < Math.max(amounts.length, minimumItemCount); i++) {
+            if(i >= amounts.length) {
+                addIngredient("", "");
+                continue;
+            }
+            addIngredient(amounts[i], names[i]);
         }
+    }
+
+    public void addIngredient(String amount, String name) {
+        View row = View.inflate(getContext(), R.layout.ingredients_row, null);
+
+        TextView amountView = (TextView)row.findViewById(R.id.ingredient_amount);
+        amountView.setText(amount);
+        amountView.setTypeface(amountView.getTypeface(), amountIsBold ? Typeface.BOLD : Typeface.NORMAL);
+
+        ((TextView)row.findViewById(R.id.ingredient_name)).setText(name);
+        table.addView(row);
     }
 }

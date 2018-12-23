@@ -12,6 +12,7 @@
     <declare-styleable name="IngredientsView">
         <attr name="showDivider" format="boolean"/>
         <attr name="amountIsBold" format="boolean"/>
+        <attr name="minimumItemCount" format="integer"/>
     </declare-styleable>
 
 </resources>

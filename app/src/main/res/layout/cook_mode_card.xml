@@ -86,7 +86,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 card_view:amountIsBold="false"
-                card_view:showDivider="false"/>
+                card_view:showDivider="false"
+                card_view:minimumItemCount="4"/>
 
         </LinearLayout>
 

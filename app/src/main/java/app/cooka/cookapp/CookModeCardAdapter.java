@@ -68,7 +68,7 @@ public class CookModeCardAdapter extends PagerAdapter {
     private void bind(String title, View view, int position) {
         ((TextView)view.findViewById(R.id.card_title)).setText(title);
         ((TextView)view.findViewById(R.id.card_step_title)).setText("Schritt " + (position+1));
-        ((IngredientsView)view.findViewById(R.id.ingredients_section_ingredients)).setIngredients(new String[]{"1", "300 g", "", "", "", "lol"}, new String[]{"Fisch", "Salat", "Salz", "Pfeffer", "Skill", "lol"});
+        ((IngredientsView)view.findViewById(R.id.ingredients_section_ingredients)).setIngredients(new String[]{"1", "300 g"}, new String[]{"Fisch", "Salat"});
     }
 
     public float getBaseCardElevation() {
