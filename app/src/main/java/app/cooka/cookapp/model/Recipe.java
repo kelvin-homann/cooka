@@ -32,16 +32,16 @@ public class Recipe extends java.util.Observable {
 
     public static final String LOGTAG = "COOKALOG";
 
-    public static final int CHANGED_TITLE = 1;
-    public static final int CHANGED_DESCRIPTION = 1 << 1;
-    public static final int CHANGED_MAINIMAGE = 1 << 2;
-    public static final int CHANGED_MAINCATEGORY = 1 << 3;
-    public static final int CHANGED_CATEGORIE = 1 << 4;
-    public static final int CHANGED_TAGS = 1 << 5;
-    public static final int CHANGED_PUBLICATIONTYPE = 1 << 6;
-    public static final int CHANGED_DIFFICULTYTYPE = 1 << 7;
-    public static final int CHANGED_PREPARATIONTIME = 1 << 8;
-    public static final int CHANGED_STEPS = 1 << 9;
+    public static final int CHANGED_TITLE = 0x00000001;
+    public static final int CHANGED_DESCRIPTION = 0x00000002;
+    public static final int CHANGED_MAINIMAGE = 0x00000004;
+    public static final int CHANGED_MAINCATEGORY = 0x00000008;
+    public static final int CHANGED_CATEGORIE = 0x00000010;
+    public static final int CHANGED_TAGS = 0x00000020;
+    public static final int CHANGED_PUBLICATIONTYPE = 0x00000040;
+    public static final int CHANGED_DIFFICULTYTYPE = 0x00000080;
+    public static final int CHANGED_PREPARATIONTIME = 0x00000100;
+    public static final int CHANGED_STEPS = 0x00000200;
     public static final int CHANGED_FORCE_UPDATE = 0xffffffff;
 
     private int changeState = 0;

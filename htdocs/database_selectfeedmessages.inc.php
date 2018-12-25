@@ -16,13 +16,24 @@
     $ofuserId = null;
     $selectedTypes = 65535;
     $onlyOwnMessages = false;
+    $startDate = null;
 
     if(isset($_getpost['ofuserId']))
         $ofuserId = $_getpost['ofuserId'];
-    if(isset($_getpost['selectedTypes']))
+    if(isset($_getpost['selectedTypes']) && $_getpost['selectedTypes'] > 0)
         $selectedTypes = $_getpost['selectedTypes'];
     if(isset($_getpost['onlyOwnMessages']) && $_getpost['onlyOwnMessages'] == 'true')
         $onlyOwnMessages = true;
+    if(isset($_getpost['startDate'])) {
+        $inputDate = $_getpost['startDate'];
+        $dateTimePattern = "/([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{0,2})([0-9]{0,2})([0-9]{0,2})/";
+        $matches = array();
+        if(preg_match($dateTimePattern, $inputDate, $matches) == 1) {
+            $parsedDate = sprintf("%04d-%02d-%02d %02d:%02d:%02d", $matches[1], $matches[2], $matches[3], 
+                isset($matches[4]) ? $matches[4] : 23, isset($matches[5]) ? $matches[5] : 59, isset($matches[6]) ? $matches[6] : 59);
+            $startDate = $parsedDate;
+        }
+    }
 
     $snacks = array();
     $sqlQueries = array();
@@ -51,15 +62,22 @@
             "left join Users followUser on followUser.userId = uuf.followUserId " .
             "left join Images userImage on userImage.imageId = user.profileImageId " .
             "left join Images followUserImage on followUserImage.imageId = followUser.profileImageId " . 
-            "where uuf.followedDateTime is not null ";
+            "where uuf.followedDateTime is not null and uuf.followUserId != :fu_uid_2 "; // make sure to hide messages saying someone is now following ofuserId
+        $partSelectParams[1][':fu_uid_2'] = array($ofuserId, PDO::PARAM_INT);
+
+        if(isset($startDate)) {
+            $partSelectFollowedUsersSql .= "and uuf.followedDateTime < :fu_sd ";
+            $partSelectParams[1][':fu_sd'] = array($startDate, PDO::PARAM_STR);
+        }
 
         if(isset($ofuserId)) {
-            $partSelectFollowedUsersSql .= "and uuf.userId = :fu_uid_2 "; // where ofuserId is the performer
-            $partSelectParams[1][':fu_uid_2'] = array($ofuserId, PDO::PARAM_INT);
+            $partSelectFollowedUsersSql .= "and (uuf.userId = :fu_uid_3 "; // where ofuserId is the performer
+            $partSelectParams[1][':fu_uid_3'] = array($ofuserId, PDO::PARAM_INT);
             if(!$onlyOwnMessages) {
-                $partSelectFollowedUsersSql .= "or uuf2.userId = :fu_uid_3 "; // where a followee of ofuserId is the performer
-                $partSelectParams[1][':fu_uid_3'] = array($ofuserId, PDO::PARAM_INT);
+                $partSelectFollowedUsersSql .= "or uuf2.userId = :fu_uid_4"; // where a followee of ofuserId is the performer
+                $partSelectParams[1][':fu_uid_4'] = array($ofuserId, PDO::PARAM_INT);
             }
+            $partSelectFollowedUsersSql .= ") ";
         }
 
         $partSelectSql[1] = $partSelectFollowedUsersSql;
@@ -90,20 +108,26 @@
             "left join Images userImage on userImage.imageId = user.profileImageId " .
             "where utf.followedDateTime is not null ";
 
+        if(isset($startDate)) {
+            $partSelectFollowedTagsSql .= "and utf.followedDateTime < :ft_sd ";
+            $partSelectParams[2][':ft_sd'] = array($startDate, PDO::PARAM_STR);
+        }
+
         if(isset($ofuserId)) {
-            $partSelectFollowedTagsSql .= "and utf.userId = :ft_uid_2 "; // where ofuserId is the performer
+            $partSelectFollowedTagsSql .= "and (utf.userId = :ft_uid_2 "; // where ofuserId is the performer
             $partSelectParams[2][':ft_uid_2'] = array($ofuserId, PDO::PARAM_INT);
             if(!$onlyOwnMessages) {
-                $partSelectFollowedTagsSql .= "or uuf.userId = :ft_uid_3 "; // where a followee of ofuserId is the performer
+                $partSelectFollowedTagsSql .= "or uuf.userId = :ft_uid_3"; // where a followee of ofuserId is the performer
                 $partSelectParams[2][':ft_uid_3'] = array($ofuserId, PDO::PARAM_INT);
             }
+            $partSelectFollowedTagsSql .= ") ";
         }
 
         $partSelectSql[2] = $partSelectFollowedTagsSql;
 
         /************************************************************************************************************************************************************************************ */
         // part select followed collections
-        $partSelectCreatedCollectionsSql = 
+        $partSelectFollowedCollectionsSql = 
             "select 'followedCollection' as 'type', concat(user.userName, ' is now following ', collectionTitle.originalValue) as message, " .
             "ucf.userId as userId, user.userName as userName, userImage.imageFileName as userImageFileName, " .
             "ucf.followCollectionId as object1Id, collectionTitle.originalValue as object1Name, null as object1ImageFileName, " .
@@ -111,27 +135,33 @@
             "from UserCollectionFollows ucf ";
 
         if(isset($ofuserId)) {
-            $partSelectCreatedCollectionsSql .= "left join UserUserFollows uuf on (uuf.followUserId = ucf.userId and uuf.userId = :fc_uid_1) "; // join to receive followed collections of followees
+            $partSelectFollowedCollectionsSql .= "left join UserUserFollows uuf on (uuf.followUserId = ucf.userId and uuf.userId = :fc_uid_1) "; // join to receive followed collections of followees
             $partSelectParams[4][':fc_uid_1'] = array($ofuserId, PDO::PARAM_INT);
         }
 
-        $partSelectCreatedCollectionsSql .= 
+        $partSelectFollowedCollectionsSql .= 
             "left join Users user on user.userId = ucf.userId " .
             "left join Collections followCollection on ucf.followCollectionId = followCollection.collectionId " .
             "left join Strings collectionTitle on followCollection.titleStringId = collectionTitle.stringId " .
             "left join Images userImage on userImage.imageId = user.profileImageId " .
             "where ucf.followedDateTime is not null ";
 
-        if(isset($ofuserId)) {
-            $partSelectCreatedCollectionsSql .= "and ucf.userId = :fc_uid_2 "; // where ofuserId is the performer
-            $partSelectParams[4][':fc_uid_2'] = array($ofuserId, PDO::PARAM_INT);
-            if(!$onlyOwnMessages) {
-                $partSelectCreatedCollectionsSql .= "or uuf.userId = :fc_uid_3 "; // where a followee of ofuserId is the performer
-                $partSelectParams[4][':fc_uid_3'] = array($ofuserId, PDO::PARAM_INT);
-            }
+        if(isset($startDate)) {
+            $partSelectFollowedCollectionsSql .= "and ucf.followedDateTime < :fc_sd ";
+            $partSelectParams[4][':fc_sd'] = array($startDate, PDO::PARAM_STR);
         }
 
-        $partSelectSql[4] = $partSelectCreatedCollectionsSql;
+        if(isset($ofuserId)) {
+            $partSelectFollowedCollectionsSql .= "and (ucf.userId = :fc_uid_2 "; // where ofuserId is the performer
+            $partSelectParams[4][':fc_uid_2'] = array($ofuserId, PDO::PARAM_INT);
+            if(!$onlyOwnMessages) {
+                $partSelectFollowedCollectionsSql .= "or uuf.userId = :fc_uid_3"; // where a followee of ofuserId is the performer
+                $partSelectParams[4][':fc_uid_3'] = array($ofuserId, PDO::PARAM_INT);
+            }
+            $partSelectFollowedCollectionsSql .= ") ";
+        }
+
+        $partSelectSql[4] = $partSelectFollowedCollectionsSql;
 
         /************************************************************************************************************************************************************************************ */
         // part select created recipes
@@ -143,7 +173,7 @@
                 "from Images image " .
                 "left join RecipeImages recipeImage on recipeImage.imageId = image.imageId " .
                 "left join Users user on user.userId = image.creatorId " .
-                "where image.creatorId = user.userId or image.creatorId != user.userId " .
+                "where recipeImage.recipeId = recipe.recipeId and (image.creatorId = user.userId or image.creatorId != user.userId or image.creatorId is null) " . // prefer the user's image if he added one
                 "order by image.rating desc, rand() limit 1" . // second order random if multiple best ratings
             ") as object1ImageFileName, null as object2Id, recipe.createdDateTime as performedDateTime " .
             "from Recipes recipe ";
@@ -159,13 +189,19 @@
             "left join Images userImage on userImage.imageId = user.profileImageId " .
             "where recipe.createdDateTime is not null ";
 
+        if(isset($startDate)) {
+            $partSelectCreatedRecipesSql .= "and recipe.createdDateTime < :ar_sd ";
+            $partSelectParams[8][':ar_sd'] = array($startDate, PDO::PARAM_STR);
+        }
+
         if(isset($ofuserId)) {
-            $partSelectCreatedRecipesSql .= "and recipe.creatorId = :ar_uid_2 "; // where ofuserId is the performer
+            $partSelectCreatedRecipesSql .= "and (recipe.creatorId = :ar_uid_2 "; // where ofuserId is the performer
             $partSelectParams[8][':ar_uid_2'] = array($ofuserId, PDO::PARAM_INT);
             if(!$onlyOwnMessages) {
-                $partSelectCreatedRecipesSql .= "or uuf.userId = :ar_uid_3 "; // where a followee of ofuserId is the performer
+                $partSelectCreatedRecipesSql .= "or uuf.userId = :ar_uid_3"; // where a followee of ofuserId is the performer
                 $partSelectParams[8][':ar_uid_3'] = array($ofuserId, PDO::PARAM_INT);
             }
+            $partSelectCreatedRecipesSql .= ") ";
         }
 
         $partSelectSql[8] = $partSelectCreatedRecipesSql;
@@ -190,13 +226,19 @@
             "left join Images userImage on userImage.imageId = user.profileImageId " .
             "where recipe.lastModifiedDateTime is not null ";
 
+        if(isset($startDate)) {
+            $partSelectModifiedRecipesSql .= "and recipe.lastModifiedDateTime < :mr_sd ";
+            $partSelectParams[16][':mr_sd'] = array($startDate, PDO::PARAM_STR);
+        }
+
         if(isset($ofuserId)) {
-            $partSelectModifiedRecipesSql .= "and recipe.modifierId = :mr_uid_2 "; // where ofuserId is the performer
+            $partSelectModifiedRecipesSql .= "and (recipe.modifierId = :mr_uid_2 "; // where ofuserId is the performer
             $partSelectParams[16][':mr_uid_2'] = array($ofuserId, PDO::PARAM_INT);
             if(!$onlyOwnMessages) {
-                $partSelectModifiedRecipesSql .= "or uuf.userId = :mr_uid_3 "; // where a followee of ofuserId is the performer
+                $partSelectModifiedRecipesSql .= "or uuf.userId = :mr_uid_3"; // where a followee of ofuserId is the performer
                 $partSelectParams[16][':mr_uid_3'] = array($ofuserId, PDO::PARAM_INT);
             }
+            $partSelectModifiedRecipesSql .= ") ";
         }
 
         $partSelectSql[16] = $partSelectModifiedRecipesSql;
@@ -211,7 +253,7 @@
                 "from Recipes imagedRecipe " .
                 "left join RecipeImages recipeImage on recipeImage.recipeId = imagedRecipe.recipeId " .
                 "left join Images image on image.imageId = recipeImage.imageId " .
-                "where imagedRecipe.recipeId = recipe.recipeId " .
+                "where recipeImage.recipeId = cooking.recipeId and (image.creatorId = user.userId or image.creatorId != user.userId or image.creatorId is null) " . // prefer the user's image if he added one
                 "order by image.rating desc, rand() limit 1" . // second order random if multiple best ratings
             ") as object1ImageFileName, null as object2Id, " .
             "cooking.cookedDateTime as performedDateTime " .
@@ -229,13 +271,19 @@
             "left join Images userImage on userImage.imageId = user.profileImageId " .
             "where cooking.cookedDateTime is not null ";
 
+        if(isset($startDate)) {
+            $partSelectCookedRecipesSql .= "and cooking.cookedDateTime < :cr_sd ";
+            $partSelectParams[32][':cr_sd'] = array($startDate, PDO::PARAM_STR);
+        }
+
         if(isset($ofuserId)) {
-            $partSelectCookedRecipesSql .= "and cooking.cookId = :cr_uid_2 "; // where ofuserId is the performer
+            $partSelectCookedRecipesSql .= "and (cooking.cookId = :cr_uid_2 "; // where ofuserId is the performer
             $partSelectParams[32][':cr_uid_2'] = array($ofuserId, PDO::PARAM_INT);
             if(!$onlyOwnMessages) {
-                $partSelectCookedRecipesSql .= "or uuf.userId = :cr_uid_3 "; // where a followee of ofuserId is the performer
+                $partSelectCookedRecipesSql .= "or uuf.userId = :cr_uid_3"; // where a followee of ofuserId is the performer
                 $partSelectParams[32][':cr_uid_3'] = array($ofuserId, PDO::PARAM_INT);
             }
+            $partSelectCookedRecipesSql .= ") ";
         }
 
         $partSelectSql[32] = $partSelectCookedRecipesSql;
@@ -260,14 +308,19 @@
             "left join Images userImage on userImage.imageId = user.profileImageId " .
             "where collection.createdDateTime is not null and collection.titleStringId is not null and user.mainCollectionId != collection.collectionId ";
 
+        if(isset($startDate)) {
+            $partSelectCreatedCollectionsSql .= "and collection.createdDateTime < :cc_sd ";
+            $partSelectParams[64][':cc_sd'] = array($startDate, PDO::PARAM_STR);
+        }
+
         if(isset($ofuserId)) {
             $partSelectCreatedCollectionsSql .= "and (collection.creatorId = :cc_uid_2 "; // where ofuserId is the performer
             $partSelectParams[64][':cc_uid_2'] = array($ofuserId, PDO::PARAM_INT);
             if(!$onlyOwnMessages) {
-                $partSelectCreatedCollectionsSql .= "or uuf.userId = :cc_uid_3 "; // where a followee of ofuserId is the performer
+                $partSelectCreatedCollectionsSql .= "or uuf.userId = :cc_uid_3"; // where a followee of ofuserId is the performer
                 $partSelectParams[64][':cc_uid_3'] = array($ofuserId, PDO::PARAM_INT);
             }
-            $partSelectCreatedCollectionsSql .= ")";
+            $partSelectCreatedCollectionsSql .= ") ";
         }
 
         $partSelectSql[64] = $partSelectCreatedCollectionsSql;
@@ -282,7 +335,7 @@
                 "from Images image " .
                 "left join RecipeImages recipeImage on recipeImage.imageId = image.imageId " .
                 "left join Users user on user.userId = image.creatorId " .
-                "where image.creatorId = user.userId or image.creatorId != user.userId " .
+                "where recipeImage.recipeId = cr.recipeId and (image.creatorId = user.userId or image.creatorId != user.userId or image.creatorId is null) " . // prefer the user's image if he added one
                 "order by image.rating desc, rand() limit 1" . // second order random if multiple best ratings
             ") as object1ImageFileName, cr.collectionId as object2Id, cr.addedDateTime as performedDateTime " .
             "from CollectionRecipes cr " .
@@ -300,13 +353,19 @@
             "left join Images userImage on userImage.imageId = user.profileImageId " .
             "where cr.addedDateTime is not null ";
 
+        if(isset($startDate)) {
+            $partSelectAddedRecipesToCollectionSql .= "and cr.addedDateTime < :arc_sd ";
+            $partSelectParams[128][':arc_sd'] = array($startDate, PDO::PARAM_STR);
+        }
+
         if(isset($ofuserId)) {
-            $partSelectAddedRecipesToCollectionSql .= "and col.creatorId = :arc_uid_2 "; // where ofuserId is the performer
+            $partSelectAddedRecipesToCollectionSql .= "and (col.creatorId = :arc_uid_2 "; // where ofuserId is the performer
             $partSelectParams[128][':arc_uid_2'] = array($ofuserId, PDO::PARAM_INT);
             if(!$onlyOwnMessages) {
-                $partSelectAddedRecipesToCollectionSql .= "or uuf.userId = :arc_uid_3 "; // where a followee of ofuserId is the performer
+                $partSelectAddedRecipesToCollectionSql .= "or uuf.userId = :arc_uid_3"; // where a followee of ofuserId is the performer
                 $partSelectParams[128][':arc_uid_3'] = array($ofuserId, PDO::PARAM_INT);
             }
+            $partSelectAddedRecipesToCollectionSql .= ") ";
         }
 
         $partSelectSql[128] = $partSelectAddedRecipesToCollectionSql;
@@ -333,13 +392,19 @@
             "left join Images userImage on userImage.imageId = user.profileImageId " .
             "where ri.addedDateTime is not null ";
 
+        if(isset($startDate)) {
+            $partSelectAddedImagesToRecipesSql .= "and ri.addedDateTime < :air_sd ";
+            $partSelectParams[256][':air_sd'] = array($startDate, PDO::PARAM_STR);
+        }
+
         if(isset($ofuserId)) {
-            $partSelectAddedImagesToRecipesSql .= "and img.creatorId = :air_uid_2 "; // where ofuserId is the performer
+            $partSelectAddedImagesToRecipesSql .= "and (img.creatorId = :air_uid_2 "; // where ofuserId is the performer
             $partSelectParams[256][':air_uid_2'] = array($ofuserId, PDO::PARAM_INT);
             if(!$onlyOwnMessages) {
-                $partSelectAddedImagesToRecipesSql .= "or uuf.userId = :air_uid_3 "; // where a followee of ofuserId is the performer
+                $partSelectAddedImagesToRecipesSql .= "or uuf.userId = :air_uid_3"; // where a followee of ofuserId is the performer
                 $partSelectParams[256][':air_uid_3'] = array($ofuserId, PDO::PARAM_INT);
             }
+            $partSelectAddedImagesToRecipesSql .= ") ";
         }
 
         $partSelectSql[256] = $partSelectAddedImagesToRecipesSql;
@@ -415,5 +480,8 @@
         exit();
     }
 
-    echo json_encode($snacks, JSON_PRETTY_PRINT);
+    if($prettyPrint == true)
+        echo json_encode($snacks, JSON_PRETTY_PRINT);
+    else
+        echo json_encode($snacks, JSON_UNESCAPED_UNICODE);
 ?>

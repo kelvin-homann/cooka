@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
 
 import app.cooka.cookapp.R;
@@ -47,7 +45,7 @@ public class RecipeFeedCardItemAdapter extends
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View v = LayoutInflater.from(parent.getContext())
-            .inflate(R.layout.category_list_view_item, parent, false);
+            .inflate(R.layout.test_recipe_list_view_item, parent, false);
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }

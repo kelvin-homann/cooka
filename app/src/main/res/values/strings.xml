@@ -1,6 +1,14 @@
 <resources>
     <string name="app_name">Cooka</string>
 
+    <!-- Shortcuts -->
+    <string name="shortcut_not_available">Shortcut is not available</string>
+    <string name="shortcut_profile">Profile</string>
+    <string name="shortcut_profile_long">Your profile</string>
+    <string name="shortcut_database_test">Database</string>
+    <string name="shortcut_database_test_long">Database Test</string>
+
+    <!-- Facebook login stuff -->
     <string name="facebook_app_id">2042351182521855</string>
     <string name="fb_login_protocol_scheme">fb2042351182521855</string>
     <string name="title_activity_bottom_nav">bottomNavActivity</string>
@@ -15,6 +23,75 @@
     <string name="action_search">Search</string>
     <string name="action_settings">Settings</string>
     <string name="action_profile">Profile</string>
+
+    <!-- Feed -->
+    <!-- Feed: time ago static singular strings -->
+    <string name="a_couple_of_seconds_ago">a couple of seconds ago</string>
+    <string name="less_than_a_minute_ago">less than a minute ago</string>
+    <string name="some_seconds_ago">some seconds ago</string>
+    <string name="minutes_ago">%1$d minutes ago</string>
+    <string name="hours_ago">%1$d hours ago</string>
+    <string name="days_ago">%1$d days ago</string>
+    <string name="weeks_ago">%1$d weeks ago</string>
+    <string name="years_ago">%1$d years ago</string>
+    <!-- Feed: time ago static plural strings -->
+    <string name="one_minute_ago">1 minute ago</string>
+    <string name="one_hour_ago">1 hour ago</string>
+    <string name="one_day_ago">1 day ago</string>
+    <string name="one_week_ago">1 week ago</string>
+    <string name="one_year_ago">1 year ago</string>
+    <!-- Feed: time ago plurals -->
+    <plurals name="minutes_ago_plural">
+        <item quantity="one">1 minute ago</item>
+        <item quantity="other">%d minutes ago</item>
+    </plurals>
+    <plurals name="hours_ago_plural">
+        <item quantity="one">1 hour ago</item>
+        <item quantity="other">%d hours ago</item>
+    </plurals>
+    <plurals name="days_ago_plural">
+        <item quantity="one">1 days ago</item>
+        <item quantity="other">%d days ago</item>
+    </plurals>
+    <plurals name="weeks_ago_plural">
+        <item quantity="one">1 week ago</item>
+        <item quantity="other">%d weeks ago</item>
+    </plurals>
+    <plurals name="years_ago_plural">
+        <item quantity="one">1 year ago</item>
+        <item quantity="other">%d years ago</item>
+    </plurals>
+    <!-- Feed: activity messages not leading with user name -->
+    <string name="is_now_following_user">is now following <a href="">@%1$s</a></string>
+    <string name="is_now_following_tag">is now following <a href="">#%1$s</a></string>
+    <string name="is_now_following_collection">is now following <a href="">%1$s</a></string>
+    <string name="created_recipe">created recipe <a href="">%1$s</a></string>
+    <string name="modified_recipe">modified recipe <a href="">%1$s</a></string>
+    <string name="cooked_recipe">cooked recipe <a href="">%1$s</a></string>
+    <string name="created_collection">created collection <a href="">%1$s</a></string>
+    <string name="added_recipe_to_collection">added a recipe to <a href="">%1$s</a></string>
+    <string name="added_image_to_recipe">added an image to recipe <a href="">%1$s</a></string>
+    <!-- Feed: activity messages leading with user name -->
+    <string name="username_is_now_following_user">%1$s is now following <a href="">@%2$s</a></string>
+    <string name="username_is_now_following_tag">%1$s is now following <a href="">#%2$s</a></string>
+    <string name="username_is_now_following_collection">%1$s is now following <a href="">%2$s</a></string>
+    <string name="username_created_recipe">%1$s created recipe <a href="">%2$s</a></string>
+    <string name="username_modified_recipe">%1$s modified recipe <a href="">%2$s</a></string>
+    <string name="username_cooked_recipe">%1$s cooked recipe <a href="">%2$s</a></string>
+    <string name="username_created_collection">%1$s created collection <a href="">%2$s</a></string>
+    <string name="username_added_recipe_to_collection">%1$s added a recipe to <a href="">%2$s</a></string>
+    <string name="username_added_image_to_recipe">%1$s added an image to recipe <a href="">%2$s</a></string>
+    <!-- Feed: activity message context menu entries -->
+    <string name="view_user_profile">View user profile</string>
+    <string name="view_profile_of_user">View profile of %1$s</string>
+    <string name="view_recipe">View recipe</string>
+    <string name="pin_recipe">Pin recipe</string>
+    <string name="cook_this_recipe_now">Cook this recipe now</string>
+    <string name="browse_collection">Browse collection</string>
+    <string name="browse_collection_name">Browse %1$s</string>
+    <string name="browse_tag">Browse tag</string>
+    <string name="browse_tag_tag">Browse tag %1$s</string>
+    <string name="report_this_feed_message">Report this message</string>
 
     <!-- Profile -->
     <string name="title_activity_profile">Profile</string>

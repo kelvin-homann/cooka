@@ -28,15 +28,15 @@ public class FeedMessage {
     public static final String LOGTAG = "COOKALOG";
 
     // selected types
-    public static final int ST_FOLLOWED_USER = 1;
-    public static final int ST_FOLLOWED_TAG = 1 << 1;
-    public static final int ST_FOLLOWED_COLLECTION = 1 << 2;
-    public static final int ST_CREATED_RECIPE = 1 << 3;
-    public static final int ST_MODIFIED_RECIPE = 1 << 4;
-    public static final int ST_COOKED_RECIPE = 1 << 5;
-    public static final int ST_CREATED_COLLECTION = 1 << 6;
-    public static final int ST_ADDED_RECIPE_TO_COLLECTION = 1 << 7;
-    public static final int ST_ADDED_IMAGE_TO_RECIPE = 1 << 8;
+    public static final int ST_FOLLOWED_USER = 0x00000001;
+    public static final int ST_FOLLOWED_TAG = 0x00000002;
+    public static final int ST_FOLLOWED_COLLECTION = 0x00000004;
+    public static final int ST_CREATED_RECIPE = 0x00000008;
+    public static final int ST_MODIFIED_RECIPE = 0x00000010;
+    public static final int ST_COOKED_RECIPE = 0x00000020;
+    public static final int ST_CREATED_COLLECTION = 0x00000040;
+    public static final int ST_ADDED_RECIPE_TO_COLLECTION = 0x00000080;
+    public static final int ST_ADDED_IMAGE_TO_RECIPE = 0x00000100;
     public static final int ST_ALL = 0xffffffff;
 
     private EFeedMessageType type;
@@ -88,6 +88,22 @@ public class FeedMessage {
 
     public static class Factory {
 
+        /**
+         * Selects all feed messages of the user specified by the user id and allows for filtering
+         * by specifying what message types shall be selected.
+         * @param context the Android context to the run the method on.
+         * @param ofuserId the identifier of the user to create the feed for (i.e. the user whose
+         *      own actions and whose followee's actions shall be selected).
+         * @param selectedTypes a bit mask used to combine different feed message types; uses the
+         *      integer constants FeedMessage.ST_* that can be combined with bitwise-or.
+         *      For example: FeedMessage.ST_CREATED_RECIPE | ST_COOKED_RECIPE
+         * @param onlyOwnMessages whether or not only messages where ofuserId is the performer of
+         *      the described action shall be selected (i.e. omits messages of users that ofuserId
+         *      is following).
+         * @param selectFeedMessagesCallback the select callback that will be called when the
+         *      selection succeeded and that will be given the list of feed messages.
+         * @return a subscription object to the select request; null if an error occurred.
+         */
         public static Subscription selectFeedMessages(final Context context, final long ofuserId,
             final int selectedTypes, final boolean onlyOwnMessages,
             final IResultCallback<List<FeedMessage>> selectFeedMessagesCallback)

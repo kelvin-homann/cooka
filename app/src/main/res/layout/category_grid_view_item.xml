@@ -28,7 +28,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tvwCategoryName"
+        android:id="@+id/tvwMessageHeading"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fontFamily="@font/catamaran"

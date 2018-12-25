@@ -28,13 +28,13 @@ public class Category extends Observable {
 
     public static final String LOGTAG = "COOKALOG";
 
-    public static final int CHANGED_NAME = 1;
-    public static final int CHANGED_PARENTCATEGORYID = 1 << 1;
-    public static final int CHANGED_DESCRIPTION = 1 << 2;
-    public static final int CHANGED_IMAGEID = 1 << 3;
-    public static final int CHANGED_IMAGEFILENAME = 1 << 4;
-    public static final int CHANGED_SORTPREFIX = 1 << 5;
-    public static final int CHANGED_BROWSABLE = 1 << 6;
+    public static final int CHANGED_NAME = 0x00000001;
+    public static final int CHANGED_PARENTCATEGORYID = 0x00000002;
+    public static final int CHANGED_DESCRIPTION = 0x00000004;
+    public static final int CHANGED_IMAGEID = 0x00000008;
+    public static final int CHANGED_IMAGEFILENAME = 0x00000010;
+    public static final int CHANGED_SORTPREFIX = 0x00000020;
+    public static final int CHANGED_BROWSABLE = 0x00000040;
     public static final int CHANGED_FORCE_UPDATE = 0xffffffff;
 
     private int changeState = 0;

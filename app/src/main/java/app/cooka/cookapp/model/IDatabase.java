@@ -20,7 +20,9 @@ public interface IDatabase {
         @Query("languageId") long languageId,
         @Query("ofuserId") long ofuserId,
         @Query("selectedTypes") int selectedTypes,
-        @Query("onlyOwnMessages") boolean onlyOwnMessages
+        @Query("onlyOwnMessages") boolean onlyOwnMessages,
+        @Query("startDate") String startDate,
+        @Query("prettyPrint") boolean prettyPrint
     );
 
     /*  ************************************************************************************  *
@@ -54,6 +56,7 @@ public interface IDatabase {
         @Query("accessToken") String accessToken,
         @Query("linkedProfileType") String linkedProfileType,
         @Query("linkedProfileUserId") String linkedProfileUserId,
+        @Query("profileImageFileName") String profileImageFileName,
         @Query("userRights") long userRights,
         @Query("deviceId") String deviceId
     );

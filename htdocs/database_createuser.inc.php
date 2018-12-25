@@ -20,6 +20,7 @@
     $accessToken = null;
     $linkedProfileType = 'unlinked';
     $linkedProfileUserId = null;
+    $profileImageFileName = null;
     $userRights = 1;
     $deviceId = null;
 
@@ -37,6 +38,8 @@
         $linkedProfileType = $_getpost['linkedProfileType'];
     if(isset($_getpost['linkedProfileUserId']))
         $linkedProfileUserId = $_getpost['linkedProfileUserId'];
+    if(isset($_getpost['profileImageFileName']))
+        $profileImageFileName = $_getpost['profileImageFileName'];
     if(isset($_getpost['userRights']))
         $userRights = $_getpost['userRights'];
     if(isset($_getpost['accessToken']))
@@ -52,10 +55,22 @@
         // start transaction block
         $database->beginTransaction();
 
+        $mainCollectionId = null;
+
         // insert new main collection
         $insertCollectionStmt = $database->prepare("insert into Collections (publicationType) values ('public')");
         $insertCollectionStmt->execute();
         $mainCollectionId = $database->lastInsertId();
+
+        $profileImageId = null;
+
+        // insert profile image
+        if(isset($profileImageFileName) && strlen($profileImageFileName) > 0) {
+            $insertImageStmt = $database->prepare("insert into Images (creatorId, imageFileName) values (null, ?)");
+            $insertImageStmt->bindValue(1, $profileImageFileName, PDO::PARAM_STR);
+            $insertImageStmt->execute();
+            $profileImageId = $database->lastInsertId();
+        }
 
         // insert actual user
         $insertUserSql = "insert into Users (userName, firstName, lastName, " .
@@ -91,25 +106,50 @@
         $insertedUserId = $database->lastInsertId();
 
         // update collection and set creator id
-        $updateCollectionSql = "update Collections set creatorId = ? where collectionId = ?";
+        if(isset($mainCollectionId)) {
+            $updateCollectionSql = "update Collections set creatorId = ? where collectionId = ?";
 
-        // build params map
-        $updateCollectionParams = array(
-            1 => array($insertedUserId, PDO::PARAM_INT),
-            2 => array($mainCollectionId, PDO::PARAM_INT),
-        );
+            // build params map
+            $updateCollectionParams = array(
+                1 => array($insertedUserId, PDO::PARAM_INT),
+                2 => array($mainCollectionId, PDO::PARAM_INT),
+            );
 
-        // extend and log sql query
-        if($logdb || $logfile || $logscreen) {
-            $query = extendSqlQuery($updateCollectionSql, $updateCollectionParams);
-            $sqlQueries[] = $query;
+            // extend and log sql query
+            if($logdb || $logfile || $logscreen) {
+                $query = extendSqlQuery($updateCollectionSql, $updateCollectionParams);
+                $sqlQueries[] = $query;
+            }
+
+            $updateCollectionStmt = $database->prepare($updateCollectionSql);
+            foreach($updateCollectionParams as $index => $param)
+                $updateCollectionStmt->bindValue($index, $param[0], $param[1]);
+            $updateCollectionStmt->execute();
+            $updateCollectionRowCount = $updateCollectionStmt->rowCount();
         }
 
-        $updateCollectionStmt = $database->prepare($updateCollectionSql);
-        foreach($updateCollectionParams as $index => $param)
-            $updateCollectionStmt->bindValue($index, $param[0], $param[1]);
-        $updateCollectionStmt->execute();
-        $updateCollectionRowCount = $updateCollectionStmt->rowCount();
+        // update profile image and set creator id
+        if(isset($profileImageId)) {
+            $updateImageSql = "update Images set creatorId = ? where imageId = ?";
+
+            // build params map
+            $updateImageParams = array(
+                1 => array($insertedUserId, PDO::PARAM_INT),
+                2 => array($profileImageId, PDO::PARAM_INT),
+            );
+
+            // extend and log sql query
+            if($logdb || $logfile || $logscreen) {
+                $query = extendSqlQuery($updateImageSql, $updateImageParams);
+                $sqlQueries[] = $query;
+            }
+
+            $updateImageStmt = $database->prepare($updateImageSql);
+            foreach($updateImageParams as $index => $param)
+                $updateImageStmt->bindValue($index, $param[0], $param[1]);
+            $updateImageStmt->execute();
+            $updateImageRowCount = $updateImageStmt->rowCount();
+        }
 
         $insertedLoginId = 0;
 

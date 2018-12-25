@@ -5,5 +5,9 @@
         <item>@font/catamaran_black</item>
         <item>@font/catamaran_bold</item>
         <item>@font/catamaran_light</item>
+        <item>@font/roboto</item>
+        <item>@font/roboto_condensed_bold</item>
+        <item>@font/roboto_condensed_regular</item>
+        <item>@font/roboto_medium</item>
     </array>
 </resources>

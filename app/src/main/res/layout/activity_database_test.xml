@@ -189,13 +189,54 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/lltPollFeedMessagesPanel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:elevation="2dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvPollFeedMessagesTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:text="Poll Feed Messages"
+                android:textColor="#44aa22"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnPollFeedMessages"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="16dp"
+                android:clickable="false"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:text="Poll Feed Messages" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvwFeedMessages"
+                android:layout_width="match_parent"
+                android:layout_height="650dp"
+                android:paddingBottom="16dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/lltPollRecipesPanel"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:elevation="2dp"
             android:orientation="vertical"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp">
+            android:paddingRight="16dp"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/tvPollRecipesTitle"

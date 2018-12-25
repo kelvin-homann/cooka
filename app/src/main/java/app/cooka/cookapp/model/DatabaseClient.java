@@ -30,6 +30,7 @@ public class DatabaseClient {
     private IDatabase databaseInterface;
     private Category.JsonAdapter categoryJsonAdapter;
     private Recipe.JsonAdapter recipeJsonAdapter;
+    private boolean jsonPrettyPrint = false;
 
     private DatabaseClient(Context context) {
 
@@ -40,6 +41,7 @@ public class DatabaseClient {
         final Gson gson = new GsonBuilder()
             .registerTypeAdapter(Category.class, categoryJsonAdapter)
             .registerTypeAdapter(Recipe.class, new Recipe.CompactFormatAdapter())
+            .registerTypeAdapter(FeedMessage.class, new FeedMessage.JsonAdapter())
             .setDateFormat("yyyy-MM-dd HH:mm:ss")
             .setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
             .create();
@@ -68,9 +70,17 @@ public class DatabaseClient {
      *  ************************************************************************************  */
 
     /**
-     * Selects all feed messages for the specified
-     * @param ofuserId
-     * @return
+     * Selects all feed messages of the user specified by the user id and allows for filtering by
+     * specifying what message types shall be selected.
+     * @param ofuserId the identifier of the user to create the feed for (i.e. the user whose own
+     *      actions and whose followee's actions shall be selected).
+     * @param selectedTypes a bit mask used to combine different feed message types; uses the
+     *      integer constants FeedMessage.ST_* that can be combined with bitwise-or.
+     *      For example: FeedMessage.ST_CREATED_RECIPE | ST_COOKED_RECIPE
+     * @param onlyOwnMessages whether or not only messages where ofuserId is the performer of the
+     *      described action shall be selected (i.e. omits messages of users that ofuserId is
+     *      following).
+     * @return a list of FeedMessages within an Observable; null if an error occurred
      */
     public Observable<List<FeedMessage>> selectFeedMessages(final long ofuserId,
         final int selectedTypes, final boolean onlyOwnMessages)
@@ -79,7 +89,32 @@ public class DatabaseClient {
             sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
             sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
             sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L), ofuserId,
-            selectedTypes, onlyOwnMessages);
+            selectedTypes, onlyOwnMessages, null, jsonPrettyPrint);
+    }
+
+    /**
+     * Selects all feed messages of the user specified by the user id and allows for filtering by
+     * specifying what message types shall be selected.
+     * @param ofuserId the identifier of the user to create the feed for (i.e. the user whose own
+     *      actions and whose followee's actions shall be selected).
+     * @param selectedTypes a bit mask used to combine different feed message types; uses the
+     *      integer constants FeedMessage.ST_* that can be combined with bitwise-or.
+     *      For example: FeedMessage.ST_CREATED_RECIPE | ST_COOKED_RECIPE
+     * @param onlyOwnMessages whether or not only messages where ofuserId is the performer of the
+     *      described action shall be selected (i.e. omits messages of users that ofuserId is
+     *      following).
+     * @param startDate the latest date of which to select feed messages from (used for pagination
+     *      and as a natural offset to the result set).
+     * @return a list of FeedMessages within an Observable; null if an error occurred
+     */
+    public Observable<List<FeedMessage>> selectFeedMessages(final long ofuserId,
+        final int selectedTypes, final boolean onlyOwnMessages, final String startDate)
+    {
+        return databaseInterface.selectFeedMessages(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
+            sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L), ofuserId,
+            selectedTypes, onlyOwnMessages, startDate, jsonPrettyPrint);
     }
 
     /*  ************************************************************************************  *
@@ -148,7 +183,20 @@ public class DatabaseClient {
         return databaseInterface.createUser(languageId, userName, firstName, lastName,
             emailAddress, hashedPassword, salt, accessToken,
             linkedProfileType != null ? linkedProfileType.toString() : null,
-            linkedProfileUserId, userRights, deviceId);
+            linkedProfileUserId, null, userRights, deviceId);
+    }
+
+    public Call<CreateUserResult> createUser(final String userName, final String firstName,
+        final String lastName, final String emailAddress, final String hashedPassword,
+        final String salt, final String accessToken, final ELinkedProfileType linkedProfileType,
+        final String linkedProfileUserId, final String profileImageFileName, final long
+        userRights, final String deviceId)
+    {
+        long languageId = sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L);
+        return databaseInterface.createUser(languageId, userName, firstName, lastName,
+            emailAddress, hashedPassword, salt, accessToken,
+            linkedProfileType != null ? linkedProfileType.toString() : null,
+            linkedProfileUserId, profileImageFileName, userRights, deviceId);
     }
 
     /**

@@ -35,14 +35,14 @@ public class User extends java.util.Observable {
 
     public static final String LOGTAG = "COOKALOG";
 
-    public static final int CHANGED_USERNAME = 1;
-    public static final int CHANGED_NAME = 1 << 1;
-    public static final int CHANGED_EMAILADDRESS = 1 << 2;
-    public static final int CHANGED_VERIFIEDSTATE = 1 << 3;
-    public static final int CHANGED_USERRIGHTS = 1 << 4;
-    public static final int CHANGED_LINKEDPROFILE = 1 << 5;
-    public static final int CHANGED_LASTDATETIME = 1 << 6;
-    public static final int CHANGED_PROFILEIMAGE = 1 << 7;
+    public static final int CHANGED_USERNAME = 0x00000001;
+    public static final int CHANGED_NAME = 0x00000002;
+    public static final int CHANGED_EMAILADDRESS = 0x00000004;
+    public static final int CHANGED_VERIFIEDSTATE = 0x00000008;
+    public static final int CHANGED_USERRIGHTS = 0x00000010;
+    public static final int CHANGED_LINKEDPROFILE = 0x00000020;
+    public static final int CHANGED_LASTDATETIME = 0x00000040;
+    public static final int CHANGED_PROFILEIMAGE = 0x00000080;
     public static final int CHANGED_FORCE_UPDATE = 0xffffffff;
 
     private int changeState = 0;
@@ -439,6 +439,23 @@ public class User extends java.util.Observable {
         changeState |= CHANGED_NAME;
         setChanged();
         notifyObservers();
+    }
+
+    /**
+     * Gets a full name from first name and last name if at least one of them is set. Gets the
+     * user name otherwise.
+     * @return a full name from first name and last name if at least one of them is set; the user
+     *      name otherwise.
+     */
+    public String getFullName() {
+        if(firstName != null && firstName.length() > 0 && lastName != null && lastName.length() > 0)
+            return firstName + " " + lastName;
+        else if(firstName != null && firstName.length() > 0)
+            return firstName;
+        if(lastName != null && lastName.length() > 0)
+            return lastName;
+        else
+            return userName;
     }
 
     public String getEmailAddress() {

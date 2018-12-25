@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.cooka.cookapp.R;
-import app.cooka.cookapp.Settings;
 import app.cooka.cookapp.model.Recipe;
 
 public class RecipeListViewAdapter extends BaseAdapter {
@@ -67,7 +66,7 @@ public class RecipeListViewAdapter extends BaseAdapter {
         private TextView tvRecipeTitle;
 
         public RecipeListViewItem(View view) {
-            tvRecipeTitle = view.findViewById(R.id.tvwCategoryName);
+            tvRecipeTitle = view.findViewById(R.id.tvwMessageHeading);
         }
 
         public void setRecipe(Recipe recipe) {

@@ -22,12 +22,18 @@
     include($scriptDir . '/functions.inc.php');
 
     $action = $_getpost['action'];
+    $prettyPrint = true;
     $debug = false;
     $allowLogfile = true;
     $allowLogdb = true;
     $logfile = true;
     $logdb = false;
     $logscreen = false;
+
+    if(isset($_getpost['prettyPrint']) && trim($_getpost['prettyPrint']) == 'true')
+        $prettyPrint = true;
+    else if(isset($_getpost['prettyPrint']) && trim($_getpost['prettyPrint']) == 'false')
+        $prettyPrint = false;
 
     if(isset($_getpost['logfile']) && trim($_getpost['logfile']) == 'true')
         $logfile = true && $allowLogfile;
@@ -112,6 +118,9 @@
         break;
     case 'selectRecipes':
         include($scriptDir . '/database_selectrecipes.inc.php');
+        break;
+    case 'selectFeedRecipes':
+        include($scriptDir . '/database_selectfeedrecipes.inc.php');
         break;
     case 'createRecipe':
         include($scriptDir . '/database_createrecipe.inc.php');

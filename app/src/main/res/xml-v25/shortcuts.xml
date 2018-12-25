@@ -1,0 +1,26 @@
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="shortcut_id_profile"
+        android:enabled="true"
+        android:icon="@drawable/ic_user_48dp"
+        android:shortcutShortLabel="@string/shortcut_profile"
+        android:shortcutLongLabel="@string/shortcut_profile_long"
+        android:shortcutDisabledMessage="@string/shortcut_not_available">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="app.cooka.cookapp"
+            android:targetClass="app.cooka.cookapp.ProfileActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="shortcut_id_database_test"
+        android:enabled="true"
+        android:icon="@drawable/ic_developer_mode_48dp"
+        android:shortcutShortLabel="@string/shortcut_database_test"
+        android:shortcutLongLabel="@string/shortcut_database_test_long"
+        android:shortcutDisabledMessage="@string/shortcut_not_available">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="app.cooka.cookapp"
+            android:targetClass="app.cooka.cookapp.DatabaseTestActivity" />
+    </shortcut>
+</shortcuts>

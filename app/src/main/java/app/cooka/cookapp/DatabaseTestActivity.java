@@ -40,9 +40,11 @@ import app.cooka.cookapp.login.ILogoutCallback;
 import app.cooka.cookapp.model.ArrayListObserver;
 import app.cooka.cookapp.model.AuthenticateUserResult;
 import app.cooka.cookapp.model.Category;
+import app.cooka.cookapp.model.ELinkedProfileType;
 import app.cooka.cookapp.model.FeedMessage;
 import app.cooka.cookapp.model.Follower;
 import app.cooka.cookapp.model.Recipe;
+import app.cooka.cookapp.utils.SecurityUtils;
 import app.cooka.cookapp.view.CategoryGridViewAdapter;
 import app.cooka.cookapp.view.CategoryListViewAdapter;
 import app.cooka.cookapp.model.CreateUserResult;
@@ -53,7 +55,11 @@ import app.cooka.cookapp.model.InvalidateLoginResult;
 import app.cooka.cookapp.model.RefreshLoginResult;
 import app.cooka.cookapp.model.User;
 import app.cooka.cookapp.utils.SystemUtils;
+import app.cooka.cookapp.view.FeedMessageRecyclerViewAdapter;
 import app.cooka.cookapp.view.RecipeFeedCardItemAdapter;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -70,6 +76,7 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
     private LinearLayout lltWelcomePanel;
     private LinearLayout lltPollCategoriesPanel;
     private LinearLayout lltPollRecipesPanel;
+    private LinearLayout lltPollFeedMessagesPanel;
 
     private LoginManager loginManager;
     private SSLContext sslContext;
@@ -78,8 +85,10 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
     private CategoryGridViewAdapter categoryGridViewAdapter = new CategoryGridViewAdapter();
     private ArrayListObserver categoryListObserver;
     private ArrayListObserver recipeListObserver;
+    private ArrayListObserver feedMessageListObserver;
     private Subscription categorySubscription;
     private Subscription recipeSubscription;
+    private Subscription feedMessageSubscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +104,7 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         lltWelcomePanel = findViewById(R.id.lltWelcomePanel);
         lltPollCategoriesPanel = findViewById(R.id.lltPollCategoriesPanel);
         lltPollRecipesPanel = findViewById(R.id.lltPollRecipesPanel);
+        lltPollFeedMessagesPanel = findViewById(R.id.lltPollFeedMessagesPanel);
 
         // hide all panels until the login state is known
         hideAllPanels();
@@ -151,6 +161,7 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         findViewById(R.id.btnCreateAccount).setOnClickListener(this);
         findViewById(R.id.btnPollCategories).setOnClickListener(this);
         findViewById(R.id.btnPollRecipes).setOnClickListener(this);
+        findViewById(R.id.btnPollFeedMessages).setOnClickListener(this);
 
         databaseClient = DatabaseClient.Factory.getInstance(this);
     }
@@ -166,6 +177,10 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         if(recipeSubscription != null && recipeSubscription.isUnsubscribed()) {
             recipeSubscription.unsubscribe();
             recipeSubscription = null;
+        }
+        if(feedMessageSubscription != null && feedMessageSubscription.isUnsubscribed()) {
+            feedMessageSubscription.unsubscribe();
+            feedMessageSubscription = null;
         }
     }
 
@@ -199,6 +214,10 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
 
             case R.id.btnPollRecipes:
                 pollRecipes();
+                break;
+
+            case R.id.btnPollFeedMessages:
+                pollFeedMessages();
                 break;
         }
     }
@@ -254,7 +273,8 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         lltLoginPanel.setVisibility(View.GONE);
         lltCreateAccountPanel.setVisibility(View.GONE);
         lltWelcomePanel.setVisibility(View.VISIBLE);
-        lltPollRecipesPanel.setVisibility(View.VISIBLE);
+        lltPollFeedMessagesPanel.setVisibility(View.VISIBLE);
+        //lltPollRecipesPanel.setVisibility(View.VISIBLE);
         //lltPollCategoriesPanel.setVisibility(View.VISIBLE);
     }
 
@@ -542,6 +562,47 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         catch(Exception e) {
             e.printStackTrace();
             btnPollRecipes.setClickable(true);
+        }
+    }
+
+    private void pollFeedMessages() {
+
+        if(databaseClient == null)
+            return;
+
+        final Button btnPollFeedMessages = findViewById(R.id.btnPollFeedMessages);
+        btnPollFeedMessages.setClickable(false);
+
+        try {
+            recipeSubscription = FeedMessage.Factory
+                .selectFeedMessages(this, 4, 0, false,
+                    new IResultCallback<List<FeedMessage>>() {
+                        @Override
+                        public void onSucceeded(List<FeedMessage> feedMessages) {
+
+                            int numFeedMessagesPolled = feedMessages.size();
+                            Toast.makeText(getApplicationContext(), String.format("%d %s polled", numFeedMessagesPolled,
+                                numFeedMessagesPolled == 1 ? "feed message" : "feed messages"), Toast.LENGTH_SHORT).show();
+
+                            RecyclerView rvwFeedMessages = findViewById(R.id.rvwFeedMessages);
+                            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                            rvwFeedMessages.setLayoutManager(layoutManager);
+
+                            RecyclerView.Adapter adapter = new FeedMessageRecyclerViewAdapter(feedMessages);
+                            rvwFeedMessages.setAdapter(adapter);
+
+//                            feedMessageListObserver = new ArrayListObserver(null, adapter);
+//                            for(FeedMessage feedMessage : feedMessages) {
+//                                feedMessage.addObserver(recipeListObserver);
+//                            }
+
+                            btnPollFeedMessages.setClickable(true);
+                        }
+                    });
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            btnPollFeedMessages.setClickable(true);
         }
     }
 

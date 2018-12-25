@@ -1,25 +1,15 @@
 package app.cooka.cookapp.view;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.support.annotation.Nullable;
-import android.support.v4.content.res.ResourcesCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,7 +80,7 @@ public class CategoryGridViewAdapter extends BaseAdapter {
         private static int unbrowsableTextColor = Color.rgb(0xc6, 0xd6, 0x4d); //Color.rgb(0x66, 0x8c, 0x51);
 
         public CategoryGridViewItem(View view) {
-            tvwCategoryName = view.findViewById(R.id.tvwCategoryName);
+            tvwCategoryName = view.findViewById(R.id.tvwMessageHeading);
             ivwCategoryImage = view.findViewById(R.id.ivwCategoryImage);
             ivwOverlay = view.findViewById(R.id.ivwOverlay);
         }

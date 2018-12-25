@@ -8,9 +8,9 @@
     android:paddingBottom="8dp">
 
     <ImageView
-        android:id="@+id/ivwImage"
+        android:id="@+id/ivwRecipeMainImage"
         android:layout_width="0dp"
-        android:layout_height="210dp"
+        android:layout_height="209dp"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
@@ -20,11 +20,12 @@
         tools:srcCompat="@tools:sample/backgrounds/scenic[5]" />
 
     <TextView
-        android:id="@+id/tvwMessageHeading"
+        android:id="@+id/tvwCategoryName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:elevation="2dp"
-        android:fontFamily="@font/catamaran_bold"
+        android:fontFamily="@font/roboto_condensed_regular"
         android:includeFontPadding="false"
         android:lineSpacingMultiplier="0.75"
         android:paddingTop="6dp"
@@ -32,16 +33,17 @@
         android:text="Feine Kartoffelsuppe mit Croûtons und Baconaroma"
         android:textAllCaps="true"
         android:textAppearance="@style/TextAppearance.AppCompat"
-        android:textSize="16sp"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivwImage" />
+        app:layout_constraintTop_toBottomOf="@+id/ivwRecipeMainImage" />
 
     <TextView
         android:id="@+id/tvwCreatorUserName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:elevation="2dp"
+        android:fontFamily="@font/roboto_condensed_regular"
         android:includeFontPadding="false"
         android:text="\@username"
         android:textAppearance="@style/TextAppearance.AppCompat"
@@ -50,7 +52,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvwMessageHeading" />
+        app:layout_constraintTop_toBottomOf="@+id/tvwCategoryName" />
 
     <TextView
         android:id="@+id/tvwPinnedCount"
@@ -62,8 +64,8 @@
         android:textAllCaps="true"
         android:textColor="#ffffff"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivwImage"
-        app:layout_constraintEnd_toEndOf="@+id/ivwImage" />
+        app:layout_constraintBottom_toBottomOf="@+id/ivwRecipeMainImage"
+        app:layout_constraintEnd_toEndOf="@+id/ivwRecipeMainImage" />
 
     <TextView
         android:id="@+id/tvwCookedCount"
@@ -78,6 +80,6 @@
         android:textAllCaps="true"
         android:textColor="#ffffff"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@+id/ivwImage"
+        app:layout_constraintBottom_toBottomOf="@+id/tvwPinnedCount"
         app:layout_constraintEnd_toStartOf="@+id/tvwPinnedCount" />
 </android.support.constraint.ConstraintLayout>

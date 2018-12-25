@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#ffffff"
+    android:elevation="2dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/ivwUserProfileImage"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="8dp"
+        android:scaleType="centerCrop"
+        app:civ_border_color="#ffffff"
+        app:civ_border_width="0dp"
+        app:layout_constraintDimensionRatio="w,1:1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <ImageView
+        android:id="@+id/ivwContextMenuButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_menu_overflow_24dp" />
+
+    <TextView
+        android:id="@+id/tvwUserName"
+        android:layout_width="0dp"
+        android:layout_height="22dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
+        android:fontFamily="@font/roboto_medium"
+        android:gravity="bottom"
+        android:text="sepplroy"
+        android:textColor="#222222"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/tvwUserDescription"
+        app:layout_constraintEnd_toStartOf="@+id/ivwContextMenuButton"
+        app:layout_constraintStart_toEndOf="@+id/ivwUserProfileImage"
+        app:layout_constraintTop_toTopOf="@+id/ivwUserProfileImage" />
+
+    <TextView
+        android:id="@+id/tvwUserDescription"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="@font/roboto_condensed_regular"
+        android:gravity="top"
+        android:text="coffee inspector"
+        android:textColor="#888888"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/ivwUserProfileImage"
+        app:layout_constraintEnd_toEndOf="@+id/tvwUserName"
+        app:layout_constraintStart_toStartOf="@+id/tvwUserName"
+        app:layout_constraintTop_toBottomOf="@+id/tvwUserName" />
+
+    <ImageView
+        android:id="@+id/ivwImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:adjustViewBounds="true"
+        android:elevation="4dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toTopOf="@+id/tvwMessageHeading"
+        app:layout_constraintDimensionRatio="w,2:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivwUserProfileImage"
+        tools:srcCompat="@tools:sample/backgrounds/scenic[14]" />
+
+    <TextView
+        android:id="@+id/tvwMessageHeading"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="16dp"
+        android:elevation="2dp"
+        android:fontFamily="@font/roboto"
+        android:includeFontPadding="false"
+        android:lineSpacingMultiplier="1"
+        android:paddingTop="6dp"
+        android:paddingBottom="0dp"
+        android:text="is now following @jamieoliver"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textColor="#333333"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivwImage" />
+
+    <TextView
+        android:id="@+id/tvwMessageDateTime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:elevation="2dp"
+        android:fontFamily="@font/roboto_condensed_regular"
+        android:includeFontPadding="false"
+        android:text="3 hours ago"
+        android:textAllCaps="true"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textColor="#999999"
+        android:textSize="11sp"
+        app:layout_constraintEnd_toEndOf="@+id/tvwMessageHeading"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/tvwMessageHeading"
+        app:layout_constraintTop_toBottomOf="@+id/tvwMessageHeading" />
+
+    <ImageView
+        android:id="@+id/ivwBottomDivider"
+        android:layout_width="0dp"
+        android:layout_height="12dp"
+        android:layout_marginTop="12dp"
+        android:background="#eeeeee"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvwMessageDateTime" />
+
+</android.support.constraint.ConstraintLayout>
