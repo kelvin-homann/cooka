@@ -78,7 +78,7 @@
                     android:lineSpacingExtra="14sp"
                     android:text="@string/profile_name"
                     android:textAlignment="center"
-                    android:textColor="@color/White"
+                    android:textColor="@android:color/white"
                     android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.501"

@@ -14,8 +14,11 @@ import app.cooka.cookapp.GlideApp;
 import app.cooka.cookapp.R;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+
+
 public class FolloweeListViewAdapter extends RecyclerView.Adapter<FolloweeListViewAdapter.ViewHolder>{
 
+    // Data for Followees
     private ArrayList<String> mUsernames = new ArrayList<>();
     private ArrayList<String> mNames = new ArrayList<>();
     private ArrayList<String> mImages = new ArrayList<>();
@@ -32,23 +35,26 @@ public class FolloweeListViewAdapter extends RecyclerView.Adapter<FolloweeListVi
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.custom_listview_followees, viewGroup, false);
-        ViewHolder holder = new ViewHolder(view);
-        return holder;
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+        // Loads the ProfilePicture
         GlideApp.with(mContext)
                 .asBitmap()
                 .load(mImages.get(i))
-                .placeholder(R.drawable.default_avatar)
-                .error(R.drawable.default_avatar)
+                .placeholder(R.drawable.ic_account_circle_24dp)
+                .error(R.drawable.ic_account_circle_24dp)
                 .into(viewHolder.imageView);
 
+        // Set full name
         viewHolder.name.setText(mNames.get(i));
+        // Set username
         viewHolder.userName.setText(mUsernames.get(i));
 
         viewHolder.parentLayout.setOnClickListener(new View.OnClickListener(){
+            // TODO redirect to Profile
             @Override
             public void onClick(View view){
                 Toast.makeText(mContext, "Click", Toast.LENGTH_LONG).show();

@@ -12,20 +12,20 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import app.cooka.cookapp.GlideApp;
 import app.cooka.cookapp.R;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ProfileFeedAdapter extends RecyclerView.Adapter<ProfileFeedAdapter.ViewHolder>{
+public class ProfileFeedViewAdapter extends RecyclerView.Adapter<ProfileFeedViewAdapter.ViewHolder>{
 
-    private ArrayList<String> mUsernames = new ArrayList<>();
+    // Data for Feed
+//    private ArrayList<String> mUsernames = new ArrayList<>();
     private ArrayList<String> mNames = new ArrayList<>();
-    private ArrayList<String> mImages = new ArrayList<>();
+//    private ArrayList<String> mImages = new ArrayList<>();
     private Context mContext;
 
-    public ProfileFeedAdapter(ArrayList<String> userNames, ArrayList<String> images, ArrayList<String> names, Context context){
-        mUsernames = userNames;
-        mImages = images;
+    public ProfileFeedViewAdapter(/*ArrayList<String> userNames, ArrayList<String> images,*/ ArrayList<String> names, Context context){
+//        mUsernames = userNames;
+//        mImages = images;
         mNames = names;
         mContext = context;
     }
@@ -40,15 +40,15 @@ public class ProfileFeedAdapter extends RecyclerView.Adapter<ProfileFeedAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        GlideApp.with(mContext)
-                .asBitmap()
-                .load(mImages.get(i))
-                .placeholder(R.drawable.default_avatar)
-                .error(R.drawable.default_avatar)
-                .into(viewHolder.imageView);
+//        GlideApp.with(mContext)
+//                .asBitmap()
+//                .load(mImages.get(i))
+//                .placeholder(R.drawable.default_avatar)
+//                .error(R.drawable.default_avatar)
+//                .into(viewHolder.imageView);
 
         viewHolder.name.setText(mNames.get(i));
-        viewHolder.userName.setText(mUsernames.get(i));
+//        viewHolder.userName.setText(mUsernames.get(i));
 
         viewHolder.parentLayout.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -71,10 +71,10 @@ public class ProfileFeedAdapter extends RecyclerView.Adapter<ProfileFeedAdapter.
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.ivwFolloweeCustomListProfileAvatar);
-            name = itemView.findViewById(R.id.tvwNameFollowee);
+            imageView = itemView.findViewById(R.id.ivwCustomFeedAvatar);
+            name = itemView.findViewById(R.id.tvwFeedNames);
             userName = itemView.findViewById(R.id.tvwUsernameFollowee);
-            parentLayout = itemView.findViewById(R.id.customListViewFollowee);
+            parentLayout = itemView.findViewById(R.id.customListViewFeed);
         }
     }
 }

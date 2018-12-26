@@ -1,13 +1,11 @@
 package app.cooka.cookapp;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import app.cooka.cookapp.view.LoadingScreenView;
-
-
+/**
+ * This activity exists to hold the different profile related fragments
+ */
 public class ProfileActivity extends AppCompatActivity {
 
     @Override

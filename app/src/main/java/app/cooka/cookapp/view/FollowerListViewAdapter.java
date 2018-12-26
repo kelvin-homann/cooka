@@ -19,6 +19,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FollowerListViewAdapter extends RecyclerView.Adapter<FollowerListViewAdapter.ViewHolder> {
 
+    // Data for Followers
     private ArrayList<String> mUsernames = new ArrayList<>();
     private ArrayList<String> mNames = new ArrayList<>();
     private ArrayList<String> mImages = new ArrayList<>();
@@ -41,15 +42,19 @@ public class FollowerListViewAdapter extends RecyclerView.Adapter<FollowerListVi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+        // Load Profile Picture
         Glide.with(mContext)
                 .asBitmap()
                 .load(mImages.get(i))
                 .into(viewHolder.imageView);
 
+        // Load Full Name
         viewHolder.name.setText(mNames.get(i));
+        // Load Username
         viewHolder.userName.setText(mUsernames.get(i));
 
         viewHolder.parentLayout.setOnClickListener(new View.OnClickListener(){
+            // TODO redirect to user profile
             @Override
             public void onClick(View view){
                 Toast.makeText(mContext, "Click", Toast.LENGTH_LONG).show();

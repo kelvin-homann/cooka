@@ -23,7 +23,7 @@ import app.cooka.cookapp.view.LoadingScreenView;
 
 
 public class FolloweeFragment extends Fragment {
-
+    // Data for the Followees
     ArrayList<String> names = new ArrayList<String>();
     ArrayList<String> usernames = new ArrayList<String>();
     ArrayList<String> imgUrls = new ArrayList<String>();
@@ -35,40 +35,109 @@ public class FolloweeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        initList();
+        View view = inflater.inflate(R.layout.fragment_followee, container, false);
+
+        // Initialisation of the FolloweeList
+//        initList(25);
+        initListDummy();
+
+        // LoadingScreen
         LoadingScreenView loadingScreen = new LoadingScreenView(getContext());
-        View v = inflater.inflate(R.layout.fragment_followee, container, false);
-        loadingScreen = v.findViewById(R.id.loading_screen);
+        loadingScreen = view.findViewById(R.id.loading_screen);
         loadingScreen.setVisible(true);
 
-        RecyclerView recyclerView = v.findViewById(R.id.lsvFollowee);
-        FolloweeListViewAdapter adapter = new FolloweeListViewAdapter(usernames, imgUrls, names, getActivity());
+        // Init RecyclerView to Display Followee List
+        RecyclerView recyclerView = view.findViewById(R.id.lsvFollowee);
+        FolloweeListViewAdapter adapter = new FolloweeListViewAdapter(usernames, imgUrls, names, getContext());
         recyclerView.setAdapter(adapter);
+        recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        final TextView followerNr = v.findViewById(R.id.tvwFolloweeNr);
+        // ViewHolder for the Followee count
+        final TextView followeeNr = view.findViewById(R.id.tvwFolloweeNr);
 
+        // new initalisation of the LoadingScreenView to be used in @Override Method
         final LoadingScreenView finalLoadingScreen = loadingScreen;
+
+        // Get followeenr
         User.Factory.selectUser(getActivity(),25, new IResultCallback<User>() {
             @Override
             public void onSucceeded(User result) {
                 if (result != null){
                     String followerNrText = getString(R.string.headertextnr_follower, result.getFolloweeCount());
-                    followerNr.setText(followerNrText);
+                    followeeNr.setText(followerNrText);
                     finalLoadingScreen.setVisible(false);
                 }
             }
         });
-        return v;
+        return view;
     }
 
-    private void initList(){
+    private void initListDummy(){
+        names.clear();
+        usernames.clear();
+        imgUrls.clear();
+        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
+        names.add("Kalle");
+        usernames.add("@Kalle");
+        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
+        names.add("Kalle");
+        usernames.add("@Kalle");
+        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
+        names.add("Kalle");
+        usernames.add("@Kalle");
+        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
+        names.add("Kalle");
+        usernames.add("@Kalle");
+        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
+        names.add("Kalle");
+        usernames.add("@Kalle");
+        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
+        names.add("Kalle");
+        usernames.add("@Kalle");
+        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
+        names.add("Kalle");
+        usernames.add("@Kalle");
+        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
+        names.add("Kalle");
+        usernames.add("@Kalle");
+        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
+        names.add("Kalle");
+        usernames.add("@Kalle");
+        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
+        names.add("Kalle");
+        usernames.add("@Kalle");
+        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
+        names.add("Kalle");
+        usernames.add("@Kalle");
+        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
+        names.add("Kalle");
+        usernames.add("@Kalle");
+        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
+        names.add("Kalle");
+        usernames.add("@Kalle");
+        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
+        names.add("Kalle");
+        usernames.add("@Kalle");
+    }
+
+    /**
+     * Fills the ArrayLists needed to Display the FolloweeList
+     * Loops through the returned ArrayList and adds the Data from
+     * the Object to the correct ArrayLists in this class
+     * @param userid userId to set the User
+     *
+     */
+    private void initList(int userid){
         User.Factory.selectUserFollowees(getActivity(), 25, new IResultCallback<List<Followee>>() {
             @Override
             public void onSucceeded(List<Followee> result) {
+                // Clearing the ArrayLists
                 names.clear();
                 usernames.clear();
                 imgUrls.clear();
+
+                Log.d("COOKALOG", String.valueOf(result.size()));
                 for (int i = 0; i < result.size();i++){
                     if (result.get(i).getType() == EFolloweeType.user){
                         names.add(result.get(i).getDetail1() + " " + result.get(i).getDetail2());
