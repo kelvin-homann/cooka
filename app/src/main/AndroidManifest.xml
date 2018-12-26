@@ -31,9 +31,9 @@
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name" />
-        <activity
-            android:name="com.facebook.CustomTabActivity">
-            <!--android:exported="true">-->
+        <activity android:name="com.facebook.CustomTabActivity">
+
+            <!-- android:exported="true"> -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -44,8 +44,8 @@
         <!-- Main activity -->
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:exported="true">
+            android:exported="true"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -54,18 +54,18 @@
 
             <meta-data
                 android:name="android.app.shortcuts"
-                android:resource="@xml/shortcuts"/>
+                android:resource="@xml/shortcuts" />
         </activity>
 
         <!-- Facebook Login test activity -->
-        <activity android:name=".FacebookLogInTestActivity"></activity>
+        <activity android:name=".FacebookLogInTestActivity" />
 
         <!-- Database test activity -->
         <activity
             android:name=".DatabaseTestActivity"
+            android:exported="true"
             android:label="@string/database_test"
-            android:windowSoftInputMode="stateHidden"
-            android:exported="true">
+            android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
@@ -74,15 +74,18 @@
         <!-- Profile activity -->
         <activity
             android:name=".ProfileActivity"
-            android:exported="true"/>
+            android:exported="true" />
 
         <!-- Cook mode activity -->
         <activity
             android:name=".CookModeActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="true"
             android:label="@string/title_activity_cook_mode"
-            android:theme="@style/FullscreenTheme"
-            android:exported="true"></activity>
+            android:theme="@style/FullscreenTheme" />
+        <activity
+            android:name=".RecipeEditorActivity"
+            android:exported="true"/>
     </application>
 
 </manifest>
