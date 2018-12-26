@@ -3,6 +3,7 @@ package app.cooka.cookapp.model;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 import rx.Observable;
@@ -123,6 +124,34 @@ public interface IDatabase {
     /*  ************************************************************************************  *
      *  RECIPE METHODS
      *  ************************************************************************************  */
+
+    @POST("database.php?action=createRecipe")
+    Call<CreateRecipeResult> createRecipe(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Query("languageId") long languageId,
+        @Body Recipe recipe
+    );
+
+    @POST("database.php?action=selectRecipe")
+    Observable<Recipe> selectRecipe(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Query("languageId") long languageId,
+        @Query("recipeId") long recipeId
+    );
+
+    @POST("database.php?action=selectRecipe")
+    Observable<Recipe> selectRecipe(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Query("languageId") long languageId,
+        @Query("recipeId") long recipeId,
+        @Query("numCategoriesRequested") int numCategoriesRequested,
+        @Query("numTagsRequested") int numTagsRequested,
+        @Query("numRecipeStepsRequested") int numRecipeStepsRequested,
+        @Query("numRecipeRatingsRequested") int numRecipeRatingsRequested
+    );
 
     @POST("database.php?action=selectRecipes")
     Observable<List<Recipe>> selectRecipes(

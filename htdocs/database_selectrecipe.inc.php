@@ -20,25 +20,26 @@
     $recipeId = $_getpost['recipeId'];
     $userId = $_getpost['userId'];
     $accessToken = $_getpost['accessToken'];
-    $includeCategories = false;
-    $includeTags = false;
-    $includeSteps = false;
-    $includeRatings = false;
+    $numCategoriesRequested = -1;
+    $numTagsRequested = -1;
+    $numRecipeStepsRequested = -1;
+    $numRecipeRatingsRequested = 0;
     $recipe = null;
     $sqlqueries = array();
 
-    if(isset($_getpost['includeCategories']) && $_getpost['includeCategories'] == 'true')
-        $includeCategories = true;
-    if(isset($_getpost['includeTags']) && $_getpost['includeTags'] == 'true')
-        $includeTags = true;
-    if(isset($_getpost['includeSteps']) && $_getpost['includeSteps'] == 'true')
-        $includeSteps = true;
-    if(isset($_getpost['includeRatings']) && $_getpost['includeRatings'] == 'true')
-        $includeRatings = true;
+    if(isset($_getpost['numCategoriesRequested']) && is_numeric($_getpost['numCategoriesRequested']))
+        $numCategoriesRequested = $_getpost['numCategoriesRequested'];
+    if(isset($_getpost['numTagsRequested']) && is_numeric($_getpost['numTagsRequested']))
+        $numTagsRequested = $_getpost['numTagsRequested'];
+    if(isset($_getpost['numRecipeStepsRequested']) && is_numeric($_getpost['numRecipeStepsRequested']))
+        $numRecipeStepsRequested = $_getpost['numRecipeStepsRequested'];
+    if(isset($_getpost['numRecipeRatingsRequested']) && is_numeric($_getpost['numRecipeRatingsRequested']))
+        $numRecipeRatingsRequested = $_getpost['numRecipeRatingsRequested'];
     
     try {
         // select the actual recipe
-        $selectRecipeSql = "select recipe.recipeId, titleString.originalValue as title, descriptionString.originalValue as description, " .
+        $selectRecipeSql = "select recipe.recipeId, titleString.originalLanguageId as languageId, " .
+            "titleString.originalValue as title, descriptionString.originalValue as description, " .
             // "titleString.originalLanguageId as languageId, languageNameString.originalValue as languageName, " .
             "recipe.originalRecipeId, originalRecipeTitleString.originalValue as originalTitle, usr.userId as creatorId, " .
             "usr.userName as creatorName, recipe.mainImageId, mainImage.imageFileName as mainImageFileName, recipe.mainCategoryId, " .
@@ -81,6 +82,7 @@
         foreach($recipeRows as $recipeRow) {
             $recipe = array(
                 'recipeId' => isset($recipeRow['recipeId']) ? $recipeRow['recipeId'] : 0, 
+                'languageId' => isset($recipeRow['languageId']) ? $recipeRow['languageId'] : 0, 
                 'title' => isset($recipeRow['title']) ? $recipeRow['title'] : "", 
                 'description' => isset($recipeRow['description']) ? $recipeRow['description'] : "", 
                 'originalRecipeId' => isset($recipeRow['originalRecipeId']) ? $recipeRow['originalRecipeId'] : 0, 
@@ -109,19 +111,25 @@
             );
 
             // query categories
-            if($includeCategories == true)
+            if($numCategoriesRequested != 0)
             {
-                $selectRecipeCategoriesSql = "select distinct category.categoryId, categoryNameString.originalValue as categoryName " .
+                $selectRecipeCategoriesSql = "select distinct category.categoryId, categoryNameString.originalValue as name " .
                     "from Recipes recipe " .
                     "left join RecipeCategories recipeCategory on recipeCategory.recipeId = ? " .
                     "left join Categories category on category.categoryId = recipeCategory.categoryId " .
-                    "left join Strings categoryNameString on categoryNameString.stringId = category.nameStringId";
+                    "left join Strings categoryNameString on categoryNameString.stringId = category.nameStringId " .
+                    "order by recipeCategory.categorizedDateTime desc";
+
+                if($numCategoriesRequested > 0)
+                    $selectRecipeCategoriesSql .= " limit ?";
 
                 if($debug == true)
                     $sqlqueries['selectRecipeCategoriesSql'] = $selectRecipeCategoriesSql;
 
                 $selectRecipeCategoriesStmt = $database->prepare($selectRecipeCategoriesSql);
                 $selectRecipeCategoriesStmt->bindValue(1, $recipeId, PDO::PARAM_INT);
+                if($numCategoriesRequested > 0)
+                    $selectRecipeCategoriesStmt->bindValue(2, $numCategoriesRequested, PDO::PARAM_INT);
                 $selectRecipeCategoriesStmt->execute();
                 $recipeCategoryRows = $selectRecipeCategoriesStmt->fetchAll(PDO::FETCH_ASSOC);
                 $categories = array();
@@ -129,27 +137,37 @@
                 foreach($recipeCategoryRows as $categoryRow) {
                     $category = array(
                         'categoryId' => isset($categoryRow['categoryId']) ? $categoryRow['categoryId'] : 0, 
-                        'categoryName' => isset($categoryRow['categoryName']) ? $categoryRow['categoryName'] : ""
+                        'name' => isset($categoryRow['name']) ? $categoryRow['name'] : ""
                     );
                     $categories[] = $category;
                 }
 
                 $recipe['categories'] = $categories;
             }
+            else
+                $recipe['categories'] = array();
+
+            $recipe['numCategoriesRequested'] = $numCategoriesRequested;
 
             // query tags
-            if($includeTags == true)
+            if($numTagsRequested != 0)
             {
-                $selectRecipeTagsSql = "select tag.tagId, tag.name as tagName " .
+                $selectRecipeTagsSql = "select tag.tagId, tag.name " .
                     "from Tags tag " .
-                    "left join RecipeTags recipeTag on recipeTag.tagId = tag.tagId " .
-                    "left join Recipes recipe on recipeTag.recipeId = recipe.recipeId and recipeTag.recipeId = ?";
+                    "right join RecipeTags recipeTag on recipeTag.tagId = tag.tagId and recipeTag.recipeId = ? " .
+                    "left join Recipes recipe on recipeTag.recipeId = recipe.recipeId " .
+                    "order by recipeTag.taggedDateTime desc";
+
+                if($numTagsRequested > 0)
+                    $selectRecipeTagsSql .= " limit ?";
 
                 if($debug == true)
                     $sqlqueries['selectRecipeTagsSql'] = $selectRecipeTagsSql;
 
                 $selectRecipeTagsStmt = $database->prepare($selectRecipeTagsSql);
                 $selectRecipeTagsStmt->bindValue(1, $recipeId, PDO::PARAM_INT);
+                if($numTagsRequested > 0)
+                    $selectRecipeTagsStmt->bindValue(2, $numTagsRequested, PDO::PARAM_INT);
                 $selectRecipeTagsStmt->execute();
                 $recipeTagRows = $selectRecipeTagsStmt->fetchAll(PDO::FETCH_ASSOC);
                 $tags = array();
@@ -157,16 +175,20 @@
                 foreach($recipeTagRows as $tagRow) {
                     $tag = array(
                         'tagId' => isset($tagRow['tagId']) ? $tagRow['tagId'] : 0, 
-                        'tagName' => isset($tagRow['tagName']) ? $tagRow['tagName'] : ""
+                        'name' => isset($tagRow['name']) ? $tagRow['name'] : ""
                     );
                     $tags[] = $tag;
                 }
 
                 $recipe['tags'] = $tags;
             }
+            else
+                $recipe['tags'] = array();
+
+            $recipe['numTagsRequested'] = $numTagsRequested;
 
             // query cooking steps
-            if($includeSteps == true)
+            if($numRecipeStepsRequested != 0)
             {
                 $selectRecipeStepsSql = "select recipeStep.recipeStepId, recipeStep.stepNumber, stepTitleString.originalValue as stepTitle, " .
                     "stepDescriptionString.originalValue as stepDescription " .
@@ -176,11 +198,16 @@
                     "where recipeStep.recipeId = ? " .
                     "order by recipeStep.stepNumber asc";
 
+                if($numRecipeStepsRequested > 0)
+                    $selectRecipeStepsSql .= " limit ?";
+
                 if($debug == true)
                     $sqlqueries['selectRecipeStepsSql'] = $selectRecipeStepsSql;
 
                 $selectRecipeStepsStmt = $database->prepare($selectRecipeStepsSql);
                 $selectRecipeStepsStmt->bindValue(1, $recipeId, PDO::PARAM_INT);
+                if($numRecipeStepsRequested > 0)
+                    $selectRecipeStepsStmt->bindValue(2, $numRecipeStepsRequested, PDO::PARAM_INT);
                 $selectRecipeStepsStmt->execute();
                 $recipeStepRows = $selectRecipeStepsStmt->fetchAll(PDO::FETCH_ASSOC);
                 $steps = array();
@@ -232,12 +259,23 @@
                         $stepIngredients[] = $stepIngredient;
                     }
 
-                    $step['ingredients'] = $stepIngredients;
+                    $step['recipeStepIngredients'] = $stepIngredients;
                     $steps[] = $step;
                 }
 
-                $recipe['steps'] = $steps;
+                $recipe['recipeSteps'] = $steps;
             }
+            else
+                $recipe['recipeSteps'] = array();
+
+            $recipe['numRecipeStepsRequested'] = $numRecipeStepsRequested;
+
+            // query ratings
+            if($numRatingsRequested != 0) {
+            }
+
+            $recipe['recipeRatings'] = array();
+            $recipe['numRecipeRatingsRequested'] = $numRecipeRatingsRequested;
 
             break; // there should be only one recipe row for a given recipeId anyway
         }

@@ -35,7 +35,8 @@
     
     try {
         // select the actual recipes
-        $selectRecipesSql = "select recipe.recipeId, titleString.originalValue as title, recipe.creatorId, " .
+        $selectRecipesSql = "select recipe.recipeId, titleString.originalLanguageId as languageId, " .
+            "titleString.originalValue as title, recipe.creatorId, " .
             "usr.userName as creatorName, recipe.mainImageId, mainImage.imageFileName as mainImageFileName, " .
             "recipe.mainCategoryId, categoryNameString.originalValue as mainCategoryName, recipe.difficultyType, " .
             "recipe.preparationTime, recipe.cookedCount, recipe.pinnedCount, recipe.variedCount, recipe.rating, " .
@@ -207,6 +208,7 @@
         foreach($recipeRows as $recipeRow) {
             $recipe = array(
                 'recipeId' => isset($recipeRow['recipeId']) ? $recipeRow['recipeId'] : 0, 
+                'languageId' => isset($recipeRow['languageId']) ? $recipeRow['languageId'] : 0, 
                 'title' => isset($recipeRow['title']) ? $recipeRow['title'] : "", 
                 'creatorId' => isset($recipeRow['creatorId']) ? $recipeRow['creatorId'] : 0, 
                 'creatorName' => isset($recipeRow['creatorName']) ? $recipeRow['creatorName'] : "", 

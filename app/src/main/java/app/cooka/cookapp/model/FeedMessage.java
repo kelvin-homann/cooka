@@ -91,7 +91,7 @@ public class FeedMessage {
         /**
          * Selects all feed messages of the user specified by the user id and allows for filtering
          * by specifying what message types shall be selected.
-         * @param context the Android context to the run the method on.
+         * @param context the Android context to run this method in.
          * @param ofuserId the identifier of the user to create the feed for (i.e. the user whose
          *      own actions and whose followee's actions shall be selected).
          * @param selectedTypes a bit mask used to combine different feed message types; uses the

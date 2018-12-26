@@ -28,19 +28,15 @@ public class DatabaseClient {
 
     private SharedPreferences sharedPreferences;
     private IDatabase databaseInterface;
-    private Category.JsonAdapter categoryJsonAdapter;
-    private Recipe.JsonAdapter recipeJsonAdapter;
     private boolean jsonPrettyPrint = false;
 
     private DatabaseClient(Context context) {
 
         sharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
-        categoryJsonAdapter = new Category.JsonAdapter(Settings.getInstance().getCurrentLanguageId());
-        recipeJsonAdapter = new Recipe.JsonAdapter();
 
         final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(Category.class, categoryJsonAdapter)
-            .registerTypeAdapter(Recipe.class, new Recipe.CompactFormatAdapter())
+            .registerTypeAdapter(Category.class, new Category.JsonAdapter())
+            .registerTypeAdapter(Recipe.class, new Recipe.JsonAdapter())
             .registerTypeAdapter(FeedMessage.class, new FeedMessage.JsonAdapter())
             .setDateFormat("yyyy-MM-dd HH:mm:ss")
             .setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
@@ -70,17 +66,18 @@ public class DatabaseClient {
      *  ************************************************************************************  */
 
     /**
-     * Selects all feed messages of the user specified by the user id and allows for filtering by
-     * specifying what message types shall be selected.
+     * Selects all {@linkplain FeedMessage}s of the user specified by the user id and allows for
+     * filtering by specifying what message types shall be selected.
      * @param ofuserId the identifier of the user to create the feed for (i.e. the user whose own
      *      actions and whose followee's actions shall be selected).
      * @param selectedTypes a bit mask used to combine different feed message types; uses the
-     *      integer constants FeedMessage.ST_* that can be combined with bitwise-or.
-     *      For example: FeedMessage.ST_CREATED_RECIPE | ST_COOKED_RECIPE
+     *      integer constants {@linkplain FeedMessage}.ST_* that can be combined with bitwise-or.
+     *      For example: {@code FeedMessage.ST_CREATED_RECIPE | FeedMessage.ST_COOKED_RECIPE}
      * @param onlyOwnMessages whether or not only messages where ofuserId is the performer of the
      *      described action shall be selected (i.e. omits messages of users that ofuserId is
      *      following).
-     * @return a list of FeedMessages within an Observable; null if an error occurred
+     * @return a list of {@linkplain FeedMessage}s within an {@linkplain Observable};
+     *      null if an error occurred.
      */
     public Observable<List<FeedMessage>> selectFeedMessages(final long ofuserId,
         final int selectedTypes, final boolean onlyOwnMessages)
@@ -93,19 +90,20 @@ public class DatabaseClient {
     }
 
     /**
-     * Selects all feed messages of the user specified by the user id and allows for filtering by
-     * specifying what message types shall be selected.
+     * Selects all {@linkplain FeedMessage}s of the user specified by the user id and allows for
+     * filtering by specifying what message types shall be selected.
      * @param ofuserId the identifier of the user to create the feed for (i.e. the user whose own
      *      actions and whose followee's actions shall be selected).
      * @param selectedTypes a bit mask used to combine different feed message types; uses the
-     *      integer constants FeedMessage.ST_* that can be combined with bitwise-or.
-     *      For example: FeedMessage.ST_CREATED_RECIPE | ST_COOKED_RECIPE
+     *      integer constants {@linkplain FeedMessage}.ST_* that can be combined with bitwise-or.
+     *      For example: {@code FeedMessage.ST_CREATED_RECIPE | FeedMessage.ST_COOKED_RECIPE}
      * @param onlyOwnMessages whether or not only messages where ofuserId is the performer of the
      *      described action shall be selected (i.e. omits messages of users that ofuserId is
      *      following).
      * @param startDate the latest date of which to select feed messages from (used for pagination
      *      and as a natural offset to the result set).
-     * @return a list of FeedMessages within an Observable; null if an error occurred
+     * @return a list of {@linkplain FeedMessage}s within an {@linkplain Observable};
+     *      null if an error occurred.
      */
     public Observable<List<FeedMessage>> selectFeedMessages(final long ofuserId,
         final int selectedTypes, final boolean onlyOwnMessages, final String startDate)
@@ -208,7 +206,7 @@ public class DatabaseClient {
      * @param userName the user name to check if exists.
      * @param emailAddress the e-mail address to check if exists.
      * @param pullSalt pulls the salt and the user ID if set to true.
-     * @return a ExistsUserResult object within a Call to it; null if an error occurred
+     * @return a {@linkplain ExistsUserResult} object within a Call to it; null if an error occurred
      */
     public Call<ExistsUserResult> existsUser(final String loginId, final String userName,
         final String emailAddress, boolean pullSalt)
@@ -219,18 +217,19 @@ public class DatabaseClient {
 
     /**
      * Authenticates a user identified by either a user ID, user name or e-mail address and returns
-     *      a AuthenticateUserResult that holds detailed information about the authentication
-     *      result.
-     * @param userId the user ID of the user to be authenticated (first priority)
-     * @param userName the user name of the user to be authenticated (second priority)
-     * @param emailAddress the e-mail address of the user to be authenticated (third priority)
+     *      a {@linkplain AuthenticateUserResult} that holds detailed information about the
+     *      authentication result.
+     * @param userId the user ID of the user to be authenticated (first priority).
+     * @param userName the user name of the user to be authenticated (second priority).
+     * @param emailAddress the e-mail address of the user to be authenticated (third priority).
      * @param hashedPassword the hashed password to check against the hashed password stored in the
-     *      database
+     *      database.
      * @param accessToken the new access token that will be used to create a new login in case of a
-     *      successful authentication
+     *      successful authentication.
      * @param deviceId an identifier of the device the login takes place. This is used to
-     *      distinguish between different logins and to remove obsolete ones
-     * @return a AuthenticateUserResult object within a Call to it; null if an error occurred
+     *      distinguish between different logins and to remove obsolete ones.
+     * @return a {@linkplain AuthenticateUserResult} object within a Call to it; null if an error
+     *      occurred.
      */
     public Call<AuthenticateUserResult> authenticateUser(final long userId, final String userName,
         final String emailAddress, final String hashedPassword, final String accessToken,
@@ -242,8 +241,9 @@ public class DatabaseClient {
 
     /**
      * Refreshes the current login that is associated with the stored user ID and access token.
-     * @return a RefreshLoginResult object within a Call to it; null if an error occurred or there
-     *      is currently no user logged in (user ID or access token in shared preferences not set)
+     * @return a {@linkplain RefreshLoginResult} object within a Call to it; null if an error
+     *      occurred or there is currently no user logged in (user ID or access token in shared
+     *      preferences not set).
      */
     public Call<RefreshLoginResult> refreshLogin() {
 
@@ -261,8 +261,9 @@ public class DatabaseClient {
 
     /**
      * Invalidates the current login that is associated with the stored user ID and access token.
-     * @return a InvalidateLoginResult object within a Call to it; null if an error occurred or
-     *      there is currently no user logged in (user ID or access token in shared prefs not set)
+     * @return a {@linkplain InvalidateLoginResult} object within a Call to it; null if an error
+     *      occurred or there is currently no user logged in (user ID or access token in shared
+     *      preferences not set).
      */
     public Call<InvalidateLoginResult> invalidateLogin() {
 
@@ -282,6 +283,40 @@ public class DatabaseClient {
     /*  ************************************************************************************  *
      *  RECIPE METHODS
      *  ************************************************************************************  */
+
+    /**
+     * Inserts a new {@linkplain Recipe} from a given recipe draft object into the database.
+     * @param recipe the {@linkplain Recipe} draft object to be inserted into the database.
+     * @return a {@linkplain CreateRecipeResult} within a {@linkplain Call} to it; null if an
+     *      error occurred.
+     */
+    public Call<CreateRecipeResult> createRecipe(final Recipe recipe) {
+
+        final long userId = sharedPreferences.getLong(LoginManager.SPK_USERID, 0L);
+        final String accessToken = sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, "");
+        final long languageId = sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L);
+        return databaseInterface.createRecipe(userId, accessToken, languageId, recipe);
+    }
+
+    public Observable<Recipe> selectRecipe(final long recipeId) {
+
+        final long userId = sharedPreferences.getLong(LoginManager.SPK_USERID, 0L);
+        final String accessToken = sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, "");
+        final long languageId = sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L);
+        return databaseInterface.selectRecipe(userId, accessToken, languageId, recipeId);
+    }
+
+    public Observable<Recipe> selectRecipe(final long recipeId, final int numCategoriesRequested,
+        final int numTagsRequested, final int numRecipeStepsRequested, final int
+        numRecipeRatingsRequested)
+    {
+        final long userId = sharedPreferences.getLong(LoginManager.SPK_USERID, 0L);
+        final String accessToken = sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, "");
+        final long languageId = sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L);
+        return databaseInterface.selectRecipe(userId, accessToken, languageId, recipeId,
+            numCategoriesRequested, numTagsRequested, numRecipeStepsRequested,
+            numRecipeRatingsRequested);
+    }
 
     public Observable<List<Recipe>> selectRecipes(final List<String> filterKeys,
         final List<String> sortKeys, final long limit, final long offset)
@@ -320,8 +355,8 @@ public class DatabaseClient {
             sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
             sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""), languageId, category.getCategoryId(),
             (changeState & Category.CHANGED_PARENTCATEGORYID) == Category.CHANGED_PARENTCATEGORYID ? category.getParentCategoryId() : 0,
-            (changeState & Category.CHANGED_NAME) == Category.CHANGED_NAME ? category.getName(languageId) : null,
-            (changeState & Category.CHANGED_DESCRIPTION) == Category.CHANGED_DESCRIPTION ? category.getDescription(languageId) : null,
+            (changeState & Category.CHANGED_NAME) == Category.CHANGED_NAME ? category.getName() : null,
+            (changeState & Category.CHANGED_DESCRIPTION) == Category.CHANGED_DESCRIPTION ? category.getDescription() : null,
             (changeState & Category.CHANGED_IMAGEID) == Category.CHANGED_IMAGEID ? category.getImageId() : 0,
             (changeState & Category.CHANGED_IMAGEFILENAME) == Category.CHANGED_IMAGEFILENAME ? category.getImageFileName() : null,
             (changeState & Category.CHANGED_SORTPREFIX) == Category.CHANGED_SORTPREFIX ? category.getSortPrefix() : null,

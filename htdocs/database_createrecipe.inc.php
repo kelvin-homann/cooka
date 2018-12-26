@@ -13,35 +13,32 @@
 
     $userId = $_getpost['userId'];
     $accessToken = $_getpost['accessToken'];
-    $tags = $_getpost['tags'];
-    $recipeId = null;
+    $json = file_get_contents('php://input');
+    $recipe = json_decode($json, true);
 
-    $othertags = array(
-        'nudeln', 
-        'pasta', 
-        'italienisch', 
-        'tomaten'
-    );
+    if(!isset($json)) {
+        returnError(5, "the request did not contain a valid json body", 0, "");
+        return;
+    }
+    
+    file_put_contents('./json/createRecipe_' . date("Ynj") . '.json', $json . PHP_EOL);
 
-    // echo base64_encode(serialize($othertags));
-    // exit();
-
-    if(isset($_getpost['tags'])) {
-        $tags_array = @unserialize(base64_decode($_getpost['tags']));
-
-        if($tags_array) {
-            echo 'unserialized tags:<br />';
-            foreach($tags_array as $tag) {
-                echo '<li>#' . $tag . '</li>';
-            }
-        }
+    if(!isset($recipe)) {
+        returnError(6, "the request did not contain a valid recipe object", 0, "");
+        return;
     }
 
-    exit();
+    // echo json_encode($result, JSON_PRETTY_PRINT);
+    // return;
     
     try {
+        // start transaction block
+        $database->beginTransaction();
+
         // insert the actual recipe
-        $insertRecipeSql = "";
+        $insertRecipeSql = "insert into Recipes (";
+
+        // iterate over recipe array and check what keys are set
 
         // build params map
         $insertRecipeParams = array(
@@ -49,29 +46,29 @@
             2 => array($accessToken, PDO::PARAM_STR),
         );
 
-        // ...
+        $insertedRecipeId = 0;
+
+        $result = array(
+            'result' => 1,
+            'recipeId' => $insertedRecipeId,
+        );
     }
     catch(PDOException $e) {
         // rollback uncommited changes
+        $database->rollBack();
         $array = array(
-            'errcode' => 5,
+            'errcode' => 7,
             'pdo.code' => $e->getCode(), 
             'pdo.message' => $e->getMessage(), 
         );
         returnErrorArray($array);
         exit();
     }
-
-    // build return data
-
-    $data = array(
-        'recipe' => $recipe,
-    );
+    finally {
+        // commit changes to database and end transaction block
+        $database->commit();
+    }
 
     // encode and return json
-
-    $jsonstring = json_encode($data, JSON_PRETTY_PRINT);
-
-    header('Content-Type: application/json');
-    echo $jsonstring;
+    echo json_encode($result, JSON_PRETTY_PRINT);
 ?>

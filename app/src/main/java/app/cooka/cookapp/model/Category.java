@@ -41,27 +41,32 @@ public class Category extends Observable {
     private boolean committed = false;
 
     private final long categoryId;
+    private long languageId;
     private long parentCategoryId;
-    private Map<Long, String> name;
-    private Map<Long, String> description;
+    private String name;
+    private String description;
     private long imageId;
     private String imageFileName;
     private Bitmap image;
     private String sortPrefix;
     private boolean browsable;
 
-    private Category(final long categoryId, long parentCategoryId, String name, String description,
-        long languageId, long imageId, String imageFileName, String sortPrefix, boolean browsable)
+    public Category(final long categoryId, long languageId, String name) {
+
+        this.categoryId = categoryId;
+        this.languageId = languageId;
+        this.name = name;
+    }
+
+    private Category(final long categoryId, long languageId, long parentCategoryId, String name,
+        String description, long imageId, String imageFileName, String sortPrefix, boolean browsable)
     {
         this.categoryId = categoryId;
+        this.languageId = languageId;
         this.parentCategoryId = parentCategoryId;
-        this.name = new TreeMap<>();
-        this.name.put(languageId, name);
-        this.description = new TreeMap<>();
-        this.description.put(languageId, description);
+        this.name = name;
+        this.description = description;
         this.imageId = imageId;
-
-        Log.d(LOGTAG, String.format("set category name \"%s\"", name));
 
         setImageFileName(imageFileName);
 
@@ -113,23 +118,23 @@ public class Category extends Observable {
         notifyObservers();
     }
 
-    public String getName(long languageId) {
-        return name.containsKey(languageId) ? name.get(languageId) : null;
+    public String getName() {
+        return name;
     }
 
-    public void setName(String name, long languageId) {
-        this.name.put(languageId, name);
+    public void setName(String name) {
+        this.name = name;
         changeState |= CHANGED_NAME;
         setChanged();
         notifyObservers();
     }
 
-    public String getDescription(long languageId) {
-        return description.containsKey(languageId) ? description.get(languageId) : null;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDescription(String description, long languageId) {
-        this.description.put(languageId, description);
+    public void setDescription(String description) {
+        this.description = description;
         changeState |= CHANGED_DESCRIPTION;
         setChanged();
         notifyObservers();
@@ -251,12 +256,6 @@ public class Category extends Observable {
      */
     public static class JsonAdapter extends TypeAdapter<Category> {
 
-        private long languageId;
-
-        public JsonAdapter(long languageId) {
-            this.languageId = languageId;
-        }
-
         @Override
         public void write(JsonWriter out, Category category) throws IOException {
             out.beginObject();
@@ -264,14 +263,17 @@ public class Category extends Observable {
             out.name("categoryId");
             out.value(category.getCategoryId());
 
+            out.name("languageId");
+            out.value(category.languageId);
+
             out.name("parentCategoryId");
             out.value(category.getParentCategoryId());
 
             out.name("name");
-            out.value(category.getName(languageId));
+            out.value(category.getName());
 
             out.name("description");
-            out.value(category.getDescription(languageId));
+            out.value(category.getDescription());
 
             out.name("imageId");
             out.value(category.getImageId());
@@ -296,6 +298,9 @@ public class Category extends Observable {
             long categoryId = in.nextLong();
 
             in.nextName();
+            long languageId = in.nextLong();
+
+            in.nextName();
             long parentCategoryId = in.nextLong();
 
             in.nextName();
@@ -318,7 +323,7 @@ public class Category extends Observable {
 
             in.endObject();
 
-            return new Category(categoryId, parentCategoryId, name, description, languageId,
+            return new Category(categoryId, languageId, parentCategoryId, name, description,
                 imageId, imageFileName, sortPrefix, browsable);
         }
     }

@@ -27,6 +27,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.SSLContext;
@@ -40,11 +41,19 @@ import app.cooka.cookapp.login.ILogoutCallback;
 import app.cooka.cookapp.model.ArrayListObserver;
 import app.cooka.cookapp.model.AuthenticateUserResult;
 import app.cooka.cookapp.model.Category;
+import app.cooka.cookapp.model.CreateRecipeResult;
+import app.cooka.cookapp.model.EDifficultyType;
 import app.cooka.cookapp.model.ELinkedProfileType;
+import app.cooka.cookapp.model.EPublicationType;
 import app.cooka.cookapp.model.FeedMessage;
 import app.cooka.cookapp.model.Follower;
+import app.cooka.cookapp.model.ICreateRecipeCallback;
 import app.cooka.cookapp.model.Recipe;
+import app.cooka.cookapp.model.RecipeStep;
+import app.cooka.cookapp.model.RecipeStepIngredient;
+import app.cooka.cookapp.model.Tag;
 import app.cooka.cookapp.utils.SecurityUtils;
+import app.cooka.cookapp.utils.StringUtils;
 import app.cooka.cookapp.view.CategoryGridViewAdapter;
 import app.cooka.cookapp.view.CategoryListViewAdapter;
 import app.cooka.cookapp.model.CreateUserResult;
@@ -164,6 +173,8 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         findViewById(R.id.btnPollFeedMessages).setOnClickListener(this);
 
         databaseClient = DatabaseClient.Factory.getInstance(this);
+
+        createTestRecipe();
     }
 
     @Override
@@ -603,6 +614,89 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         catch(Exception e) {
             e.printStackTrace();
             btnPollFeedMessages.setClickable(true);
+        }
+    }
+
+    private void createTestRecipe() {
+
+        Recipe newRecipe = Recipe.Factory.createRecipeDraft(Settings.getInstance().getCurrentLanguageId());
+        newRecipe.setTitle("Kürbiscremesuppe mit Ingwer");
+        newRecipe.setDescription("Kürbissuppe ist eine meist gebundene Suppe mit Kürbis als Hauptzutat. In Varianten ist sie in vielen europäischen Ländern sowie den USA, anderen Teilen Amerikas und in Australien bekannt. Obwohl Kürbis als „Gesinde-Kost“ und auch als Schweinefutter verwendet wurde, gehörte Kürbissuppe mindestens seit dem 18. Jahrhundert auch zur bürgerlichen und herrschaftlichen Küche.");
+        newRecipe.setCreatorId(4);
+        newRecipe.setMainImageFileName("fca6fc21192a1e59d1322746291da79b.jpg");
+        newRecipe.setMainCategoryId(11);
+        newRecipe.setPublicationType(EPublicationType.PUBLIC);
+        newRecipe.setDifficultyType(EDifficultyType.SIMPLE);
+        newRecipe.setPreparationTime(30);
+
+        List<Tag> tags = new ArrayList<>();
+        tags.add(Tag.fromTagId(1));
+        tags.add(Tag.fromTagId(2));
+        newRecipe.setTags(tags);
+
+        List<RecipeStep> recipeSteps = new ArrayList<>();
+
+        // step 1
+        List<RecipeStepIngredient> recipeStep1Ingredients = new ArrayList<>();
+        recipeStep1Ingredients.add(RecipeStepIngredient.Factory.createRecipeStepIngredientDraft("Kürbis", null, 120f, null, "g", null));
+        RecipeStep step1 = RecipeStep.Factory.createRecipeStepDraft(1, "Kürbis vorbereiten", "Den Kürbis gut abspülen und halbieren. Kerne und das \"Stroh\" im Inneren entfernen und das Fruchtfleisch in grobe Stücke schneiden (Hokkaido-Kürbis braucht nicht geschält zu werden, andere Sorten besser schälen)",
+            recipeStep1Ingredients);
+        recipeSteps.add(step1);
+
+        // step 2
+        List<RecipeStepIngredient> recipeStep2Ingredients = new ArrayList<>();
+        recipeStep2Ingredients.add(RecipeStepIngredient.Factory.createRecipeStepIngredientDraft("Kartoffeln", null, 35f, null, "g", null));
+        recipeStep2Ingredients.add(RecipeStepIngredient.Factory.createRecipeStepIngredientDraft("Zwiebeln", null, 0.15f, null, "Stck", null));
+        recipeStep2Ingredients.add(RecipeStepIngredient.Factory.createRecipeStepIngredientDraft("Ingwer", null, 0.15f, null, "Stck", null));
+        RecipeStep step2 = RecipeStep.Factory.createRecipeStepDraft(2, "Gemüse in Würfel schneiden", "Kartoffeln schälen, abspülen und in Stücke schneiden. Zwiebel abziehen, Ingwer schälen und beides in kleine Würfel schneiden.",
+            recipeStep2Ingredients);
+        recipeSteps.add(step2);
+
+        // step 3
+        List<RecipeStepIngredient> recipeStep3Ingredients = new ArrayList<>();
+        recipeStep3Ingredients.add(RecipeStepIngredient.Factory.createRecipeStepIngredientDraft("Öl", null, 1, null, "EL", null));
+        recipeStep3Ingredients.add(RecipeStepIngredient.Factory.createRecipeStepIngredientDraft("Gemüsebrühe", null, 130, "Milliliter", "ml", null));
+        RecipeStep step3 = RecipeStep.Factory.createRecipeStepDraft(3, "Gemüse kochen", "Das Öl in einem großen Topf erhitzen und Kürbis, Kartoffeln, Zwiebel und Ingwer darin etwa 3 Minuten andünsten. Dann die Brühe dazugießen und etwa 20 Minuten kochen lassen, bis das Gemüse weich ist.",
+            recipeStep3Ingredients);
+        recipeSteps.add(step3);
+
+        // step 4
+        List<RecipeStepIngredient> recipeStep4Ingredients = new ArrayList<>();
+        recipeStep4Ingredients.add(RecipeStepIngredient.Factory.createRecipeStepIngredientDraft("Apfelkompott", null, 50f, null, "g", null));
+        recipeStep4Ingredients.add(RecipeStepIngredient.Factory.createRecipeStepIngredientDraft("Salz und Pfeffer", null, 0f, null, null, null));
+        RecipeStep step4 = RecipeStep.Factory.createRecipeStepDraft(4, "Pürieren und abschmecken", "Das Gemüse in der Brühe mit dem Stabmixer fein pürieren. Das Apfelkompott unterrühren und die Suppe mit Salz und Pfeffer abschmecken.",
+            recipeStep4Ingredients);
+        recipeSteps.add(step4);
+
+        // step 5
+        List<RecipeStepIngredient> recipeStep5Ingredients = new ArrayList<>();
+        recipeStep5Ingredients.add(RecipeStepIngredient.Factory.createRecipeStepIngredientDraft("Schlagsahne", null, 0.5f, null, "EL", null));
+        recipeStep5Ingredients.add(RecipeStepIngredient.Factory.createRecipeStepIngredientDraft("Pfeffer", null, 0f, null, null, null));
+        RecipeStep step5 = RecipeStep.Factory.createRecipeStepDraft(5, "Suppe servieren", "Zum Servieren die Suppe in Teller geben und etwas flüssige Sahne mit einem Löffel kreisförmig darauf verteilen. Etwas frisch gemahlenen Pfeffer darüber streuen.",
+            recipeStep5Ingredients);
+        recipeSteps.add(step5);
+
+        newRecipe.setRecipeSteps(recipeSteps);
+
+        try {
+            Recipe.Factory.submitRecipeDraft(getApplicationContext(), newRecipe,
+                new ICreateRecipeCallback() {
+                @Override
+                public void onSucceeded(CreateRecipeResult createRecipeResult,
+                    Recipe createdRecipe)
+                {
+                    Log.d(LOGTAG, String.format("result = %d; recipeId = %d",
+                        createRecipeResult.result, createRecipeResult.recipeId));
+                }
+
+                @Override
+                public void onFailed() {
+                    Log.e(LOGTAG, "submitRecipeDraft failed");
+                }
+            });
+        }
+        catch(Exception e) {
+            e.printStackTrace();
         }
     }
 

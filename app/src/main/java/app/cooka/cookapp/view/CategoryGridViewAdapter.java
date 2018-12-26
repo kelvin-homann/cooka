@@ -86,7 +86,7 @@ public class CategoryGridViewAdapter extends BaseAdapter {
         }
 
         public void setCategory(Category category) {
-            String categoryName = category.getName(Settings.Factory.getInstance().getCurrentLanguageId());
+            String categoryName = category.getName();
 //            if(!category.isBrowsable())
 //                categoryName += "*";
             tvwCategoryName.setText(categoryName);

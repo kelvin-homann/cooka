@@ -9,14 +9,19 @@ import android.util.Log;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -34,20 +39,22 @@ public class Recipe extends java.util.Observable {
 
     public static final int CHANGED_TITLE = 0x00000001;
     public static final int CHANGED_DESCRIPTION = 0x00000002;
-    public static final int CHANGED_MAINIMAGE = 0x00000004;
-    public static final int CHANGED_MAINCATEGORY = 0x00000008;
-    public static final int CHANGED_CATEGORIE = 0x00000010;
-    public static final int CHANGED_TAGS = 0x00000020;
-    public static final int CHANGED_PUBLICATIONTYPE = 0x00000040;
-    public static final int CHANGED_DIFFICULTYTYPE = 0x00000080;
-    public static final int CHANGED_PREPARATIONTIME = 0x00000100;
-    public static final int CHANGED_STEPS = 0x00000200;
+    public static final int CHANGED_CREATOR = 0x00000004;
+    public static final int CHANGED_MAINIMAGE = 0x00000008;
+    public static final int CHANGED_MAINCATEGORY = 0x00000010;
+    public static final int CHANGED_CATEGORIE = 0x00000020;
+    public static final int CHANGED_TAGS = 0x00000040;
+    public static final int CHANGED_PUBLICATIONTYPE = 0x00000080;
+    public static final int CHANGED_DIFFICULTYTYPE = 0x00000100;
+    public static final int CHANGED_PREPARATIONTIME = 0x00000200;
+    public static final int CHANGED_STEPS = 0x00000400;
     public static final int CHANGED_FORCE_UPDATE = 0xffffffff;
 
     private int changeState = 0;
     private boolean committed = false;
 
-    private final long recipeId;
+    private long recipeId;
+    private long languageId;
     private String title;
     private String description;
     private long originalRecipeId;
@@ -77,22 +84,31 @@ public class Recipe extends java.util.Observable {
     private Date lastModifiedDateTime;
     private Date lastCookedDateTime;
 
-    private Recipe(final long recipeId, String title, String description) {
+    private List<Category> categories;
+    private int numCategoriesRequested = -1;
+    private List<Tag> tags;
+    private int numTagsRequested = -1;
+    private List<RecipeStep> recipeSteps;
+    private int numRecipeStepsRequested = -1;
+
+    private Recipe(final long recipeId, long languageId, String title, String description) {
 
         this.recipeId = recipeId;
+        this.languageId = languageId;
         this.title = title;
         this.description = description;
     }
 
-    private Recipe(final long recipeId, String title, String description, long originalRecipeId,
-        String originalRecipeTitle, long creatorId, String creatorName, long mainImageId,
-        String mainImageFileName, long mainCategoryId, String mainCategoryName,
-        String publicationType, String difficultyType, int preparationTime,
-        int viewedCount, int cookedCount, int pinnedCount, int modifiedCount, int variedCount,
-        int sharedCount, float rating, String createdDateTime, String lastModifiedDateTime,
+    private Recipe(final long recipeId, long languageId, String title, String description,
+        long originalRecipeId, String originalRecipeTitle, long creatorId, String creatorName,
+        long mainImageId, String mainImageFileName, long mainCategoryId, String mainCategoryName,
+        String publicationType, String difficultyType, int preparationTime, int viewedCount,
+        int cookedCount, int pinnedCount, int modifiedCount, int variedCount, int sharedCount,
+        float rating, String createdDateTime, String lastModifiedDateTime,
         String lastCookedDateTime)
     {
         this.recipeId = recipeId;
+        this.languageId = languageId;
         this.title = title;
         this.description = description;
         this.originalRecipeId = originalRecipeId;
@@ -163,11 +179,13 @@ public class Recipe extends java.util.Observable {
         }
     }
 
-    private Recipe(final long recipeId, String title, long creatorId, String creatorName,
-        long mainImageId, String mainImageFileName, long mainCategoryId, String mainCategoryName,
-        String difficultyType, int preparationTime, int cookedCount, int pinnedCount, float rating)
+    private Recipe(final long recipeId, long languageId, String title, long creatorId,
+        String creatorName, long mainImageId, String mainImageFileName, long mainCategoryId,
+        String mainCategoryName, String difficultyType, int preparationTime, int cookedCount,
+        int pinnedCount, float rating)
     {
         this.recipeId = recipeId;
+        this.languageId = languageId;
         this.title = title;
         this.description = "";
         this.originalRecipeId = 0;
@@ -204,10 +222,154 @@ public class Recipe extends java.util.Observable {
         this.rating = rating;
     }
 
+    // only used for recipe draft creation by the Factory
+    private Recipe(long languageId) {
+
+        this.recipeId = -1;
+        this.languageId = languageId;
+    }
+
     /**
      * A recipe factory class that does recipe creation, selection and database serialization.
      */
     public static class Factory {
+
+        /**
+         * Creates a recipe draft and returns an empty recipe object to be filled with data by
+         * during the recipe creation process within the recipe editor.
+         * The filled object will then have to be passed to the
+         * {@linkplain Recipe.Factory#submitRecipeDraft(Context, Recipe, ICreateRecipeCallback)}
+         * method to be stored into the database.
+         * @return an empty recipe object for manual data fill.
+         */
+        public static Recipe createRecipeDraft(final long languageId) {
+
+            return new Recipe(languageId);
+        }
+
+        /**
+         * Submits a previously created recipe draft in form of a recipe object for insertion into
+         * the database. Only recipe objects created by the
+         * {@linkplain Factory#createRecipeDraft(long languageId)} method can be submitted for
+         * insertion.
+         * @param context the Android context to run this method in.
+         * @param recipeDraft the recipe object to be inserted into the database.
+         * @param createRecipeCallback the create recipe callback that will be called when the
+         *      insertion succeeded and that will be given the transformed recipe object that was
+         *      a draft instance previously.
+         * @throws Exception if the given recipe object is not a valid recipe draft object created
+         *      by the {@linkplain Factory#createRecipeDraft(long languageId)} method.
+         */
+        public static void submitRecipeDraft(final Context context, final Recipe
+            recipeDraft, final ICreateRecipeCallback createRecipeCallback)
+            throws Exception
+        {
+            if(createRecipeCallback == null) {
+                throw new NullPointerException("create recipe callback is null");
+            }
+            if(recipeDraft == null) {
+                throw new NullPointerException("recipe draft object is null");
+            }
+            if(recipeDraft.recipeId != -1) {
+                throw new Exception("the given recipe object is not a valid recipe draft object!");
+            }
+            DatabaseClient.Factory.getInstance(context)
+                .createRecipe(recipeDraft)
+                .enqueue(new Callback<CreateRecipeResult>() {
+                    @Override
+                    public void onResponse(Call<CreateRecipeResult> call, Response<CreateRecipeResult> response) {
+                        CreateRecipeResult createRecipeResult = response.body();
+                        if(createRecipeResult != null && createRecipeResult.result > 0) {
+                            recipeDraft.recipeId = createRecipeResult.recipeId;
+                            // todo: register new recipe at the update observer
+                            createRecipeCallback.onSucceeded(createRecipeResult, recipeDraft);
+                        }
+                        else {
+                            createRecipeCallback.onFailed();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<CreateRecipeResult> call, Throwable t) {
+                        Log.e(LOGTAG, "Recipe.Factory.submitRecipeDraft() failed");
+                        Log.e(LOGTAG, t.getMessage());
+                        createRecipeCallback.onFailed();
+                    }
+                });
+        }
+
+        /**
+         * Selects a recipe from the database given its recipe identifier.
+         * @param context the Android context to run this method in.
+         * @param recipeId the identifier of the recipe to be selected.
+         * @param selectRecipeCallback the select callback that will be called when the
+         *      selection succeeded and that will be given the recipe object.
+         * @return a subscription object to the select request; null if an error occurred.
+         */
+        public static Subscription selectRecipe(final Context context, final long recipeId,
+            final IResultCallback<Recipe> selectRecipeCallback)
+        {
+            if(selectRecipeCallback == null) {
+                throw new NullPointerException("select recipe callback is null");
+            }
+            return DatabaseClient.Factory.getInstance(context)
+                .selectRecipe(recipeId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Recipe>() {
+                    @Override public void onCompleted() {}
+                    @Override public void onError(Throwable e) {
+                        Log.e(LOGTAG, "Recipe.Factory.selectRecipes() failed");
+                        Log.e(LOGTAG, e.getMessage());
+                    }
+                    @Override public void onNext(Recipe recipe) {
+                        // todo: register recipe at the update observer
+                        selectRecipeCallback.onSucceeded(recipe);
+                    }
+                });
+        }
+
+        /**
+         * Selects a recipe from the database given its recipe identifier.
+         * @param context the Android context to run this method in.
+         * @param recipeId the identifier of the recipe to be selected.
+         * @param numCategoriesRequested the maximum number of categories associated with this
+         *      recipe to be fetched with the recipe.
+         * @param numTagsRequested the maximum number of tags that this recipe is tagged with to be
+         *      fetched with the recipe.
+         * @param numRecipeStepsRequested the maximum number of recipe steps to be fetched with the
+         *      recipe.
+         * @param numRecipeRatingsRequested the maximum number of recipe ratings to be fetched with
+         *      the recipe.
+         * @param selectRecipeCallback the select callback that will be called when the
+         *      selection succeeded and that will be given the recipe object.
+         * @return a subscription object to the select request; null if an error occurred.
+         */
+        public static Subscription selectRecipe(final Context context, final long recipeId,
+            final int numCategoriesRequested, final int numTagsRequested,
+            final int numRecipeStepsRequested, final int numRecipeRatingsRequested,
+            final IResultCallback<Recipe> selectRecipeCallback)
+        {
+            if(selectRecipeCallback == null) {
+                throw new NullPointerException("select recipe callback is null");
+            }
+            return DatabaseClient.Factory.getInstance(context)
+                .selectRecipe(recipeId, numCategoriesRequested, numTagsRequested,
+                    numRecipeStepsRequested, numRecipeRatingsRequested)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Recipe>() {
+                    @Override public void onCompleted() {}
+                    @Override public void onError(Throwable e) {
+                        Log.e(LOGTAG, "Recipe.Factory.selectRecipes() failed");
+                        Log.e(LOGTAG, e.getMessage());
+                    }
+                    @Override public void onNext(Recipe recipe) {
+                        // todo: register recipe at the update observer
+                        selectRecipeCallback.onSucceeded(recipe);
+                    }
+                });
+        }
 
         public static Subscription selectRecipes(final Context context, final List<String>
             filterKeys, final List<String> sortKeys, final long limit, final long offset,
@@ -227,7 +389,7 @@ public class Recipe extends java.util.Observable {
                         Log.e(LOGTAG, e.getMessage());
                     }
                     @Override public void onNext(List<Recipe> recipes) {
-                        // todo: register all users at the update observer
+                        // todo: register all recipes at the update observer
                         selectRecipesCallback.onSucceeded(recipes);
                     }
                 });
@@ -293,12 +455,23 @@ public class Recipe extends java.util.Observable {
         return originalRecipeId;
     }
 
+    public void setOriginalRecipeId(long originalRecipeId) {
+        this.originalRecipeId = originalRecipeId;
+    }
+
     public String getOriginalRecipeTitle() {
         return originalRecipeTitle;
     }
 
     public long getCreatorId() {
         return creatorId;
+    }
+
+    public void setCreatorId(long creatorId) {
+        this.creatorId = creatorId;
+        changeState |= CHANGED_CREATOR;
+        setChanged();
+        notifyObservers();
     }
 
     public String getCreatorName() {
@@ -320,7 +493,14 @@ public class Recipe extends java.util.Observable {
         return mainImageFileName;
     }
 
-    private void setMainImageFileName(String mainImageFileName) {
+    public void setMainImageFileName(String mainImageFileName) {
+        this.mainImageFileName = mainImageFileName;
+        changeState |= CHANGED_MAINIMAGE;
+        setChanged();
+        notifyObservers();
+    }
+
+    private void downloadMainImageFileName(String mainImageFileName) {
 
         if(this.mainImageFileName == null || this.mainImageFileName.compareTo(mainImageFileName) != 0) {
             this.mainImageFileName = mainImageFileName;
@@ -466,6 +646,42 @@ public class Recipe extends java.util.Observable {
         this.lastCookedDateTime = lastCookedDateTime;
     }
 
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
+    }
+
+    public int getNumCategoriesRequested() {
+        return numCategoriesRequested;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public int getNumTagsRequested() {
+        return numTagsRequested;
+    }
+
+    public List<RecipeStep> getRecipeSteps() {
+        return recipeSteps;
+    }
+
+    public void setRecipeSteps(List<RecipeStep> recipeSteps) {
+        this.recipeSteps = recipeSteps;
+    }
+
+    public int getNumRecipeStepsRequested() {
+        return numRecipeStepsRequested;
+    }
+
     /**
      * A simple asynchronous image download task.
      */
@@ -512,7 +728,173 @@ public class Recipe extends java.util.Observable {
     public static class JsonAdapter extends TypeAdapter<Recipe> {
 
         @Override
-        public void write(JsonWriter out, Recipe recipe) throws IOException {}
+        public void write(JsonWriter out, Recipe recipe) throws IOException {
+            out.beginObject();
+
+            out.name("recipeId");
+            out.value(recipe.recipeId);
+
+            out.name("languageId");
+            out.value(recipe.languageId);
+
+            out.name("title");
+            out.value(recipe.title);
+
+            out.name("description");
+            out.value(recipe.description);
+
+            out.name("originalRecipeId");
+            out.value(recipe.originalRecipeId);
+
+            out.name("originalRecipeTitle");
+            out.value(recipe.originalRecipeTitle);
+
+            out.name("creatorId");
+            out.value(recipe.creatorId);
+
+            out.name("creatorName");
+            out.value(recipe.creatorName);
+
+            out.name("mainImageId");
+            out.value(recipe.mainImageId);
+
+            out.name("mainImageFileName");
+            out.value(recipe.mainImageFileName);
+
+            out.name("mainCategoryId");
+            out.value(recipe.mainCategoryId);
+
+            out.name("mainCategoryName");
+            out.value(recipe.mainCategoryName);
+
+            out.name("publicationType");
+            out.value(recipe.publicationType.toString().toLowerCase());
+
+            out.name("difficultyType");
+            out.value(recipe.difficultyType.toString().toLowerCase());
+
+            out.name("preparationTime");
+            out.value(recipe.preparationTime);
+
+            if(recipe.viewedCount > 0) {
+                out.name("viewedCount");
+                out.value(recipe.viewedCount);
+            }
+
+            if(recipe.cookedCount > 0) {
+                out.name("cookedCount");
+                out.value(recipe.cookedCount);
+            }
+
+            if(recipe.pinnedCount > 0) {
+                out.name("pinnedCount");
+                out.value(recipe.pinnedCount);
+            }
+
+            if(recipe.modifiedCount > 0) {
+                out.name("modifiedCount");
+                out.value(recipe.modifiedCount);
+            }
+
+            if(recipe.variedCount > 0) {
+                out.name("variedCount");
+                out.value(recipe.variedCount);
+            }
+
+            if(recipe.sharedCount > 0) {
+                out.name("sharedCount");
+                out.value(recipe.sharedCount);
+            }
+
+            if(recipe.rating != 0f) {
+                out.name("rating");
+                out.value(recipe.rating);
+            }
+
+            if(recipe.createdDateTime != null) {
+                out.name("createdDateTime");
+                out.value(DatabaseClient.databaseDateFormat.format(recipe.createdDateTime));
+            }
+
+            if(recipe.lastModifiedDateTime != null) {
+                out.name("lastModifiedDateTime");
+                out.value(DatabaseClient.databaseDateFormat.format(recipe.lastModifiedDateTime));
+            }
+
+            if(recipe.lastCookedDateTime != null) {
+                out.name("lastCookedDateTime");
+                out.value(DatabaseClient.databaseDateFormat.format(recipe.lastCookedDateTime));
+            }
+
+            out.name("categories");
+            out.beginArray();
+            if(recipe.categories != null) for(Category category : recipe.categories) {
+                out.beginObject();
+                out.name("categoryId");
+                out.value(category.getCategoryId());
+                out.name("name");
+                out.value(category.getName());
+                out.endObject();
+            }
+            out.endArray();
+
+            out.name("tags");
+            out.beginArray();
+            if(recipe.tags != null) for(Tag tag : recipe.tags) {
+                out.beginObject();
+                out.name("tagId");
+                out.value(tag.getTagId());
+                out.name("name");
+                out.value(tag.getName());
+                out.endObject();
+            }
+            out.endArray();
+
+            out.name("recipeSteps");
+            out.beginArray();
+            if(recipe.recipeSteps != null) for(RecipeStep recipeStep : recipe.recipeSteps) {
+                out.beginObject();
+                out.name("recipeStepId");
+                out.value(recipeStep.getRecipeStepId());
+                out.name("stepNumber");
+                out.value(recipeStep.getStepNumber());
+                out.name("stepTitle");
+                out.value(recipeStep.getStepTitle());
+                out.name("stepDescription");
+                out.value(recipeStep.getStepDescription());
+
+                out.name("recipeStepIngredients");
+                out.beginArray();
+                List<RecipeStepIngredient> recipeStepIngredients = recipeStep.getRecipeStepIngredients();
+                if(recipeStepIngredients != null)
+                for(RecipeStepIngredient recipeStepIngredient : recipeStepIngredients) {
+                    out.beginObject();
+                    out.name("ingredientId");
+                    out.value(recipeStepIngredient.getIngredientId());
+                    out.name("ingredientName");
+                    out.value(recipeStepIngredient.getIngredientName());
+                    out.name("ingredientDescription");
+                    out.value(recipeStepIngredient.getIngredientDescription());
+                    out.name("ingredientAmount");
+                    out.value(recipeStepIngredient.getIngredientAmount());
+                    out.name("unitTypeId");
+                    out.value(recipeStepIngredient.getUnitTypeId());
+                    out.name("unitTypeName");
+                    out.value(recipeStepIngredient.getUnitTypeName());
+                    out.name("unitTypeAbbreviation");
+                    out.value(recipeStepIngredient.getUnitTypeAbbreviation());
+                    out.name("customUnit");
+                    out.value(recipeStepIngredient.getCustomUnit());
+                    out.endObject(); // recipeStepIngredient
+                }
+                out.endArray(); // recipeStepIngredients
+
+                out.endObject(); // recipeStep
+            }
+            out.endArray(); // recipeSteps
+
+            out.endObject(); // recipe
+        }
 
         @Override
         public Recipe read(JsonReader in) throws IOException {
@@ -520,6 +902,9 @@ public class Recipe extends java.util.Observable {
 
             in.nextName();
             final long recipeId = in.nextLong();
+
+            in.nextName();
+            final long languageId = in.nextLong();
 
             in.nextName();
             String title = in.nextString();
@@ -590,13 +975,149 @@ public class Recipe extends java.util.Observable {
             in.nextName();
             String lastCookedDateTime = in.nextString();
 
+            // categories
+            in.nextName();
+            in.beginArray();
+            List<Category> categories = new ArrayList<>();
+            while(in.hasNext()) {
+                JsonToken categoryToken = in.peek();
+                if(categoryToken == JsonToken.END_ARRAY)
+                    break;
+
+                in.beginObject();
+                in.nextName();
+                final long categoryId = in.nextLong();
+                in.nextName();
+                String categoryName = in.nextString();
+                in.endObject();
+
+                categories.add(new Category(categoryId, languageId, categoryName));
+            }
+            in.endArray();
+
+            in.nextName();
+            int numCategoriesRequested = in.nextInt();
+
+            // tags
+            in.nextName();
+            in.beginArray();
+            List<Tag> tags = new ArrayList<>();
+            while(in.hasNext()) {
+                JsonToken tagToken = in.peek();
+                if(tagToken == JsonToken.END_ARRAY)
+                    break;
+
+                in.beginObject();
+                in.nextName();
+                final long tagId = in.nextLong();
+                in.nextName();
+                String tagName = in.nextString();
+                in.endObject();
+
+                tags.add(Tag.Factory.createTag(tagId, tagName));
+            }
+            in.endArray();
+
+            in.nextName();
+            int numTagsRequested = in.nextInt();
+
+            // steps
+            in.nextName();
+            in.beginArray();
+            List<RecipeStep> recipeSteps = new ArrayList<>();
+            while(in.hasNext()) {
+                JsonToken rsToken = in.peek();
+                if(rsToken == JsonToken.END_ARRAY)
+                    break;
+
+                in.beginObject();
+                in.nextName();
+                final long recipeStepId = in.nextLong();
+                in.nextName();
+                int stepNumber = in.nextInt();
+                in.nextName();
+                String stepTitle = in.nextString();
+                in.nextName();
+                String stepDescription = in.nextString();
+
+                // ingredients
+                in.nextName();
+                in.beginArray();
+                List<RecipeStepIngredient> recipeStepIngredients = new ArrayList<>();
+                while(in.hasNext()) {
+                    JsonToken rsiToken = in.peek();
+                    if(rsiToken == JsonToken.END_ARRAY)
+                        break;
+
+                    in.beginObject();
+                    in.nextName();
+                    final long ingredientId = in.nextLong();
+                    in.nextName();
+                    String ingredientName = in.nextString();
+                    in.nextName();
+                    String ingredientDescription = in.nextString();
+                    in.nextName();
+                    float ingredientAmount = (float)in.nextDouble();
+                    in.nextName();
+                    final long unitTypeId = in.nextLong();
+                    in.nextName();
+                    String unitTypeName = in.nextString();
+                    in.nextName();
+                    String unitTypeAbbreviation = in.nextString();
+                    in.nextName();
+                    String customUnit = in.nextString();
+                    in.endObject();
+
+                    recipeStepIngredients.add(RecipeStepIngredient.Factory
+                        .createRecipeStepIngredient(ingredientId, ingredientName,
+                            ingredientDescription, ingredientAmount, unitTypeId, unitTypeName,
+                            unitTypeAbbreviation, customUnit));
+                }
+                in.endArray();
+                in.endObject();
+
+                RecipeStep newRecipeStep = RecipeStep.Factory.createRecipeStep(recipeStepId, stepNumber, stepTitle,
+                    stepDescription, recipeStepIngredients);
+
+                recipeSteps.add(newRecipeStep);
+            }
+            in.endArray();
+
+            in.nextName();
+            int numRecipeStepsRequested = in.nextInt();
+
+            // ratings
+            in.nextName();
+            in.beginArray();
+            //List<Rating> ratings = new ArrayList<>();
+            while(in.hasNext()) {
+                JsonToken categoryToken = in.peek();
+                if(categoryToken == JsonToken.END_ARRAY)
+                    break;
+            }
+            in.endArray();
+
+            in.nextName();
+            int numRecipeRatingsRequested = in.nextInt();
+
             in.endObject();
 
-            return new Recipe(recipeId, title, description, originalRecipeId, originalRecipeTitle,
-                creatorId, creatorName, mainImageId, mainImageFileName, mainCategoryId,
-                mainCategoryName, publicationType, difficultyType, preparationTime, viewedCount,
-                cookedCount, pinnedCount, modifiedCount, variedCount, sharedCount, rating,
-                createdDateTime, lastModifiedDateTime, lastCookedDateTime);
+            Recipe newRecipe = new Recipe(recipeId, languageId, title, description, originalRecipeId,
+                originalRecipeTitle, creatorId, creatorName, mainImageId, mainImageFileName,
+                mainCategoryId, mainCategoryName, publicationType, difficultyType, preparationTime,
+                viewedCount, cookedCount, pinnedCount, modifiedCount, variedCount, sharedCount,
+                rating, createdDateTime, lastModifiedDateTime, lastCookedDateTime);
+
+            newRecipe.categories = categories;
+            newRecipe.numCategoriesRequested = numCategoriesRequested;
+
+            newRecipe.tags = tags;
+            newRecipe.numTagsRequested = numTagsRequested;
+
+            newRecipe.recipeSteps = recipeSteps;
+            newRecipe.numRecipeStepsRequested = numRecipeStepsRequested;
+
+            return newRecipe;
         }
     }
 
@@ -615,6 +1136,9 @@ public class Recipe extends java.util.Observable {
 
             in.nextName();
             final long recipeId = in.nextLong();
+
+            in.nextName();
+            final long languageId = in.nextLong();
 
             in.nextName();
             String title = in.nextString();
@@ -654,7 +1178,7 @@ public class Recipe extends java.util.Observable {
 
             in.endObject();
 
-            return new Recipe(recipeId, title, creatorId, creatorName, mainImageId,
+            return new Recipe(recipeId, languageId, title, creatorId, creatorName, mainImageId,
                 mainImageFileName, mainCategoryId, mainCategoryName, difficultyType,
                 preparationTime, cookedCount, pinnedCount, rating);
         }
