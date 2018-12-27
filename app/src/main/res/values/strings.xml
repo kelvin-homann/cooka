@@ -49,12 +49,15 @@
     <string name="days_ago">%1$d days ago</string>
     <string name="weeks_ago">%1$d weeks ago</string>
     <string name="years_ago">%1$d years ago</string>
+
+    <!-- Feed: time ago static plural strings -->
     <!-- Feed: time ago static singular strings -->
     <string name="one_minute_ago">1 minute ago</string>
     <string name="one_hour_ago">1 hour ago</string>
     <string name="one_day_ago">1 day ago</string>
     <string name="one_week_ago">1 week ago</string>
     <string name="one_year_ago">1 year ago</string>
+
     <!-- Feed: time ago plurals -->
     <plurals name="minutes_ago_plural">
         <item quantity="one">1 minute ago</item>
@@ -76,7 +79,18 @@
         <item quantity="one">1 year ago</item>
         <item quantity="other">%d years ago</item>
     </plurals>
+
     <!-- Feed: activity messages not leading with user name -->
+    <string name="is_now_following_user">is now following <a href="">@%1$s</a></string>
+    <string name="is_now_following_tag">is now following <a href="">#%1$s</a></string>
+    <string name="is_now_following_collection">is now following <a href="">%1$s</a></string>
+    <string name="created_recipe">created recipe <a href="">%1$s</a></string>
+    <string name="modified_recipe">modified recipe <a href="">%1$s</a></string>
+    <string name="cooked_recipe">cooked recipe <a href="">%1$s</a></string>
+    <string name="created_collection">created collection <a href="">%1$s</a></string>
+    <string name="added_recipe_to_collection">added a recipe to <a href="">%1$s</a></string>
+    <string name="added_image_to_recipe">added an image to recipe <a href="">%1$s</a></string>
+
     <string name="feed_message_and">and</string>
     <string name="is_now_following_user">is now following <a href="%2$s">@%1$s</a></string>
     <string name="is_now_following_users">is now following </string>
@@ -105,6 +119,16 @@
     <string name="added_recipe_to_collection">added a recipe to <a href="%2$s">%1$s</a></string>
     <string name="added_image_to_recipe">added an image to recipe <a href="%2$s">%1$s</a></string>
     <!-- Feed: activity messages leading with user name -->
+    <string name="username_is_now_following_user">%1$s is now following <a href="">@%2$s</a></string>
+    <string name="username_is_now_following_tag">%1$s is now following <a href="">#%2$s</a></string>
+    <string name="username_is_now_following_collection">%1$s is now following <a href="">%2$s</a></string>
+    <string name="username_created_recipe">%1$s created recipe <a href="">%2$s</a></string>
+    <string name="username_modified_recipe">%1$s modified recipe <a href="">%2$s</a></string>
+    <string name="username_cooked_recipe">%1$s cooked recipe <a href="">%2$s</a></string>
+    <string name="username_created_collection">%1$s created collection <a href="">%2$s</a></string>
+    <string name="username_added_recipe_to_collection">%1$s added a recipe to <a href="">%2$s</a></string>
+    <string name="username_added_image_to_recipe">%1$s added an image to recipe <a href="">%2$s</a></string>
+
     <string name="username_is_now_following_user">%1$s is now following <a href="%3$s">@%2$s</a></string>
     <string name="username_is_now_following_users">%1$s is now following </string>
     <string name="username_is_now_following_user_and_user">%1$s is now following <a href="%3$s">@%2$s</a> and <a href="%5$s">@%4$s</a></string>
