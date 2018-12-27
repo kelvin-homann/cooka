@@ -12,22 +12,19 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import app.cooka.cookapp.GlideApp;
 import app.cooka.cookapp.R;
+import app.cooka.cookapp.model.EFolloweeType;
+import app.cooka.cookapp.model.Followee;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
 
 public class FolloweeListViewAdapter extends RecyclerView.Adapter<FolloweeListViewAdapter.ViewHolder>{
-
     // Data for Followees
-    private ArrayList<String> mUsernames = new ArrayList<>();
-    private ArrayList<String> mNames = new ArrayList<>();
-    private ArrayList<String> mImages = new ArrayList<>();
+    private ArrayList<Followee> mFollowees;
     private Context mContext;
 
-    public FolloweeListViewAdapter(ArrayList<String> userNames, ArrayList<String> images, ArrayList<String> names, Context context){
-        mUsernames = userNames;
-        mImages = images;
-        mNames = names;
+    public FolloweeListViewAdapter(ArrayList<Followee> followees , Context context){
+        mFollowees = followees;
         mContext = context;
     }
 
@@ -40,18 +37,53 @@ public class FolloweeListViewAdapter extends RecyclerView.Adapter<FolloweeListVi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        // Loads the ProfilePicture
-        GlideApp.with(mContext)
-                .asBitmap()
-                .load(mImages.get(i))
-                .placeholder(R.drawable.ic_account_circle_24dp)
-                .error(R.drawable.ic_account_circle_24dp)
-                .into(viewHolder.imageView);
+        if (mFollowees.get(i).getType() == EFolloweeType.user){
+            // Loads the ProfilePicture
+            if (mFollowees.get(i).getImageId() != 0){
+                GlideApp.with(mContext)
+                        .asBitmap()
+                        .load("https://www.sebastianzander.de/cooka/img/" + mFollowees.get(i).getImageFileName())
+                        .placeholder(R.drawable.ic_account_circle_24dp)
+                        .error(R.drawable.ic_account_circle_24dp)
+                        .into(viewHolder.imageView);
+            }
 
-        // Set full name
-        viewHolder.name.setText(mNames.get(i));
-        // Set username
-        viewHolder.userName.setText(mUsernames.get(i));
+            // Set full name
+            viewHolder.name.setText(mFollowees.get(i).getDetail1() + " " + mFollowees.get(i).getDetail2()); // TODO Replace with getFullName
+            // Set username
+            viewHolder.userName.setText("@" + mFollowees.get(i).getDisplayName());
+        }
+        else if (mFollowees.get(i).getType() == EFolloweeType.collection){
+            // Loads the ProfilePicture
+            if (mFollowees.get(i).getImageId() != 0){
+                GlideApp.with(mContext)
+                        .asBitmap()
+                        .load("https://www.sebastianzander.de/cooka/img/" + mFollowees.get(i).getImageFileName())
+                        .placeholder(R.drawable.ic_account_circle_24dp)
+                        .error(R.drawable.ic_account_circle_24dp)
+                        .into(viewHolder.imageView);
+            }
+
+            // Set full name
+            viewHolder.name.setText("#" + mFollowees.get(i).getDisplayName());
+            // Set username
+            viewHolder.userName.setText(null);
+        }
+        else if (mFollowees.get(i).getType() == EFolloweeType.tag){
+            // Loads the ProfilePicture
+            if (mFollowees.get(i).getImageId() != 0){
+                GlideApp.with(mContext)
+                        .asBitmap()
+                        .load("https://www.sebastianzander.de/cooka/img/" + mFollowees.get(i).getImageFileName())
+                        .placeholder(R.drawable.ic_account_circle_24dp)
+                        .error(R.drawable.ic_account_circle_24dp)
+                        .into(viewHolder.imageView);
+            }
+            // Set full name
+            viewHolder.name.setText("#" + mFollowees.get(i).getDisplayName());
+            // Set username
+            viewHolder.userName.setText(null);
+        }
 
         viewHolder.parentLayout.setOnClickListener(new View.OnClickListener(){
             // TODO redirect to Profile
@@ -65,7 +97,7 @@ public class FolloweeListViewAdapter extends RecyclerView.Adapter<FolloweeListVi
 
     @Override
     public int getItemCount() {
-        return mNames.size();
+        return mFollowees.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{

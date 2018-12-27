@@ -1,6 +1,5 @@
 package app.cooka.cookapp;
 
-
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,6 +7,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -25,8 +26,8 @@ import com.bumptech.glide.request.target.Target;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import app.cooka.cookapp.login.LoginManager;
 import app.cooka.cookapp.model.FeedMessage;
 import app.cooka.cookapp.model.IResultCallback;
 import app.cooka.cookapp.model.User;
@@ -35,16 +36,16 @@ import app.cooka.cookapp.view.ProfileFeedViewAdapter;
 
 public class ProfileFragment extends Fragment {
     // Data for the Feed
-    ArrayList<String> feedNames = new ArrayList<String>();
-    ArrayList<String> feedMessage = new ArrayList<String>();
-    ArrayList<String> feedUsernames = new ArrayList<String>();
-    ArrayList<String> feedUserImgUrls = new ArrayList<String>();
-    ArrayList<String> feedObj1name = new ArrayList<String>();
-    ArrayList<String> feedObj1ImgUrls = new ArrayList<String>();
+    ArrayList<FeedMessage> feed = new ArrayList<FeedMessage>();
 
     // Fragments for the Follower and Followee lists
     private FollowerFragment followerFragment;
     private FolloweeFragment followeeFragment;
+
+    RecyclerView rvwFeed;
+    ProfileFeedViewAdapter feedListAdapter;
+    LoadingScreenView loadingScreen;
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -56,16 +57,21 @@ public class ProfileFragment extends Fragment {
         followeeFragment = new FolloweeFragment();
 
         // Loading Screen
-        LoadingScreenView loadingScreen = new LoadingScreenView(getContext());
+        loadingScreen = new LoadingScreenView(getContext());
         loadingScreen = view.findViewById(R.id.loading_screen);
         loadingScreen.setVisible(true);
 
         // RecyclerView of the Feed
-        RecyclerView recyclerView = view.findViewById(R.id.rvwProfileFeed);
-        ProfileFeedViewAdapter adapter = new ProfileFeedViewAdapter(feedNames, getActivity());
-        recyclerView.setAdapter(adapter);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        rvwFeed = view.findViewById(R.id.rvwProfileFeed);
+        feedListAdapter = new ProfileFeedViewAdapter(feed, getContext());
+        rvwFeed.setAdapter(feedListAdapter);
+        rvwFeed.setHasFixedSize(true);
+        rvwFeed.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        // Setting divider between Feed items
+        DividerItemDecoration itemDecorator = new DividerItemDecoration(Objects.requireNonNull(getContext()), DividerItemDecoration.VERTICAL);
+        itemDecorator.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(getContext(), R.drawable.feed_divider)));
+        rvwFeed.addItemDecoration(itemDecorator);
 
         // ViewHolders for the Profile
         final TextView profileFullname = view.findViewById(R.id.tvwName);
@@ -76,12 +82,6 @@ public class ProfileFragment extends Fragment {
         final TextView profileFollowingNr = view.findViewById(R.id.tvwFollowingnr);
         final ImageView profileAvatar = view.findViewById(R.id.ivwProfilePicFollower);
         final CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.ctlProfileBar);
-
-        // Database Connection
-//        LoginManager.Factory.getInstance(getActivity());
-
-        // new initalisation of the LoadingScreenView to be used in @Override Method
-        final LoadingScreenView finalLoadingScreen = loadingScreen;
 
         // selectUser-Data to Display on Profile
         User.Factory.selectUser(getActivity(),25, new IResultCallback<User>() {
@@ -119,7 +119,7 @@ public class ProfileFragment extends Fragment {
                                     @Override
                                     public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
                                         // Disable LoadingScreen once Profile Picture is loaded
-                                        finalLoadingScreen.setVisible(false);
+                                        loadingScreen.setVisible(false);
                                         return false;
                                     }
                                 })
@@ -170,9 +170,11 @@ public class ProfileFragment extends Fragment {
         FeedMessage.Factory.selectFeedMessages(getContext(), userId, FeedMessage.ST_ALL, true, new IResultCallback<List<FeedMessage>>() {
             @Override
             public void onSucceeded(List<FeedMessage> result) {
-                for (int i = 0; i < result.size(); i++) {
-                    feedNames.add(result.get(i).getUserName());
-                }
+                feed.clear();
+
+                feed.addAll(result);
+
+                feedListAdapter.notifyDataSetChanged();
             }
         });
     }

@@ -14,21 +14,19 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
+import app.cooka.cookapp.GlideApp;
 import app.cooka.cookapp.R;
+import app.cooka.cookapp.model.Followee;
+import app.cooka.cookapp.model.Follower;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FollowerListViewAdapter extends RecyclerView.Adapter<FollowerListViewAdapter.ViewHolder> {
-
     // Data for Followers
-    private ArrayList<String> mUsernames = new ArrayList<>();
-    private ArrayList<String> mNames = new ArrayList<>();
-    private ArrayList<String> mImages = new ArrayList<>();
+    private ArrayList<Follower> mFollowers;
     private Context mContext;
 
-    public FollowerListViewAdapter(ArrayList<String> userNames, ArrayList<String> images, ArrayList<String> names, Context context){
-        mUsernames = userNames;
-        mImages = images;
-        mNames = names;
+    public FollowerListViewAdapter(ArrayList<Follower> followers, Context context){
+        mFollowers = followers;
         mContext = context;
     }
 
@@ -42,16 +40,19 @@ public class FollowerListViewAdapter extends RecyclerView.Adapter<FollowerListVi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        // Load Profile Picture
-        Glide.with(mContext)
-                .asBitmap()
-                .load(mImages.get(i))
-                .into(viewHolder.imageView);
+        if (mFollowers.get(i).getProfileImageId() != 0){
+            GlideApp.with(mContext)
+                    .asBitmap()
+                    .load("https://www.sebastianzander.de/cooka/img/" + mFollowers.get(i).getProfileImageFileName())
+                    .placeholder(R.drawable.ic_account_circle_24dp)
+                    .error(R.drawable.ic_account_circle_24dp)
+                    .into(viewHolder.imageView);
+        }
 
-        // Load Full Name
-        viewHolder.name.setText(mNames.get(i));
-        // Load Username
-        viewHolder.userName.setText(mUsernames.get(i));
+        // Set full name
+        viewHolder.name.setText(mFollowers.get(i).getFirstName() + " " + mFollowers.get(i).getLastName()); // TODO Replace with getFullName
+        // Set username
+        viewHolder.userName.setText("@" + mFollowers.get(i).getUserName());
 
         viewHolder.parentLayout.setOnClickListener(new View.OnClickListener(){
             // TODO redirect to user profile
@@ -64,7 +65,7 @@ public class FollowerListViewAdapter extends RecyclerView.Adapter<FollowerListVi
 
     @Override
     public int getItemCount() {
-        return mNames.size();
+        return mFollowers.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{

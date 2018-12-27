@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +21,11 @@ import app.cooka.cookapp.view.LoadingScreenView;
 
 public class FollowerFragment extends Fragment {
     // Data for the Followers
-    ArrayList<String> names = new ArrayList<String>();
-    ArrayList<String> usernames = new ArrayList<String>();
-    ArrayList<String> imgUrls = new ArrayList<String>();
+    ArrayList<Follower> followers = new ArrayList<>();
+
+    RecyclerView rvwFollower;
+    FollowerListViewAdapter followerListViewAdapter;
+    LoadingScreenView loadingScreen;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,27 +34,23 @@ public class FollowerFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_follower, container, false);
+        View view = inflater.inflate(R.layout.fragment_follower, container, false);
         // Initialisation of the FollowerList
-        initListDummy();
-//        initList(25);
+        initList(25);
 
         // Init LoadingScreen
-        LoadingScreenView loadingScreen = new LoadingScreenView(getContext());
-        loadingScreen = v.findViewById(R.id.loading_screen);
+        loadingScreen = new LoadingScreenView(getContext());
+        loadingScreen = view.findViewById(R.id.loading_screen);
         loadingScreen.setVisible(true);
 
         // Init RecyclerView to Display Follower List
-        RecyclerView recyclerView = v.findViewById(R.id.lsvFollower);
-        FollowerListViewAdapter adapter = new FollowerListViewAdapter(usernames, imgUrls, names, getContext());
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        rvwFollower = view.findViewById(R.id.lsvFollower);
+        followerListViewAdapter = new FollowerListViewAdapter(followers, getContext());
+        rvwFollower.setAdapter(followerListViewAdapter);
+        rvwFollower.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         // ViewHolder for the Follower count
-        final TextView followerNr = (TextView) v.findViewById(R.id.tvwFollowerNr);
-
-        // new initalisation of the LoadingScreenView to be used in @Override Method
-        final LoadingScreenView finalLoadingScreen = loadingScreen;
+        final TextView followerNr = (TextView) view.findViewById(R.id.tvwFollowerNr);
 
         // Get followernr
         User.Factory.selectUser(getActivity(),25, new IResultCallback<User>() {
@@ -64,60 +61,13 @@ public class FollowerFragment extends Fragment {
                     followerNr.setText(followerNrText);
 
                     // Disable LoadingScreen once data is loaded
-                    finalLoadingScreen.setVisible(false);
+                    loadingScreen.setVisible(false);
                 }
             }
         });
-        return v;
+        return view;
     }
 
-    private void initListDummy(){
-        names.clear();
-        usernames.clear();
-        imgUrls.clear();
-        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
-        names.add("Kalle");
-        usernames.add("@Kalle");
-        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
-        names.add("Kalle");
-        usernames.add("@Kalle");
-        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
-        names.add("Kalle");
-        usernames.add("@Kalle");
-        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
-        names.add("Kalle");
-        usernames.add("@Kalle");
-        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
-        names.add("Kalle");
-        usernames.add("@Kalle");
-        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
-        names.add("Kalle");
-        usernames.add("@Kalle");
-        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
-        names.add("Kalle");
-        usernames.add("@Kalle");
-        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
-        names.add("Kalle");
-        usernames.add("@Kalle");
-        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
-        names.add("Kalle");
-        usernames.add("@Kalle");
-        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
-        names.add("Kalle");
-        usernames.add("@Kalle");
-        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
-        names.add("Kalle");
-        usernames.add("@Kalle");
-        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
-        names.add("Kalle");
-        usernames.add("@Kalle");
-        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
-        names.add("Kalle");
-        usernames.add("@Kalle");
-        imgUrls.add("https://i.imgur.com/WLlkPsF.jpg");
-        names.add("Kalle");
-        usernames.add("@Kalle");
-    }
 
     /**
      * Fills the ArrayLists needed to Display the FollowerList
@@ -131,13 +81,11 @@ public class FollowerFragment extends Fragment {
         User.Factory.selectUserFollowers(getActivity(), userid, new IResultCallback<List<Follower>>() {
             @Override
             public void onSucceeded(List<Follower> result) {
-                // TODO refine to differ between cases
-                for (int i = 0; i < result.size();i++){
-                    names.add(result.get(i).getFirstName());
-                    usernames.add(result.get(i).getUserName());
-                    imgUrls.add("https://www.sebastianzander.de/cooka/img/" + result.get(i).getProfileImageFileName());
-                }
-                Log.d("COOKALOG", String.valueOf(result.size()));
+                followers.clear();
+
+                followers.addAll(result);
+
+                followerListViewAdapter.notifyDataSetChanged();
             }
         });
     }
