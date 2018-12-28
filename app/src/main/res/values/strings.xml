@@ -222,6 +222,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="btn_register">Register</string>
     <string name="register_with_alternative">or Register with</string>
+    <string name="register_using_e_mail">Register with E-Mail</string>
+    <string name="register_with_facebook">Register with Facebook</string>
     <string name="card_title_hint"><i>Enter title</i></string>
     <string name="card_body_hint"><i>Enter description</i></string>
     <string name="delete_step_warning_message">Are you sure you want to delete the current step?</string>
