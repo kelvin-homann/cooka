@@ -181,17 +181,15 @@
 
     <!-- Login -->
     <string name="title_activity_login">Login</string>
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password (optional)</string>
+    <string name="prompt_email">E-Mail</string>
+    <string name="prompt_password">Password</string>
     <string name="action_login">Login</string>
     <string name="action_login_short">Login</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email completions." </string>
     <string name="login_background_desc">Login Background</string>
     <string name="profile_cookbook_ivw">Cookbook Imageview</string>
 
@@ -216,6 +214,14 @@
     <string name="steps_fab_text">Steps</string>
     <string name="ingredients">Ingredients</string>
     <string name="ingredients_section_title">Ingredients for this step</string>
+    <string name="login_with_alternative">or Login with</string>
+    <string name="btn_login">Login</string>
+    <string name="title_activity_register">RegisterActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="btn_register">Register</string>
+    <string name="register_with_alternative">or Register with</string>
     <string name="card_title_hint"><i>Enter title</i></string>
     <string name="card_body_hint"><i>Enter description</i></string>
     <string name="delete_step_warning_message">Are you sure you want to delete the current step?</string>

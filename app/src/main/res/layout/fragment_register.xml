@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/ctlLoginActivity"
+    android:id="@+id/ctlRegisterFragment"
     tools:context=".LoginActivity">
 
     <ImageView
-        android:id="@+id/ivwLoginBackground"
+        android:id="@+id/ivwRegisterBackground"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:alpha="0.7"
@@ -22,7 +22,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/ivwFacebookLogin"
+        android:id="@+id/ivwFacebookRegister"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_alignParentStart="true"
@@ -39,7 +39,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
-        android:id="@+id/ivwLoginLogo"
+        android:id="@+id/ivwRegisterLogo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -47,11 +47,11 @@
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/ivwLoginBackground"
+        app:layout_constraintTop_toTopOf="@+id/ivwRegisterBackground"
         tools:src="@tools:sample/avatars[6]" />
 
     <EditText
-        android:id="@+id/etvEmailLogin"
+        android:id="@+id/etvEmailRegister"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -63,14 +63,13 @@
         android:inputType="textEmailAddress"
         android:text="@string/prompt_email"
         android:textColor="@android:color/darker_gray"
-        app:layout_constraintBottom_toTopOf="@+id/etvPasswordLogin"
+        app:layout_constraintBottom_toTopOf="@+id/etvPasswordRegister"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivwLoginLogo"
-        android:autofillHints="" />
+        app:layout_constraintTop_toBottomOf="@+id/ivwRegisterLogo" />
 
     <EditText
-        android:id="@+id/etvPasswordLogin"
+        android:id="@+id/etvPasswordRegister"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -83,17 +82,34 @@
         android:textColor="@android:color/darker_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etvEmailLogin" />
+        app:layout_constraintTop_toBottomOf="@+id/etvEmailRegister" />
+
+    <EditText
+        android:id="@+id/etvPasswordRegister2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:ems="10"
+        android:hint="@string/prompt_password"
+        android:inputType="textPassword"
+        android:text="@string/prompt_password"
+        android:textColor="@android:color/darker_gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etvPasswordRegister" />
 
     <TextView
-        android:id="@+id/tvwLoginAlternative"
+        android:id="@+id/tvwRegisterAlternative"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:text="@string/login_with_alternative"
-        app:layout_constraintBottom_toTopOf="@+id/ivwFacebookLogin"
+        android:text="@string/register_with_alternative"
+        app:layout_constraintBottom_toTopOf="@+id/ivwFacebookRegister"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -107,12 +123,13 @@
         android:layout_marginBottom="8dp"
         android:background="@color/colorPrimary"
         android:backgroundTint="@color/colorPrimary"
-        android:text="@string/btn_login"
+        android:text="@string/btn_register"
         android:textAlignment="center"
         android:textAllCaps="true"
-        app:layout_constraintBottom_toTopOf="@+id/tvwLoginAlternative"
+        app:layout_constraintBottom_toTopOf="@+id/tvwRegisterAlternative"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etvPasswordLogin" />
+        app:layout_constraintTop_toBottomOf="@+id/etvPasswordRegister2" />
 
 </android.support.constraint.ConstraintLayout>
