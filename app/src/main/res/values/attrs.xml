@@ -13,6 +13,7 @@
         <attr name="showDivider" format="boolean"/>
         <attr name="amountIsBold" format="boolean"/>
         <attr name="minimumItemCount" format="integer"/>
+        <attr name="editorMode" format="boolean"/>
     </declare-styleable>
 
 </resources>

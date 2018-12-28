@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView
+        android:id="@+id/ingredient_amount"
+        android:layout_weight="0.3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:padding="8dp"
+        android:textSize="18sp"/>
+
+    <TextView
+        android:id="@+id/ingredient_name"
+        android:layout_weight="0.7"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:padding="8dp"
+        android:textSize="18sp"/>
+
+    <ImageView
+        android:id="@+id/delete_button"
+        style="@style/Widget.AppCompat.ActionButton"
+        android:clickable="true"
+        android:focusable="true"
+        android:src="@drawable/ic_cancel_black_24dp"
+        android:tint="@color/card_hint"
+        android:layout_gravity="right"/>
+</TableRow>

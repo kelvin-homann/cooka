@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -20,6 +21,7 @@ public class IngredientsView extends FrameLayout {
     private TableLayout table;
     private boolean amountIsBold = false;
     private int minimumItemCount = 0;
+    private boolean editorMode = false;
 
     //Constructors
     public IngredientsView(@NonNull Context context) {
@@ -55,6 +57,7 @@ public class IngredientsView extends FrameLayout {
             boolean showDivider = array.getBoolean(R.styleable.IngredientsView_showDivider, true);
             amountIsBold = array.getBoolean(R.styleable.IngredientsView_amountIsBold, true);
             minimumItemCount = array.getInt(R.styleable.IngredientsView_minimumItemCount, 0);
+            editorMode = array.getBoolean(R.styleable.IngredientsView_editorMode, false);
 
             if(!showDivider) table.setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
         }
@@ -78,7 +81,7 @@ public class IngredientsView extends FrameLayout {
     }
 
     public void addIngredient(String amount, String name) {
-        View row = View.inflate(getContext(), R.layout.ingredients_row, null);
+        View row = View.inflate(getContext(), getRowLayout(), null);
 
         TextView amountView = (TextView)row.findViewById(R.id.ingredient_amount);
         amountView.setText(amount);
@@ -86,5 +89,27 @@ public class IngredientsView extends FrameLayout {
 
         ((TextView)row.findViewById(R.id.ingredient_name)).setText(name);
         table.addView(row);
+    }
+
+    public void addIngredient(String amount, String name, final OnDeleteIngredientListener listener) {
+        addIngredient(amount, name);
+        if(!editorMode) return;
+        final int index = table.getChildCount()-1;
+
+        ImageView button = table.getChildAt(index).findViewById(R.id.delete_button);
+        button.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onDelete(index);
+            }
+        });
+    }
+
+    private int getRowLayout() {
+        return editorMode ? R.layout.ingredients_row_editor : R.layout.ingredients_row;
+    }
+
+    public interface OnDeleteIngredientListener {
+        void onDelete(int index);
     }
 }

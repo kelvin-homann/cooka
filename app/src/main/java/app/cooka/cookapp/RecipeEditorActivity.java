@@ -1,11 +1,13 @@
 package app.cooka.cookapp;
 
 import android.content.DialogInterface;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 
 import com.rd.PageIndicatorView;
@@ -13,6 +15,8 @@ import com.rd.utils.DensityUtils;
 
 import app.cooka.cookapp.model.Recipe;
 import app.cooka.cookapp.model.RecipeStep;
+import app.cooka.cookapp.model.RecipeStepIngredient;
+import app.cooka.cookapp.view.IngredientsView;
 
 public class RecipeEditorActivity extends AppCompatActivity {
 
@@ -54,9 +58,8 @@ public class RecipeEditorActivity extends AppCompatActivity {
         cardViewPager = findViewById(R.id.card_view_pager);
 
         //Adapter
-        cardAdapter = new RecipeEditorCardAdapter();
-        cardAdapter.addItem("Fisch würzen");
-        cardAdapter.addItem("Fisch würzen");
+        cardAdapter = new RecipeEditorCardAdapter(this);
+        cardAdapter.addItem();
 
         //Setup view pager margin/padding
 
@@ -82,13 +85,31 @@ public class RecipeEditorActivity extends AppCompatActivity {
     }
 
     public void fab_onClick(View view) {
-        cardAdapter.addItem("");
+        cardAdapter.addItem();
         cardAdapter.notifyDataSetChanged();
         cardViewPager.setCurrentItem(cardAdapter.getCount()-1, true);
     }
 
     public void currentCardDelete_onClick(View view) {
         showDeleteStepDialog();
+    }
+
+    public void addIngredient_onClick(View view) {
+        IngredientDialogFragment dialog = new IngredientDialogFragment();
+        dialog.show(getSupportFragmentManager(), false, new IngredientDialogFragment.OnSubmitListener() {
+            @Override
+            public void onSubmit(RecipeStepIngredient ingredient) {
+                View currentView = cardAdapter.getViewAt(cardViewPager.getCurrentItem());
+                ((IngredientsView)currentView.findViewById(R.id.ingredients_section_ingredients)).
+                        addIngredient("", ingredient.getIngredientName(), new IngredientsView.OnDeleteIngredientListener() {
+                            @Override
+                            public void onDelete(int index) {
+                                Log.d("Recipe Editor", "Attempting to delete item at index " + index);
+                            }
+                        });
+            }
+        });
+
     }
 
     private void showDeleteStepDialog() {
@@ -102,6 +123,7 @@ public class RecipeEditorActivity extends AppCompatActivity {
     private void deleteCurrentStep() {
         int itemToRemove = cardViewPager.getCurrentItem();
 
+        cardAdapter.syncSteps();
         cardViewPager.setAdapter(null);
         cardAdapter.removeItem(itemToRemove);
 

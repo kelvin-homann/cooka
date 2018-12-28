@@ -145,5 +145,13 @@
     <string name="delete_step_warning_message">Are you sure you want to delete the current step?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="step_title">Step %1$d</string>
+    <string name="add_ingredient">Add Ingredient</string>
+    <string name="ok">OK</string>
+    <string name="add">Add</string>
+    <string name="cancel">Cancel</string>
+    <string name="edit_ingredient">Edit Ingredient</string>
+    <string name="ingredient">Ingredient</string>
+    <string name="amount">Amount</string>
 
 </resources>
