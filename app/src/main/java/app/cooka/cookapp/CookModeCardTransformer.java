@@ -1,5 +1,6 @@
 package app.cooka.cookapp;
 
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;
 import android.view.View;
@@ -9,11 +10,11 @@ public class CookModeCardTransformer implements ViewPager.OnPageChangeListener, 
     private static final float SCALE_FACTOR = 1.02f;
 
     private ViewPager mViewPager;
-    private CookModeCardAdapter mAdapter;
+    private CardPagerAdapter mAdapter;
     private float mLastOffset;
     private boolean mScalingEnabled;
 
-    public CookModeCardTransformer(ViewPager viewPager, CookModeCardAdapter adapter) {
+    public CookModeCardTransformer(ViewPager viewPager, CardPagerAdapter adapter) {
         mViewPager = viewPager;
         viewPager.addOnPageChangeListener(this);
         mAdapter = adapter;

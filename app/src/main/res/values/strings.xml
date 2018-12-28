@@ -140,5 +140,10 @@
     <string name="steps_fab_text">Steps</string>
     <string name="ingredients">Ingredients</string>
     <string name="ingredients_section_title">Ingredients for this step</string>
+    <string name="card_title_hint"><i>Enter title</i></string>
+    <string name="card_body_hint"><i>Enter description</i></string>
+    <string name="delete_step_warning_message">Are you sure you want to delete the current step?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
 </resources>

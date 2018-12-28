@@ -43,11 +43,57 @@
     <style name="FullscreenActionBarStyle" parent="Widget.AppCompat.ActionBar">
         <item name="android:background">@color/black_overlay</item>
     </style>
+    
+    <style name="Dialog" parent="Theme.MaterialComponents.Dialog">
+        <item name="android:background">@android:color/white</item>
+        <item name="android:textColorPrimary">@android:color/tertiary_text_light</item>
+        <item name="android:textColorSecondary">@android:color/tertiary_text_light</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+    </style>
+
+    <!-- Cook Mode/Editor styles -->
 
     <style name="Divider">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">2dp</item>
         <item name="android:background">@color/light_divider</item>
+    </style>
+
+    <style name="CookModeCard">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="cardBackgroundColor">@android:color/white</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="contentPadding">0dp</item>
+    </style>
+
+    <style name="CookModeText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:textColor">@android:color/tertiary_text_light</item>
+    </style>
+
+    <style name="CookModeText.CardBody">
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="CookModeText.CardTitle">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="CookModeText.CardSectionTitle">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:paddingBottom">2dp</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:letterSpacing">0.15</item>
     </style>
 
     <style name="HeaderBar">
