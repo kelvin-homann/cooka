@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,22 +42,17 @@ import app.cooka.cookapp.model.AuthenticateUserResult;
 import app.cooka.cookapp.model.Category;
 import app.cooka.cookapp.model.CreateRecipeResult;
 import app.cooka.cookapp.model.EDifficultyType;
-import app.cooka.cookapp.model.ELinkedProfileType;
 import app.cooka.cookapp.model.EPublicationType;
 import app.cooka.cookapp.model.FeedMessage;
-import app.cooka.cookapp.model.Follower;
 import app.cooka.cookapp.model.ICreateRecipeCallback;
 import app.cooka.cookapp.model.Recipe;
 import app.cooka.cookapp.model.RecipeStep;
 import app.cooka.cookapp.model.RecipeStepIngredient;
 import app.cooka.cookapp.model.Tag;
-import app.cooka.cookapp.utils.SecurityUtils;
-import app.cooka.cookapp.utils.StringUtils;
 import app.cooka.cookapp.view.CategoryGridViewAdapter;
 import app.cooka.cookapp.view.CategoryListViewAdapter;
 import app.cooka.cookapp.model.CreateUserResult;
 import app.cooka.cookapp.model.DatabaseClient;
-import app.cooka.cookapp.model.Followee;
 import app.cooka.cookapp.model.IResultCallback;
 import app.cooka.cookapp.model.InvalidateLoginResult;
 import app.cooka.cookapp.model.RefreshLoginResult;
@@ -66,9 +60,6 @@ import app.cooka.cookapp.model.User;
 import app.cooka.cookapp.utils.SystemUtils;
 import app.cooka.cookapp.view.FeedMessageRecyclerViewAdapter;
 import app.cooka.cookapp.view.RecipeFeedCardItemAdapter;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -174,7 +165,7 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
 
         databaseClient = DatabaseClient.Factory.getInstance(this);
 
-        createTestRecipe();
+        //createTestRecipe();
     }
 
     @Override
@@ -646,8 +637,8 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         // step 2
         List<RecipeStepIngredient> recipeStep2Ingredients = new ArrayList<>();
         recipeStep2Ingredients.add(RecipeStepIngredient.Factory.createRecipeStepIngredientDraft("Kartoffeln", null, 35f, null, "g", null));
-        recipeStep2Ingredients.add(RecipeStepIngredient.Factory.createRecipeStepIngredientDraft("Zwiebeln", null, 0.15f, null, "Stck", null));
-        recipeStep2Ingredients.add(RecipeStepIngredient.Factory.createRecipeStepIngredientDraft("Ingwer", null, 0.15f, null, "Stck", null));
+        recipeStep2Ingredients.add(RecipeStepIngredient.Factory.createRecipeStepIngredientDraft("Zwiebeln", null, 0.1666666666666f, null, "Stck", null));
+        recipeStep2Ingredients.add(RecipeStepIngredient.Factory.createRecipeStepIngredientDraft("Ingwer", null, 0.1666666666666f, null, "Stck", null));
         RecipeStep step2 = RecipeStep.Factory.createRecipeStepDraft(2, "Gemüse in Würfel schneiden", "Kartoffeln schälen, abspülen und in Stücke schneiden. Zwiebel abziehen, Ingwer schälen und beides in kleine Würfel schneiden.",
             recipeStep2Ingredients);
         recipeSteps.add(step2);
@@ -677,21 +668,27 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         recipeSteps.add(step5);
 
         newRecipe.setRecipeSteps(recipeSteps);
+        newRecipe.setFlags(Recipe.FLAG_MOCKUP | Recipe.FLAG_UNCHANGED_COPY);
 
         try {
-            Recipe.Factory.submitRecipeDraft(getApplicationContext(), newRecipe,
+            Recipe.Factory.submitRecipe(getApplicationContext(), newRecipe, false,
                 new ICreateRecipeCallback() {
                 @Override
                 public void onSucceeded(CreateRecipeResult createRecipeResult,
                     Recipe createdRecipe)
                 {
-                    Log.d(LOGTAG, String.format("result = %d; recipeId = %d",
-                        createRecipeResult.result, createRecipeResult.recipeId));
+                    Log.d(LOGTAG, String.format("submitRecipe succeeded and returned recipe id %d",
+                        createRecipeResult.recipeId));
                 }
 
                 @Override
-                public void onFailed() {
-                    Log.e(LOGTAG, "submitRecipeDraft failed");
+                public void onFailed(CreateRecipeResult createRecipeResult) {
+                    String errorMessage = "submitRecipe failed";
+                    if(createRecipeResult != null) {
+                        errorMessage += String.format(": error %d: %s",
+                            createRecipeResult.resultCode, createRecipeResult.resultMessage);
+                    }
+                    Log.e(LOGTAG, errorMessage);
                 }
             });
         }

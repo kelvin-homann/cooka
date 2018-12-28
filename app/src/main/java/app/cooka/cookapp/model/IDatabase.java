@@ -130,6 +130,15 @@ public interface IDatabase {
         @Query("userId") long userId,
         @Query("accessToken") String accessToken,
         @Query("languageId") long languageId,
+        @Query("ignoreDuplicate") boolean ignoreDuplicate,
+        @Body Recipe recipe
+    );
+
+    @POST("database.php?action=updateRecipe")
+    Call<UpdateRecipeResult> updateRecipe(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Query("languageId") long languageId,
         @Body Recipe recipe
     );
 

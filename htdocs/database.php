@@ -125,6 +125,9 @@
     case 'createRecipe':
         include($scriptDir . '/database_createrecipe.inc.php');
         break;
+    case 'updateRecipe':
+        include($scriptDir . '/database_updaterecipe.inc.php');
+        break;
 
     /* CATEGORY ACTIONS */
 
@@ -203,7 +206,7 @@
         foreach($sqlQueries as $query) {
             $prefix = strlen($action) > 0 ? $action : 'unknown';
             file_put_contents('./log/' . $prefix . '_' . date("Ynj") . '.log', 
-                date("Y-n-j H:i:s") . ';' . $userId . ';' . $accessToken. ';' . $query . ';' . $_SERVER['REQUEST_URI'] . ';' . 
+                date("Y-n-j H:i:s") . ';' . $userId . ';' . $accessToken . ';' . $query . ';' . $_SERVER['REQUEST_URI'] . ';' . 
                 $_SERVER['REQUEST_METHOD'] . ';' . $_SERVER['HTTP_USER_AGENT'] . PHP_EOL, FILE_APPEND);
         }
     }

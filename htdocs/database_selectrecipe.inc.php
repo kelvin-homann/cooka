@@ -40,12 +40,11 @@
         // select the actual recipe
         $selectRecipeSql = "select recipe.recipeId, titleString.originalLanguageId as languageId, " .
             "titleString.originalValue as title, descriptionString.originalValue as description, " .
-            // "titleString.originalLanguageId as languageId, languageNameString.originalValue as languageName, " .
             "recipe.originalRecipeId, originalRecipeTitleString.originalValue as originalTitle, usr.userId as creatorId, " .
             "usr.userName as creatorName, recipe.mainImageId, mainImage.imageFileName as mainImageFileName, recipe.mainCategoryId, " .
             "categoryNameString.originalValue as mainCategoryName, recipe.publicationType, recipe.difficultyType, recipe.preparationTime, " .
             "recipe.viewedCount, recipe.cookedCount, recipe.pinnedCount, recipe.modifiedCount, recipe.variedCount, recipe.sharedCount, " .
-            "recipe.createdDateTime, recipe.lastModifiedDateTime, recipe.lastCookedDateTime, recipe.rating " .
+            "recipe.createdDateTime, recipe.lastModifiedDateTime, recipe.lastCookedDateTime, recipe.rating, recipe.flags " .
             "from Recipes recipe " .
             "left join Recipes originalRecipe on recipe.originalRecipeId = originalRecipe.recipeId " .
             "left join Users usr on recipe.creatorId = usr.userId " .
@@ -54,8 +53,6 @@
             "left join Strings descriptionString on recipe.descriptionStringId = descriptionString.stringId " .
             "left join Strings originalRecipeTitleString on originalRecipe.titleStringId = originalRecipeTitleString.stringId " .
             "left join Strings categoryNameString on category.nameStringId = categoryNameString.stringId " .
-            // "left join Languages language on language.languageId = titleString.originalLanguageId " .
-            // "left join Strings languageNameString on language.nameStringId = languageNameString.stringId " .
             "left join Images mainImage on mainImage.imageId = recipe.mainImageId " .
             "left join Logins login on login.userId = usr.userId " .
             "where recipe.recipeId = ? and (recipe.publicationType = 'public' or recipe.publicationType = 'unlisted' or " .
@@ -87,8 +84,6 @@
                 'description' => isset($recipeRow['description']) ? $recipeRow['description'] : "", 
                 'originalRecipeId' => isset($recipeRow['originalRecipeId']) ? $recipeRow['originalRecipeId'] : 0, 
                 'originalTitle' => isset($recipeRow['originalTitle']) ? $recipeRow['originalTitle'] : "", 
-                // 'languageId' => isset($recipeRow['languageId']) ? $recipeRow['languageId'] : 0, 
-                // 'languageName' => isset($recipeRow['languageName']) ? $recipeRow['languageName'] : "", 
                 'creatorId' => isset($recipeRow['creatorId']) ? $recipeRow['creatorId'] : 0, 
                 'creatorName' => isset($recipeRow['creatorName']) ? $recipeRow['creatorName'] : "", 
                 'mainImageId' => isset($recipeRow['mainImageId']) ? $recipeRow['mainImageId'] : 0, 
@@ -107,7 +102,8 @@
                 'rating' => isset($recipeRow['rating']) ? $recipeRow['rating'] : 0, 
                 'createdDateTime' => isset($recipeRow['createdDateTime']) ? $recipeRow['createdDateTime'] : "", 
                 'lastModifiedDateTime' => isset($recipeRow['lastModifiedDateTime']) ? $recipeRow['lastModifiedDateTime'] : "", 
-                'lastCookedDateTime' => isset($recipeRow['lastCookedDateTime']) ? $recipeRow['lastCookedDateTime'] : ""
+                'lastCookedDateTime' => isset($recipeRow['lastCookedDateTime']) ? $recipeRow['lastCookedDateTime'] : "",
+                'flags' => isset($recipeRow['flags']) ? $recipeRow['flags'] : 0, 
             );
 
             // query categories
@@ -115,7 +111,7 @@
             {
                 $selectRecipeCategoriesSql = "select distinct category.categoryId, categoryNameString.originalValue as name " .
                     "from Recipes recipe " .
-                    "left join RecipeCategories recipeCategory on recipeCategory.recipeId = ? " .
+                    "inner join RecipeCategories recipeCategory on recipeCategory.recipeId = recipe.recipeId and recipeCategory.recipeId = ? " .
                     "left join Categories category on category.categoryId = recipeCategory.categoryId " .
                     "left join Strings categoryNameString on categoryNameString.stringId = category.nameStringId " .
                     "order by recipeCategory.categorizedDateTime desc";
@@ -154,7 +150,7 @@
             {
                 $selectRecipeTagsSql = "select tag.tagId, tag.name " .
                     "from Tags tag " .
-                    "right join RecipeTags recipeTag on recipeTag.tagId = tag.tagId and recipeTag.recipeId = ? " .
+                    "inner join RecipeTags recipeTag on recipeTag.tagId = tag.tagId and recipeTag.recipeId = ? " .
                     "left join Recipes recipe on recipeTag.recipeId = recipe.recipeId " .
                     "order by recipeTag.taggedDateTime desc";
 

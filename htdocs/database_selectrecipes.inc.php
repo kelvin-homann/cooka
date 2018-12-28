@@ -40,7 +40,7 @@
             "usr.userName as creatorName, recipe.mainImageId, mainImage.imageFileName as mainImageFileName, " .
             "recipe.mainCategoryId, categoryNameString.originalValue as mainCategoryName, recipe.difficultyType, " .
             "recipe.preparationTime, recipe.cookedCount, recipe.pinnedCount, recipe.variedCount, recipe.rating, " .
-            "floor(recipe.rating * 2) / 2 as fairRating " .
+            "floor(recipe.rating * 2) / 2 as fairRating, recipe.flags " .
             "from Recipes recipe " .
             "left join Recipes originalRecipe on recipe.originalRecipeId = originalRecipe.recipeId " .
             "left join Users usr on recipe.creatorId = usr.userId " .
@@ -221,6 +221,7 @@
                 'cookedCount' => isset($recipeRow['cookedCount']) ? $recipeRow['cookedCount'] : 0, 
                 'pinnedCount' => isset($recipeRow['pinnedCount']) ? $recipeRow['pinnedCount'] : 0, 
                 'rating' => isset($recipeRow['rating']) ? $recipeRow['rating'] : 0, 
+                'flags' => isset($recipeRow['flags']) ? $recipeRow['flags'] : 0, 
             );
 
             $recipes[] = $recipe;

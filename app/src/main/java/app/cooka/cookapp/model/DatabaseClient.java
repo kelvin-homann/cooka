@@ -287,15 +287,32 @@ public class DatabaseClient {
     /**
      * Inserts a new {@linkplain Recipe} from a given recipe draft object into the database.
      * @param recipe the {@linkplain Recipe} draft object to be inserted into the database.
+     * @param ignoreDuplicate whether or not to ignore duplicate recipes when there is already a
+     *      recipe with the exact same title and description (default: false).
      * @return a {@linkplain CreateRecipeResult} within a {@linkplain Call} to it; null if an
      *      error occurred.
      */
-    public Call<CreateRecipeResult> createRecipe(final Recipe recipe) {
+    public Call<CreateRecipeResult> createRecipe(final Recipe recipe, boolean ignoreDuplicate) {
 
         final long userId = sharedPreferences.getLong(LoginManager.SPK_USERID, 0L);
         final String accessToken = sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, "");
         final long languageId = sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L);
-        return databaseInterface.createRecipe(userId, accessToken, languageId, recipe);
+        return databaseInterface.createRecipe(userId, accessToken, languageId, ignoreDuplicate,
+            recipe);
+    }
+
+    /**
+     * Updates a {@linkplain Recipe} from a given recipe object in the database.
+     * @param recipe the {@linkplain Recipe} object to be updated in the database.
+     * @return a {@linkplain UpdateRecipeResult} within a {@linkplain Call} to it; null if an
+     *      error occurred.
+     */
+    public Call<UpdateRecipeResult> updateRecipe(final Recipe recipe) {
+
+        final long userId = sharedPreferences.getLong(LoginManager.SPK_USERID, 0L);
+        final String accessToken = sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, "");
+        final long languageId = sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L);
+        return databaseInterface.updateRecipe(userId, accessToken, languageId, recipe);
     }
 
     public Observable<Recipe> selectRecipe(final long recipeId) {
