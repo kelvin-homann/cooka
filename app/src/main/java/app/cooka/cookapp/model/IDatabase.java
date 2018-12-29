@@ -130,7 +130,7 @@ public interface IDatabase {
         @Query("userId") long userId,
         @Query("accessToken") String accessToken,
         @Query("languageId") long languageId,
-        @Query("ignoreDuplicate") boolean ignoreDuplicate,
+        @Query("ignoreDuplicate") int ignoreDuplicate,
         @Body Recipe recipe
     );
 

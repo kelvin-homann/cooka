@@ -25,8 +25,7 @@
         $userId = $_getpost['userId'];
         $accessToken = $_getpost['accessToken'];
         $languageId = 1031;
-        $storeAsDraft = false;
-        $ignoreDuplicate = false;
+        $ignoreDuplicate = 0;
         $json = file_get_contents('php://input');
         $recipe = json_decode($json, true);
         $rollbackOnCategoryErrors = true;
@@ -34,10 +33,10 @@
 
         if(isset($_getpost['languageId']) && is_numeric($_getpost['languageId']))
             $languageId = $_getpost['languageId'];
-        if(isset($_getpost['storeAsDraft']) && $_getpost['storeAsDraft'] == true)
-            $storeAsDraft = true;
-        if(isset($_getpost['ignoreDuplicate']) && $_getpost['ignoreDuplicate'] == true)
-            $ignoreDuplicate = true;
+        if(isset($_getpost['ignoreDuplicate']) && boolval($_getpost['ignoreDuplicate']) == true)
+            $ignoreDuplicate = 1;
+        else
+            $ignoreDuplicate = 0;
 
         if(!isset($json)) {
             $resultCode = 206000;
@@ -78,7 +77,7 @@
         $insertRecipeStringsValuesSql = '';
         $insertRecipeStringsParams = array();
 
-        // check for individual submitted key values pairs
+        // check for individual submitted key value pairs
         if(isset($recipe['title'])) {
             $insertRecipeStringsValuesSql = "(:rt_ov, :rt_ol)"; // rt = recipe title; ov = original value; ol = original language id
             $insertRecipeStringsParams[':rt_ov'] = array($recipe['title'], PDO::PARAM_STR);
@@ -99,6 +98,36 @@
             $numRecipeStringValues++;
         }
 
+        // check for duplicate recipe with same title and by same creator
+        if($ignoreDuplicate == 0) {
+            $existsRecipeSql = "select 1 from Recipes recipe " .
+                "inner join Strings titleString on titleString.stringId = recipe.titleStringId and titleString.originalValue = :ts " .
+                "where recipe.creatorId = :cid;";
+            $existsRecipeParams = array(
+                ':ts' => array($recipe['title'], PDO::PARAM_STR),
+                ':cid' => array($creatorId, PDO::PARAM_INT)
+            );
+
+            // extend and log sql query
+            if($logdb || $logfile || $logscreen) {
+                $query = extendSqlQuery($insertMainImageSql, $insertMainImageParams);
+                $sqlQueries[] = $query;
+            }
+
+            $existsRecipeStmt = $database->prepare($existsRecipeSql);
+            foreach($existsRecipeParams as $index => $param)
+                $existsRecipeStmt->bindValue($index, $param[0], $param[1]);
+            $existsRecipeStmt->execute();
+            $existsRecipeRows = $existsRecipeStmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // if there already exists a recipe with the same title and by the same creator
+            if(count($existsRecipeRows) == 1) {
+                $resultCode = 211000;
+                $resultMessage = "a recipe with the title \"" . $recipe['title'] . "\" by creatorId $creatorId does already exist";
+                throw new Exception($resultMessage);
+            }
+        }
+
         // insert recipe strings
         $insertRecipeStringsSql = 'insert into Strings (originalValue, originalLanguageId) values ' . $insertRecipeStringsValuesSql;
         // extend and log sql query
@@ -115,13 +144,13 @@
         $numAffectedRows = $insertRecipeStringsStmt->rowCount();
 
         if($numRecipeStringValues != $numAffectedRows) {
-            $resultCode = 211000;
+            $resultCode = 212000;
             $resultMessage = "the number of inserted recipe strings ($numAffectedRows) is not equal to the number of provided strings ($numRecipeStringValues)";
             throw new Exception($resultMessage);
         }
 
         if(!isset($insertRecipeStringsId) || $insertRecipeStringsId == 0) {
-            $resultCode = 211100;
+            $resultCode = 213000;
             $resultMessage = "could not insert recipe strings into the database";
             throw new Exception($resultMessage);
         }
@@ -156,7 +185,7 @@
             $numAffectedRows = $insertMainImageStmt->rowCount();
 
             if($numAffectedRows == 0) {
-                $resultCode = 212000;
+                $resultCode = 214000;
                 $resultMessage = "could not insert main image with file name \"" . $recipe['mainImageFileName'] . "\" into the database";
                 throw new Exception($resultMessage);
             }
@@ -166,7 +195,7 @@
 
         // build dynamic recipe insert sql string
         // insert recipe
-        $insertIngredientParams = array();
+        $insertRecipeParams = array();
 
         // fixed columns and values
         $insertRecipeColumnsSql = 'titleStringId, creatorId';
@@ -239,7 +268,7 @@
         $numAffectedRows = $insertRecipeStmt->rowCount();
 
         if($numAffectedRows == 0) {
-            $resultCode = 213000;
+            $resultCode = 215000;
             $resultMessage = "could not insert recipe \"" . $recipe['title'] . "\" into the database";
             throw new Exception($resultMessage);
         }
@@ -284,7 +313,7 @@
                 $numAffectedRows = $insertRecipeCategoriesStmt->rowCount();
 
                 if($numRecipeCategoriesToInsert != $numAffectedRows && $rollbackOnCategoryErrors == true) {
-                    $resultCode = 214000;
+                    $resultCode = 216000;
                     $resultMessage = "the number of inserted recipe category relations ($numAffectedRows) is not equal to the number of provided recipe category relations ($numRecipeCategoriesToInsert)";
                     throw new Exception($resultMessage);
                 }
@@ -321,7 +350,7 @@
                     $numAffectedRows = $insertTagStmt->rowCount();
 
                     if($numAffectedRows == 0 && $rollbackOnTagErrors == true) {
-                        $resultCode = 215000;
+                        $resultCode = 217000;
                         $resultMessage = "could not insert tag with name \"" . $tag['name'] . "\" into database";
                         throw new Exception($resultMessage);
                     }
@@ -350,7 +379,7 @@
                         $selectTagRows = $selectTagStmt->fetchAll(PDO::FETCH_ASSOC);
 
                         if(count($selectTagRows) == 0 && $rollbackOnTagErrors == true) {
-                            $resultCode = 216000;
+                            $resultCode = 218000;
                             $resultMessage = "could not select tag with name \"" . $tag['name'] . "\" from database";
                             throw new Exception($resultMessage);
                         }
@@ -358,7 +387,7 @@
                 }
                 // if no tag id and no tag name was set, return an error
                 else if((!isset($tag['tagId']) || $tag['tagId'] == 0) && (!isset($tag['name']) || strlen($tag['name']) == 0) && $rollbackOnTagErrors) {
-                    $resultCode = 217000;
+                    $resultCode = 219000;
                     $resultMessage = "the tag name key is not present within the submitted recipe but is required when no tagId was specified";
                     throw new Exception($resultMessage);
                 }
@@ -397,7 +426,7 @@
                 $numAffectedRows = $insertRecipeTagsStmt->rowCount();
 
                 if($numRecipeTagsToInsert != $numAffectedRows && $rollbackOnTagErrors == true) {
-                    $resultCode = 218000;
+                    $resultCode = 220000;
                     $resultMessage = "the number of inserted recipe tag relations ($numAffectedRows) is not equal to the number of provided recipe tag relations ($numRecipeTagsToInsert)";
                     throw new Exception($resultMessage);
                 }
@@ -424,7 +453,7 @@
                     $numRecipeStepStringValues++;
                 }
                 else {
-                    $resultCode = 219000 + $stepNumber;
+                    $resultCode = 221000 + $stepNumber;
                     $resultMessage = "the step description key for recipe step number $stepNumber is not present within the submitted recipe";
                     throw new Exception($resultMessage);
                 }
@@ -452,7 +481,7 @@
                 $numAffectedRows = $insertRecipeStepStringsStmt->rowCount();
 
                 if($numRecipeStepStringValues != $numAffectedRows) {
-                    $resultCode = 220000 + $stepNumber;
+                    $resultCode = 222000 + $stepNumber;
                     $resultMessage = "the number of inserted recipe step strings ($numAffectedRows) is not equal to the number of provided strings ($numRecipeStepStringValues)";
                     throw new Exception($resultMessage);
                 }
@@ -497,7 +526,7 @@
                 $numAffectedRows = $insertRecipeStepStmt->rowCount();
     
                 if($numAffectedRows == 0) {
-                    $resultCode = 221000 + $stepNumber;
+                    $resultCode = 223000 + $stepNumber;
                     $resultMessage = "could not insert recipe step with number $stepNumber into the database";
                     throw new Exception($resultMessage);
                 }
@@ -528,7 +557,7 @@
                                 $numIngredientStringValues++;
                             }
                             else {
-                                $resultCode = 222000 + $stepNumber;
+                                $resultCode = 224000 + $stepNumber;
                                 $resultMessage = "an ingredient name key in recipe step number $stepNumber is not present within the submitted recipe";
                                 throw new Exception($resultMessage);
                             }
@@ -557,7 +586,7 @@
                                 $numAffectedRows = $insertIngredientStringsStmt->rowCount();
 
                                 if($numIngredientStringValues != $numAffectedRows) {
-                                    $resultCode = 223000 + $stepNumber;
+                                    $resultCode = 225000 + $stepNumber;
                                     $resultMessage = "the number of inserted ingredient strings ($numAffectedRows) is not equal to the number of provided strings ($numIngredientStringValues)";
                                     throw new Exception($resultMessage);
                                 }
@@ -597,7 +626,7 @@
                                 $numAffectedRows = $insertIngredientStmt->rowCount();
 
                                 if($numAffectedRows == 0) {
-                                    $resultCode = 224000 + $stepNumber;
+                                    $resultCode = 226000 + $stepNumber;
                                     $resultMessage = "could not insert ingredient \"" . $recipeStepIngredient['ingredientName'] . "\" into the database";
                                     throw new Exception($resultMessage);
                                 }
@@ -641,7 +670,7 @@
                             $numAffectedRows = $insertUnitTypeStringsStmt->rowCount();
 
                             if($numAffectedRows == 0) {
-                                $resultCode = 225000 + $stepNumber;
+                                $resultCode = 227000 + $stepNumber;
                                 $resultMessage = "could not insert unit type name string \"" . $recipeStepIngredient['unitTypeName'] . "\" into the database";
                                 throw new Exception($resultMessage);
                             }
@@ -684,7 +713,7 @@
                             $numAffectedRows = $insertUnitTypeStmt->rowCount();
 
                             if($numAffectedRows == 0) {
-                                $resultCode = 226000 + $stepNumber;
+                                $resultCode = 228000 + $stepNumber;
                                 $resultMessage = "could not insert unit type \"" . $recipeStepIngredient['unitTypeName'] . "\" into the database";
                                 throw new Exception($resultMessage);
                             }
@@ -714,7 +743,7 @@
                             $selectUnitTypeRows = $selectUnitTypeStmt->fetchAll(PDO::FETCH_ASSOC);
 
                             if(count($selectUnitTypeRows) == 0) {
-                                $resultCode = 227000 + $stepNumber;
+                                $resultCode = 229000 + $stepNumber;
                                 $resultMessage = "could not find unit type with abbreviation \"" . $recipeStepIngredient['unitTypeAbbreviation'] . "\" in the database";
                                 throw new Exception($resultMessage);
                             }
@@ -764,7 +793,7 @@
                         $numAffectedRows = $insertRecipeStepIngredientStmt->rowCount();
             
                         if($numAffectedRows == 0) {
-                            $resultCode = 228000 + $stepNumber;
+                            $resultCode = 230000 + $stepNumber;
                             $resultMessage = "could not insert recipe step ingredient with ingredient id $insertIngredientId into the database";
                             throw new Exception($resultMessage);
                         }

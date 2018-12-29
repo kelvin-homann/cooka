@@ -45,10 +45,12 @@ import app.cooka.cookapp.model.EDifficultyType;
 import app.cooka.cookapp.model.EPublicationType;
 import app.cooka.cookapp.model.FeedMessage;
 import app.cooka.cookapp.model.ICreateRecipeCallback;
+import app.cooka.cookapp.model.IUpdateRecipeCallback;
 import app.cooka.cookapp.model.Recipe;
 import app.cooka.cookapp.model.RecipeStep;
 import app.cooka.cookapp.model.RecipeStepIngredient;
 import app.cooka.cookapp.model.Tag;
+import app.cooka.cookapp.model.UpdateRecipeResult;
 import app.cooka.cookapp.view.CategoryGridViewAdapter;
 import app.cooka.cookapp.view.CategoryListViewAdapter;
 import app.cooka.cookapp.model.CreateUserResult;
@@ -165,7 +167,7 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
 
         databaseClient = DatabaseClient.Factory.getInstance(this);
 
-        //createTestRecipe();
+        selectAndUpdateTestRecipe();
     }
 
     @Override
@@ -695,6 +697,48 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         catch(Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void selectAndUpdateTestRecipe() {
+
+        // select recipe before we can update one
+        Recipe.Factory.selectRecipe(getApplicationContext(), 11, new IResultCallback<Recipe>() {
+            @Override
+            public void onSucceeded(Recipe recipe) {
+                // then perform an update
+                updateTestRecipe(recipe);
+            }
+        });
+    }
+
+    private void updateTestRecipe(Recipe recipe) {
+
+        recipe.setTitle("Kürbissuppe mit Ingwer");
+        recipe.setDescription(null);
+        recipe.getTags().add(Tag.fromTagId(3));
+        recipe.setDifficultyType(EDifficultyType.DEMANDING);
+        recipe.setPreparationTime(40);
+        recipe.addFlags(Recipe.FLAG_HIGHLIGHTED);
+
+        // update recipe in database
+        Recipe.Factory.updateRecipe(getApplicationContext(), recipe, new IUpdateRecipeCallback() {
+            @Override
+            public void onSucceeded(UpdateRecipeResult updateRecipeResult, Recipe updatedRecipe) {
+                Log.d(LOGTAG, String.format("updateRecipe succeeded; number of rows affected = %d, " +
+                    "inserted = %d, deleted = %d", updateRecipeResult.numAffectedRows,
+                    updateRecipeResult.numInsertedRows, updateRecipeResult.numDeletedRows));
+            }
+
+            @Override
+            public void onFailed(UpdateRecipeResult updateRecipeResult) {
+                String errorMessage = "updateRecipe failed";
+                if(updateRecipeResult != null) {
+                    errorMessage += String.format(": error %d: %s",
+                        updateRecipeResult.resultCode, updateRecipeResult.resultMessage);
+                }
+                Log.e(LOGTAG, errorMessage);
+            }
+        });
     }
 
     /**

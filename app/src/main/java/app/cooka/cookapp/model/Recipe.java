@@ -62,6 +62,7 @@ public class Recipe extends java.util.Observable {
 
     private int changeState = 0;
     private boolean committed = false;
+    private int flags = 0;
 
     private long recipeId;
     private long languageId;
@@ -93,8 +94,6 @@ public class Recipe extends java.util.Observable {
     private Date createdDateTime;
     private Date lastModifiedDateTime;
     private Date lastCookedDateTime;
-
-    private int flags;
 
     private List<Category> categories;
     private int numCategoriesRequested = -1;
@@ -128,9 +127,7 @@ public class Recipe extends java.util.Observable {
         this.creatorId = creatorId;
         this.creatorName = creatorName;
         this.mainImageId = mainImageId;
-
-        setMainImageFileName(mainImageFileName);
-
+        this.mainImageFileName = mainImageFileName;
         this.mainCategoryId = mainCategoryId;
         this.mainCategoryName = mainCategoryName;
 
@@ -205,9 +202,7 @@ public class Recipe extends java.util.Observable {
         this.creatorId = creatorId;
         this.creatorName = creatorName;
         this.mainImageId = mainImageId;
-
-        setMainImageFileName(mainImageFileName);
-
+        this.mainImageFileName = mainImageFileName;
         this.mainCategoryId = mainCategoryId;
         this.mainCategoryName = mainCategoryName;
 
@@ -286,50 +281,61 @@ public class Recipe extends java.util.Observable {
             }
             if(recipeDraft.recipeId != -1) {
                 CreateRecipeResult createRecipeResult = new CreateRecipeResult();
-                createRecipeResult.resultCode = 100001;
+                createRecipeResult.resultCode = 101000;
                 createRecipeResult.resultMessage = "the given recipe object is not a valid recipe draft object";
                 createRecipeCallback.onFailed(createRecipeResult);
                 return;
             }
             if(recipeDraft.title == null || recipeDraft.title.length() == 0) {
                 CreateRecipeResult createRecipeResult = new CreateRecipeResult();
-                createRecipeResult.resultCode = 100002;
+                createRecipeResult.resultCode = 102000;
                 createRecipeResult.resultMessage = "the given recipe object does not have a title set";
                 createRecipeCallback.onFailed(createRecipeResult);
                 return;
             }
             if(recipeDraft.recipeSteps == null || recipeDraft.recipeSteps.size() == 0) {
                 CreateRecipeResult createRecipeResult = new CreateRecipeResult();
-                createRecipeResult.resultCode = 100002;
+                createRecipeResult.resultCode = 103000;
                 createRecipeResult.resultMessage = "the given recipe object does not contain any recipe steps";
                 createRecipeCallback.onFailed(createRecipeResult);
                 return;
             }
-            DatabaseClient.Factory.getInstance(context)
-                .createRecipe(recipeDraft, ignoreDuplicate)
-                .enqueue(new Callback<CreateRecipeResult>() {
-                    @Override
-                    public void onResponse(Call<CreateRecipeResult> call, Response<CreateRecipeResult> response) {
-                        CreateRecipeResult createRecipeResult = response.body();
-                        if(createRecipeResult != null && createRecipeResult.resultCode == 0) {
-                            recipeDraft.recipeId = createRecipeResult.recipeId;
-                            recipeDraft.resetChangeState();
-                            recipeDraft.resetCommitted();
-                            // todo: register new recipe at the update observer
-                            createRecipeCallback.onSucceeded(createRecipeResult, recipeDraft);
-                        }
-                        else {
-                            createRecipeCallback.onFailed(createRecipeResult);
-                        }
-                    }
 
-                    @Override
-                    public void onFailure(Call<CreateRecipeResult> call, Throwable t) {
-                        Log.e(LOGTAG, "Recipe.Factory.submitRecipe() failed");
-                        Log.e(LOGTAG, t.getMessage());
-                        createRecipeCallback.onFailed(null);
+            Call<CreateRecipeResult> call = DatabaseClient.Factory
+                .getInstance(context)
+                .createRecipe(recipeDraft, ignoreDuplicate);
+
+            if(call == null) {
+                CreateRecipeResult createRecipeResult = new CreateRecipeResult();
+                createRecipeResult.resultCode = 110000;
+                createRecipeResult.resultMessage = "call could not be created; please verify that the user id in the login information store is set";
+                createRecipeCallback.onFailed(createRecipeResult);
+                return;
+            }
+
+            call.enqueue(new Callback<CreateRecipeResult>() {
+                @Override
+                public void onResponse(Call<CreateRecipeResult> call, Response<CreateRecipeResult> response) {
+                    CreateRecipeResult createRecipeResult = response.body();
+                    if(createRecipeResult != null && createRecipeResult.resultCode == 0) {
+                        recipeDraft.recipeId = createRecipeResult.recipeId;
+                        recipeDraft.resetChangeState();
+                        recipeDraft.resetCommitted();
+                        // todo: register new recipe at the update observer
+                        createRecipeCallback.onSucceeded(createRecipeResult, recipeDraft);
                     }
-                });
+                    else {
+                        createRecipeCallback.onFailed(createRecipeResult);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<CreateRecipeResult> call, Throwable t) {
+                    Log.e(LOGTAG, "Recipe.Factory.submitRecipe() failed");
+                    Log.e(LOGTAG, t.getMessage());
+                    createRecipeCallback.onFailed(null);
+                }
+            });
         }
 
         /**
@@ -351,35 +357,45 @@ public class Recipe extends java.util.Observable {
             }
             if(recipe.recipeId == -1) {
                 UpdateRecipeResult updateRecipeResult = new UpdateRecipeResult();
-                updateRecipeResult.resultCode = 100001;
+                updateRecipeResult.resultCode = 101000;
                 updateRecipeResult.resultMessage = "the given recipe object is a recipe draft object and needs database insertion first";
                 updateRecipeCallback.onFailed(updateRecipeResult);
                 return;
             }
-            DatabaseClient.Factory.getInstance(context)
-                .updateRecipe(recipe)
-                .enqueue(new Callback<UpdateRecipeResult>() {
-                    @Override
-                    public void onResponse(Call<UpdateRecipeResult> call, Response<UpdateRecipeResult> response) {
-                        UpdateRecipeResult updateRecipeResult = response.body();
-                        if(updateRecipeResult != null && updateRecipeResult.resultCode == 0) {
-                            recipe.resetChangeState();
-                            recipe.resetCommitted();
-                            // todo: register new recipe at the update observer
-                            updateRecipeCallback.onSucceeded(updateRecipeResult, recipe);
-                        }
-                        else {
-                            updateRecipeCallback.onFailed(updateRecipeResult);
-                        }
-                    }
 
-                    @Override
-                    public void onFailure(Call<UpdateRecipeResult> call, Throwable t) {
-                        Log.e(LOGTAG, "Recipe.Factory.updateRecipe() failed");
-                        Log.e(LOGTAG, t.getMessage());
-                        updateRecipeCallback.onFailed(null);
+            Call<UpdateRecipeResult> call = DatabaseClient.Factory
+                .getInstance(context)
+                .updateRecipe(recipe);
+
+            if(call == null) {
+                UpdateRecipeResult updateRecipeResult = new UpdateRecipeResult();
+                updateRecipeResult.resultCode = 110000;
+                updateRecipeResult.resultMessage = "call could not be created; please verify that the user id in the login information store is set";
+                updateRecipeCallback.onFailed(updateRecipeResult);
+                return;
+            }
+
+            call.enqueue(new Callback<UpdateRecipeResult>() {
+                @Override
+                public void onResponse(Call<UpdateRecipeResult> call, Response<UpdateRecipeResult> response) {
+                    UpdateRecipeResult updateRecipeResult = response.body();
+                    if(updateRecipeResult != null && updateRecipeResult.resultCode == 0) {
+                        recipe.resetChangeState();
+                        recipe.resetCommitted();
+                        updateRecipeCallback.onSucceeded(updateRecipeResult, recipe);
                     }
-                });
+                    else {
+                        updateRecipeCallback.onFailed(updateRecipeResult);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UpdateRecipeResult> call, Throwable t) {
+                    Log.e(LOGTAG, "Recipe.Factory.updateRecipe() failed");
+                    Log.e(LOGTAG, t.getMessage());
+                    updateRecipeCallback.onFailed(null);
+                }
+            });
         }
 
         /**
@@ -489,8 +505,17 @@ public class Recipe extends java.util.Observable {
         return changeState;
     }
 
+    /**
+     * Reset the change state of this recipe as well as its recipe steps and recipe step ingredients
+     * to denote that this recipe instance is up-to-date and synchronized with its database
+     * counterpart. This method should be called after a recipe has been successfully submitted to,
+     * created or updated in the database.
+     */
     public void resetChangeState() {
         changeState = 0;
+        if(recipeSteps != null) for(RecipeStep recipeStep : recipeSteps) {
+            recipeStep.resetChangeState();
+        }
     }
 
     public void setForceUpdate() {
@@ -507,6 +532,35 @@ public class Recipe extends java.util.Observable {
 
     public void commit() {
         this.committed = true;
+    }
+
+    @SuppressWarnings("unused")
+    public int getFlags() {
+        return flags;
+    }
+
+    @SuppressWarnings("unused")
+    public void setFlags(int flags) {
+        this.flags = flags;
+        changeState |= CHST_FLAGS;
+        setChanged();
+        notifyObservers();
+    }
+
+    @SuppressWarnings("unused")
+    public void addFlags(int flags) {
+        this.flags |= flags;
+        changeState |= CHST_FLAGS;
+        setChanged();
+        notifyObservers();
+    }
+
+    @SuppressWarnings("unused")
+    public void removeFlags(int flags) {
+        this.flags ^= flags;
+        changeState |= CHST_FLAGS;
+        setChanged();
+        notifyObservers();
     }
 
     @SuppressWarnings("unused")
@@ -636,6 +690,9 @@ public class Recipe extends java.util.Observable {
     @SuppressWarnings("unused")
     public void setMainCategoryId(long mainCategoryId) {
         this.mainCategoryId = mainCategoryId;
+        changeState |= CHST_MAINCATEGORY;
+        setChanged();
+        notifyObservers();
     }
 
     @SuppressWarnings("unused")
@@ -646,6 +703,9 @@ public class Recipe extends java.util.Observable {
     @SuppressWarnings("unused")
     public void setMainCategoryName(String mainCategoryName) {
         this.mainCategoryName = mainCategoryName;
+        changeState |= CHST_MAINCATEGORY;
+        setChanged();
+        notifyObservers();
     }
 
     @SuppressWarnings("unused")
@@ -656,6 +716,9 @@ public class Recipe extends java.util.Observable {
     @SuppressWarnings("unused")
     public void setPublicationType(EPublicationType publicationType) {
         this.publicationType = publicationType;
+        changeState |= CHST_PUBLICATIONTYPE;
+        setChanged();
+        notifyObservers();
     }
 
     @SuppressWarnings("unused")
@@ -666,6 +729,9 @@ public class Recipe extends java.util.Observable {
     @SuppressWarnings("unused")
     public void setDifficultyType(EDifficultyType difficultyType) {
         this.difficultyType = difficultyType;
+        changeState |= CHST_DIFFICULTYTYPE;
+        setChanged();
+        notifyObservers();
     }
 
     @SuppressWarnings("unused")
@@ -676,6 +742,9 @@ public class Recipe extends java.util.Observable {
     @SuppressWarnings("unused")
     public void setPreparationTime(int preparationTime) {
         this.preparationTime = preparationTime;
+        changeState |= CHST_PREPARATIONTIME;
+        setChanged();
+        notifyObservers();
     }
 
     @SuppressWarnings("unused")
@@ -776,19 +845,6 @@ public class Recipe extends java.util.Observable {
     @SuppressWarnings("unused")
     public void setLastCookedDateTime(Date lastCookedDateTime) {
         this.lastCookedDateTime = lastCookedDateTime;
-    }
-
-    @SuppressWarnings("unused")
-    public int getFlags() {
-        return flags;
-    }
-
-    @SuppressWarnings("unused")
-    public void setFlags(int flags) {
-        this.flags = flags;
-        changeState |= CHST_FLAGS;
-        setChanged();
-        notifyObservers();
     }
 
     @SuppressWarnings("unused")
@@ -894,14 +950,14 @@ public class Recipe extends java.util.Observable {
             out.name("languageId");
             out.value(recipe.languageId);
 
-            if((recipe.changeState & recipe.CHST_TITLE) == recipe.CHST_TITLE) {
+            if((recipe.changeState & Recipe.CHST_TITLE) == Recipe.CHST_TITLE) {
                 out.name("title");
                 out.value(recipe.title);
             }
 
-            if((recipe.changeState & recipe.CHST_DESCRIPTION) == recipe.CHST_DESCRIPTION) {
+            if((recipe.changeState & Recipe.CHST_DESCRIPTION) == Recipe.CHST_DESCRIPTION) {
                 out.name("description");
-                out.value(recipe.description);
+                out.value(recipe.description != null ? recipe.description : "");
             }
 
             out.name("originalRecipeId");
@@ -916,42 +972,36 @@ public class Recipe extends java.util.Observable {
             out.name("creatorName");
             out.value(recipe.creatorName);
 
-            if((recipe.changeState & recipe.CHST_MAINIMAGE) == recipe.CHST_MAINIMAGE) {
+            if((recipe.changeState & Recipe.CHST_MAINIMAGE) == Recipe.CHST_MAINIMAGE) {
                 out.name("mainImageId");
                 out.value(recipe.mainImageId);
-            }
-
-            if((recipe.changeState & recipe.CHST_MAINIMAGE) == recipe.CHST_MAINIMAGE) {
                 out.name("mainImageFileName");
-                out.value(recipe.mainImageFileName);
+                out.value(recipe.mainImageFileName != null ? recipe.mainImageFileName : "");
             }
 
-            if((recipe.changeState & recipe.CHST_MAINCATEGORY) == recipe.CHST_MAINCATEGORY) {
+            if((recipe.changeState & Recipe.CHST_MAINCATEGORY) == Recipe.CHST_MAINCATEGORY) {
                 out.name("mainCategoryId");
                 out.value(recipe.mainCategoryId);
-            }
-
-            if((recipe.changeState & recipe.CHST_MAINCATEGORY) == recipe.CHST_MAINCATEGORY) {
                 out.name("mainCategoryName");
-                out.value(recipe.mainCategoryName);
+                out.value(recipe.mainCategoryName != null ? recipe.mainCategoryName : "");
             }
 
-            if((recipe.changeState & recipe.CHST_PUBLICATIONTYPE) == recipe.CHST_PUBLICATIONTYPE) {
+            if((recipe.changeState & Recipe.CHST_PUBLICATIONTYPE) == Recipe.CHST_PUBLICATIONTYPE) {
                 out.name("publicationType");
                 out.value(recipe.publicationType.toString().toLowerCase());
             }
 
-            if((recipe.changeState & recipe.CHST_DIFFICULTYTYPE) == recipe.CHST_DIFFICULTYTYPE) {
+            if((recipe.changeState & Recipe.CHST_DIFFICULTYTYPE) == Recipe.CHST_DIFFICULTYTYPE) {
                 out.name("difficultyType");
                 out.value(recipe.difficultyType.toString().toLowerCase());
             }
 
-            if((recipe.changeState & recipe.CHST_PREPARATIONTIME) == recipe.CHST_PREPARATIONTIME) {
+            if((recipe.changeState & Recipe.CHST_PREPARATIONTIME) == Recipe.CHST_PREPARATIONTIME) {
                 out.name("preparationTime");
                 out.value(recipe.preparationTime);
             }
 
-            if((recipe.changeState & recipe.CHST_FLAGS) == recipe.CHST_FLAGS) {
+            if((recipe.changeState & Recipe.CHST_FLAGS) == Recipe.CHST_FLAGS) {
                 out.name("flags");
                 out.value(recipe.flags);
             }
@@ -1006,7 +1056,7 @@ public class Recipe extends java.util.Observable {
                 out.value(DatabaseClient.databaseDateFormat.format(recipe.lastCookedDateTime));
             }*/
 
-            if((recipe.changeState & recipe.CHST_CATEGORIES) == recipe.CHST_CATEGORIES) {
+            if((recipe.changeState & Recipe.CHST_CATEGORIES) == Recipe.CHST_CATEGORIES) {
                 out.name("categories");
                 out.beginArray();
                 if(recipe.categories != null) for(Category category : recipe.categories) {
@@ -1020,7 +1070,7 @@ public class Recipe extends java.util.Observable {
                 out.endArray();
             }
 
-            if((recipe.changeState & recipe.CHST_TAGS) == recipe.CHST_TAGS) {
+            if((recipe.changeState & Recipe.CHST_TAGS) == Recipe.CHST_TAGS) {
                 out.name("tags");
                 out.beginArray();
                 if(recipe.tags != null) for(Tag tag : recipe.tags) {
@@ -1034,50 +1084,113 @@ public class Recipe extends java.util.Observable {
                 out.endArray();
             }
 
-            if((recipe.changeState & recipe.CHST_RECIPESTEPS) == recipe.CHST_RECIPESTEPS) {
-                out.name("recipeSteps");
-                out.beginArray();
-                if(recipe.recipeSteps != null) for(RecipeStep recipeStep : recipe.recipeSteps) {
-                    out.beginObject();
-                    out.name("recipeStepId");
-                    out.value(recipeStep.getRecipeStepId());
+            out.name("recipeSteps");
+            out.beginArray();
+            if(recipe.recipeSteps != null) for(RecipeStep recipeStep : recipe.recipeSteps) {
+
+                int recipeStepChangeState = recipeStep.getChangeState();
+                if(recipeStepChangeState == 0)
+                    continue;
+
+                out.beginObject();
+                out.name("recipeStepId");
+                out.value(recipeStep.getRecipeStepId());
+
+                if((recipeStepChangeState & RecipeStep.CHST_FLAGS) == RecipeStep.CHST_FLAGS) {
+                    out.name("flags");
+                    out.value(recipeStep.getFlags());
+
+                    // if the recipe step was deleted stop the object here and continue with the next
+                    // because any other recipe step changes do not make sense from here on
+                    if((recipeStep.getFlags() & RecipeStep.FLAG_DELETED) == RecipeStep.FLAG_DELETED) {
+                        out.endObject();
+                        continue;
+                    }
+                }
+
+                if((recipeStepChangeState & RecipeStep.CHST_STEPNUMBER) == RecipeStep.CHST_STEPNUMBER) {
                     out.name("stepNumber");
                     out.value(recipeStep.getStepNumber());
+
+                    // if the order of recipe steps has changed
+                    if(recipeStep.getOriginalStepNumber() != -1) {
+                        out.name("originalStepNumber");
+                        out.value(recipeStep.getOriginalStepNumber());
+                    }
+                }
+
+                if((recipeStepChangeState & RecipeStep.CHST_TITLE) == RecipeStep.CHST_TITLE) {
                     out.name("stepTitle");
                     out.value(recipeStep.getStepTitle());
+                }
+
+                if((recipeStepChangeState & RecipeStep.CHST_DESCRIPTION) == RecipeStep.CHST_DESCRIPTION) {
                     out.name("stepDescription");
                     out.value(recipeStep.getStepDescription());
+                }
 
-                    out.name("recipeStepIngredients");
-                    out.beginArray();
-                    List<RecipeStepIngredient> recipeStepIngredients = recipeStep.getRecipeStepIngredients();
-                    if(recipeStepIngredients != null)
-                        for(RecipeStepIngredient recipeStepIngredient : recipeStepIngredients) {
-                            out.beginObject();
-                            out.name("ingredientId");
-                            out.value(recipeStepIngredient.getIngredientId());
+                out.name("recipeStepIngredients");
+                out.beginArray();
+                List<RecipeStepIngredient> recipeStepIngredients = recipeStep.getRecipeStepIngredients();
+                if(recipeStepIngredients != null)
+                    for(RecipeStepIngredient recipeStepIngredient : recipeStepIngredients) {
+
+                        int recipeStepIngredientChangeState = recipeStepIngredient.getChangeState();
+                        if(recipeStepIngredientChangeState == 0)
+                            continue;
+
+                        out.beginObject();
+                        out.name("ingredientId");
+                        out.value(recipeStepIngredient.getIngredientId());
+
+                        if((recipeStepChangeState & RecipeStepIngredient.CHST_FLAGS) == RecipeStepIngredient.CHST_FLAGS) {
+                            out.name("flags");
+                            out.value(recipeStepIngredient.getFlags());
+
+                            // if the recipe step ingredient was deleted stop the object here and continue with the next
+                            // because any other recipe step ingredient changes do not make sense from here on
+                            if((recipeStepIngredient.getFlags() & RecipeStepIngredient.FLAG_DELETED) == RecipeStepIngredient.FLAG_DELETED) {
+                                out.endObject();
+                                continue;
+                            }
+                        }
+
+                        if((recipeStepChangeState & RecipeStepIngredient.CHST_INGREDIENTNAME) == RecipeStepIngredient.CHST_INGREDIENTNAME) {
                             out.name("ingredientName");
                             out.value(recipeStepIngredient.getIngredientName());
+                        }
+
+                        if((recipeStepChangeState & RecipeStepIngredient.CHST_INGREDIENTDESCRIPTION) == RecipeStepIngredient.CHST_INGREDIENTDESCRIPTION) {
                             out.name("ingredientDescription");
                             out.value(recipeStepIngredient.getIngredientDescription());
+                        }
+
+                        if((recipeStepChangeState & RecipeStepIngredient.CHST_INGREDIENTAMOUNT) == RecipeStepIngredient.CHST_INGREDIENTAMOUNT) {
                             out.name("ingredientAmount");
                             out.value(recipeStepIngredient.getIngredientAmount());
+                        }
+
+                        if((recipeStepChangeState & RecipeStepIngredient.CHST_UNITTYPE) == RecipeStepIngredient.CHST_UNITTYPE) {
                             out.name("unitTypeId");
                             out.value(recipeStepIngredient.getUnitTypeId());
                             out.name("unitTypeName");
                             out.value(recipeStepIngredient.getUnitTypeName());
                             out.name("unitTypeAbbreviation");
                             out.value(recipeStepIngredient.getUnitTypeAbbreviation());
+                        }
+
+                        if((recipeStepChangeState & RecipeStepIngredient.CHST_CUSTOMUNIT) == RecipeStepIngredient.CHST_CUSTOMUNIT) {
                             out.name("customUnit");
                             out.value(recipeStepIngredient.getCustomUnit());
-                            out.endObject(); // recipeStepIngredient
                         }
-                    out.endArray(); // recipeStepIngredients
 
-                    out.endObject(); // recipeStep
-                }
-                out.endArray(); // recipeSteps
+                        out.endObject(); // recipeStepIngredient
+                    }
+                out.endArray(); // recipeStepIngredients
+
+                out.endObject(); // recipeStep
             }
+            out.endArray(); // recipeSteps
 
             out.endObject(); // recipe
         }
@@ -1305,6 +1418,8 @@ public class Recipe extends java.util.Observable {
 
             newRecipe.recipeSteps = recipeSteps;
             newRecipe.numRecipeStepsRequested = numRecipeStepsRequested;
+
+            newRecipe.setFlags(flags);
 
             return newRecipe;
         }

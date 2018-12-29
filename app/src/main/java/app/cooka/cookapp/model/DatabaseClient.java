@@ -295,10 +295,12 @@ public class DatabaseClient {
     public Call<CreateRecipeResult> createRecipe(final Recipe recipe, boolean ignoreDuplicate) {
 
         final long userId = sharedPreferences.getLong(LoginManager.SPK_USERID, 0L);
+        if(userId == 0L)
+            return null;
         final String accessToken = sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, "");
         final long languageId = sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L);
-        return databaseInterface.createRecipe(userId, accessToken, languageId, ignoreDuplicate,
-            recipe);
+        return databaseInterface.createRecipe(userId, accessToken, languageId,
+            ignoreDuplicate ? 1 : 0, recipe);
     }
 
     /**
@@ -310,6 +312,8 @@ public class DatabaseClient {
     public Call<UpdateRecipeResult> updateRecipe(final Recipe recipe) {
 
         final long userId = sharedPreferences.getLong(LoginManager.SPK_USERID, 0L);
+        if(userId == 0L)
+            return null;
         final String accessToken = sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, "");
         final long languageId = sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L);
         return databaseInterface.updateRecipe(userId, accessToken, languageId, recipe);
