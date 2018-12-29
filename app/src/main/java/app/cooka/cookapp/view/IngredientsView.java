@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.dynamic.OnDelegateCreatedListener;
 
+import java.util.List;
 import java.util.Locale;
 
 import app.cooka.cookapp.R;
@@ -83,6 +84,16 @@ public class IngredientsView extends FrameLayout {
                 continue;
             }
             addIngredient(amounts[i], names[i]);
+        }
+    }
+
+    public void setIngredients(List<RecipeStepIngredient> ingredients) {
+        for (int i = 0; i < Math.max(ingredients.size(), minimumItemCount); i++) {
+            if(i >= ingredients.size()) {
+                addIngredient("", "");
+                continue;
+            }
+            addIngredient(ingredients.get(i));
         }
     }
 

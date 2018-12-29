@@ -24,6 +24,9 @@ import android.widget.Toast;
 import com.rd.PageIndicatorView;
 import com.rd.utils.DensityUtils;
 
+import app.cooka.cookapp.model.IResultCallback;
+import app.cooka.cookapp.model.Recipe;
+import app.cooka.cookapp.model.RecipeStep;
 import app.cooka.cookapp.view.IngredientsView;
 
 public class CookModeActivity extends AppCompatActivity {
@@ -67,12 +70,7 @@ public class CookModeActivity extends AppCompatActivity {
         cardViewPager = findViewById(R.id.card_view_pager);
 
         //Adapter
-        cardAdapter = new CookModeCardAdapter();
-        cardAdapter.addItem("Fisch würzen");
-        cardAdapter.addItem("Fisch braten");
-        cardAdapter.addItem("Salat vorbereiten");
-        cardAdapter.addItem("Gericht anrichten");
-        cardAdapter.addItem("Fertig");
+        cardAdapter = new CookModeCardAdapter(this);
 
         //Setup view pager margin/padding
 
@@ -122,6 +120,8 @@ public class CookModeActivity extends AppCompatActivity {
 
         //Hide the default system ui for this activity
         hideSystemUI();
+
+        loadRecipe(1);
     }
 
     @Override
@@ -212,5 +212,26 @@ public class CookModeActivity extends AppCompatActivity {
             //Make the content of the details sheet scroll back to the beginning
             ((NestedScrollView)detailsSheetContentContainer).smoothScrollTo(0, 0);
         }
+    }
+
+    public void loadRecipe(long id) {
+        Recipe.Factory.selectRecipe(this, id, new IResultCallback<Recipe>() {
+            @Override
+            public void onSucceeded(Recipe result) {
+                loadRecipe(result);
+            }
+        });
+    }
+
+    public void loadRecipe(Recipe recipe) {
+        cardViewPager.setAdapter(null);
+
+        for(RecipeStep step : recipe.getRecipeSteps()){
+            cardAdapter.addItem(step);
+            Log.d(LOG_TAG, "Step added: " + step.getStepTitle());
+        }
+        Log.d(LOG_TAG, "Recipe received: " + recipe.getTitle() + " with " + recipe.getRecipeSteps().size() + " steps.");
+
+        cardViewPager.setAdapter(cardAdapter);
     }
 }
