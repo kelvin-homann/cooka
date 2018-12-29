@@ -101,7 +101,7 @@ public class RecipeEditorActivity extends AppCompatActivity {
             public void onSubmit(RecipeStepIngredient ingredient) {
                 View currentView = cardAdapter.getViewAt(cardViewPager.getCurrentItem());
                 ((IngredientsView)currentView.findViewById(R.id.ingredients_section_ingredients)).
-                        addIngredient("", ingredient.getIngredientName(), new IngredientsView.OnDeleteIngredientListener() {
+                        addIngredient(ingredient, new IngredientsView.OnDeleteIngredientListener() {
                             @Override
                             public void onDelete(int index) {
                                 Log.d("Recipe Editor", "Attempting to delete item at index " + index);

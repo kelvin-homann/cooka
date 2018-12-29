@@ -14,7 +14,12 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.dynamic.OnDelegateCreatedListener;
+
+import java.util.Locale;
+
 import app.cooka.cookapp.R;
+import app.cooka.cookapp.model.RecipeStepIngredient;
 
 public class IngredientsView extends FrameLayout {
 
@@ -80,6 +85,7 @@ public class IngredientsView extends FrameLayout {
         }
     }
 
+    //Add ingredient by passing amount and name as string
     public void addIngredient(String amount, String name) {
         View row = View.inflate(getContext(), getRowLayout(), null);
 
@@ -91,6 +97,7 @@ public class IngredientsView extends FrameLayout {
         table.addView(row);
     }
 
+    //Add ingredient by passing amount and name as string as well as adding an OnDelete listener
     public void addIngredient(String amount, String name, final OnDeleteIngredientListener listener) {
         addIngredient(amount, name);
         if(!editorMode) return;
@@ -103,6 +110,24 @@ public class IngredientsView extends FrameLayout {
                 listener.onDelete(index);
             }
         });
+    }
+
+    //Add ingredient by passing RecipeStepIngredient object
+    public void addIngredient(RecipeStepIngredient ingredient) {
+        String amount = String.format(Locale.getDefault(), "%f %s", ingredient.getIngredientAmount(),
+                ingredient.getUnitTypeAbbreviation());
+        String name = ingredient.getIngredientName();
+
+        addIngredient(amount, name);
+    }
+
+    //Add ingredient by passing RecipeStepIngredient object as well as adding an OnDelete listener
+    public void addIngredient(RecipeStepIngredient ingredient, final OnDeleteIngredientListener listener) {
+        String amount = String.format(Locale.getDefault(), "%f %s", ingredient.getIngredientAmount(),
+                ingredient.getUnitTypeAbbreviation());
+        String name = ingredient.getIngredientName();
+
+        addIngredient(amount, name, listener);
     }
 
     private int getRowLayout() {
