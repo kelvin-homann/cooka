@@ -40,6 +40,7 @@ public class FollowerListViewAdapter extends RecyclerView.Adapter<FollowerListVi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+        String nameText = null;
         if (mFollowers.get(i).getProfileImageId() != 0){
             GlideApp.with(mContext)
                     .asBitmap()
@@ -50,7 +51,18 @@ public class FollowerListViewAdapter extends RecyclerView.Adapter<FollowerListVi
         }
 
         // Set full name
-        viewHolder.name.setText(mFollowers.get(i).getFirstName() + " " + mFollowers.get(i).getLastName()); // TODO Replace with getFullName
+        // Check whether or not User set a FullName
+        if (mFollowers.get(i).getFirstName() != null && mFollowers.get(i).getLastName() == null){
+            nameText = mFollowers.get(i).getFirstName();
+        }
+        else if (mFollowers.get(i).getFirstName() == null && mFollowers.get(i).getLastName() != null){
+            nameText = mFollowers.get(i).getLastName();
+        }
+        else if (mFollowers.get(i).getFirstName() != null && mFollowers.get(i).getLastName() != null){
+            nameText = mFollowers.get(i).getFirstName() + " " + mFollowers.get(i).getLastName();
+        }
+
+        viewHolder.name.setText(nameText);
         // Set username
         viewHolder.userName.setText("@" + mFollowers.get(i).getUserName());
 

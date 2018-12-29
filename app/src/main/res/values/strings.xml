@@ -175,8 +175,8 @@
     <string name="profile_username">\@%1$s</string>
     <string name="profile_following_nr">%1$d </string>
     <string name="profile_follower_nr">%1$d </string>
-    <string name="profile_following_text">Following</string>
-    <string name="profile_follower_text">Follower</string>
+    <string name="profile_following_text">%1$d Following</string>
+    <string name="profile_follower_text">%1$d Follower</string>
     <string name="profile_adduser">Add User</string>
 
     <!-- Login and Register-->

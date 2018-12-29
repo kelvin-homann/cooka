@@ -54,6 +54,7 @@ public class FolloweeListViewAdapter extends RecyclerView.Adapter<FolloweeListVi
             viewHolder.userName.setText("@" + mFollowees.get(i).getDisplayName());
         }
         else if (mFollowees.get(i).getType() == EFolloweeType.collection){
+            String nameText = null;
             // Loads the ProfilePicture
             if (mFollowees.get(i).getImageId() != 0){
                 GlideApp.with(mContext)
@@ -65,7 +66,17 @@ public class FolloweeListViewAdapter extends RecyclerView.Adapter<FolloweeListVi
             }
 
             // Set full name
-            viewHolder.name.setText("#" + mFollowees.get(i).getDisplayName());
+            if (mFollowees.get(i).getDetail1() != null && mFollowees.get(i).getDetail2() == null){
+                nameText = mFollowees.get(i).getDetail1();
+            }
+            else if (mFollowees.get(i).getDetail1() == null && mFollowees.get(i).getDetail2() != null){
+                nameText = mFollowees.get(i).getDetail2();
+            }
+            else if (mFollowees.get(i).getDetail1() != null && mFollowees.get(i).getDetail2() != null){
+                nameText = mFollowees.get(i).getDetail1() + " " + mFollowees.get(i).getDetail2();
+            }
+
+            viewHolder.name.setText(nameText);
             // Set username
             viewHolder.userName.setText(null);
         }

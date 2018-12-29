@@ -1,6 +1,8 @@
 package app.cooka.cookapp;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,6 +13,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,8 +85,6 @@ public class ProfileFragment extends Fragment {
         final TextView profileUsername = view.findViewById(R.id.tvwUsername);
         final TextView profileFollower = view.findViewById(R.id.tvwFollower);
         final TextView profileFollowing = view.findViewById(R.id.tvwFollowing);
-        final TextView profileFollowerNr = view.findViewById(R.id.tvwFollowernr);
-        final TextView profileFollowingNr = view.findViewById(R.id.tvwFollowingnr);
         final ImageView profileAvatar = view.findViewById(R.id.ivwProfilePicFollower);
         final CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.ctlProfileBar);
 
@@ -87,17 +92,64 @@ public class ProfileFragment extends Fragment {
         User.Factory.selectUser(getActivity(),25, new IResultCallback<User>() {
             @Override
             public void onSucceeded(User result) {
+                String nameText = null;
+                String userNameText;
+                String followerText;
+                String followingText;
+
                 // if user is not empty
                 if (result != null){
-                    // TODO replace with getFullName()
-                    String nameText = getString(R.string.profile_name, (result.getFirstName() + " " + result.getLastName()));
-                    String userNameText = getString(R.string.profile_username, (result.getUserName()));
-                    String followingNrText = getString(R.string.profile_following_nr, result.getFollowerCount());
-                    String followerNrText = getString(R.string.profile_follower_nr, result.getFolloweeCount());
+                    if (result.getFolloweeCount() >= 10){
+                        followerText = getString(R.string.profile_following_text, result.getFolloweeCount());
+
+                        SpannableString spanFollowerText=  new SpannableString(followerText);
+                        spanFollowerText.setSpan(new RelativeSizeSpan(1.3f), 0,2, 0); // set size
+                        spanFollowerText.setSpan(new ForegroundColorSpan(Color.rgb(110,199,86)), 0, 2, 0);// set color
+                        spanFollowerText.setSpan(new StyleSpan(Typeface.BOLD), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        profileFollowing.setText(spanFollowerText);
+                    }
+                    else {
+                        followerText = getString(R.string.profile_following_text, result.getFolloweeCount());
+                        SpannableString spanFollowerText=  new SpannableString(followerText);
+                        spanFollowerText.setSpan(new RelativeSizeSpan(1.3f), 0,1, 0); // set size
+                        spanFollowerText.setSpan(new ForegroundColorSpan(Color.rgb(110,199,86)), 0, 2, 0);// set color
+                        spanFollowerText.setSpan(new StyleSpan(Typeface.BOLD), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        profileFollowing.setText(spanFollowerText);
+                    }
+
+                    if (result.getFollowerCount() >= 10){
+                        followingText = getString(R.string.profile_follower_text, result.getFollowerCount());
+                        SpannableString spanFolloweeText=  new SpannableString(followingText);
+                        spanFolloweeText.setSpan(new RelativeSizeSpan(1.3f), 0,2, 0); // set size
+                        spanFolloweeText.setSpan(new ForegroundColorSpan(Color.rgb(110,199,86)), 0, 2, 0);// set color
+                        spanFolloweeText.setSpan(new StyleSpan(Typeface.BOLD), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        profileFollower.setText(spanFolloweeText);
+                    }
+                    else {
+                        followingText = getString(R.string.profile_follower_text, result.getFollowerCount());
+                        SpannableString spanFolloweeText=  new SpannableString(followingText);
+                        spanFolloweeText.setSpan(new RelativeSizeSpan(1.3f), 0,1, 0); // set size
+                        spanFolloweeText.setSpan(new ForegroundColorSpan(Color.rgb(110,199,86)), 0, 2, 0);// set color
+                        spanFolloweeText.setSpan(new StyleSpan(Typeface.BOLD), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        profileFollower.setText(spanFolloweeText);
+                    }
+//
+//                    profileFollower.setText(followerText);
+//                    profileFollowing.setText(followingText);
+
+                    // Check whether or not User set a FullName
+                    if (result.getFirstName() != null && result.getLastName() == null){
+                        nameText = getString(R.string.profile_name, (result.getFirstName()));
+                    }
+                    else if (result.getFirstName() == null && result.getLastName() != null){
+                        nameText = getString(R.string.profile_name, (result.getLastName()));
+                    }
+                    else if (result.getFirstName() != null && result.getLastName() != null){
+                        nameText = getString(R.string.profile_name, (result.getFirstName() + " " + result.getLastName()));
+                    }
+                    userNameText = getString(R.string.profile_username, (result.getUserName()));
                     profileFullname.setText(nameText);
                     profileUsername.setText(userNameText);
-                    profileFollowerNr.setText(followerNrText);
-                    profileFollowingNr.setText(followingNrText);
                     collapsingToolbarLayout.setTitle(nameText);
 
                     // If getProfileImageId() == 0 the user did not upload a profile picture
