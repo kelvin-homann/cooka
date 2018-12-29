@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import app.cooka.cookapp.R;
 import app.cooka.cookapp.model.RecipeStepIngredient;
+import app.cooka.cookapp.utils.RecipeUtils;
 
 public class IngredientsView extends FrameLayout {
 
@@ -114,8 +115,7 @@ public class IngredientsView extends FrameLayout {
 
     //Add ingredient by passing RecipeStepIngredient object
     public void addIngredient(RecipeStepIngredient ingredient) {
-        String amount = String.format(Locale.getDefault(), "%f %s", ingredient.getIngredientAmount(),
-                ingredient.getUnitTypeAbbreviation());
+        String amount = RecipeUtils.ingredientAmountToString(ingredient);
         String name = ingredient.getIngredientName();
 
         addIngredient(amount, name);
@@ -123,8 +123,7 @@ public class IngredientsView extends FrameLayout {
 
     //Add ingredient by passing RecipeStepIngredient object as well as adding an OnDelete listener
     public void addIngredient(RecipeStepIngredient ingredient, final OnDeleteIngredientListener listener) {
-        String amount = String.format(Locale.getDefault(), "%f %s", ingredient.getIngredientAmount(),
-                ingredient.getUnitTypeAbbreviation());
+        String amount = RecipeUtils.ingredientAmountToString(ingredient);
         String name = ingredient.getIngredientName();
 
         addIngredient(amount, name, listener);

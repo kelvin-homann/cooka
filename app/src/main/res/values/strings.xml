@@ -153,5 +153,6 @@
     <string name="edit_ingredient">Edit Ingredient</string>
     <string name="ingredient">Ingredient</string>
     <string name="amount">Amount</string>
+    <string name="unit">Unit</string>
 
 </resources>

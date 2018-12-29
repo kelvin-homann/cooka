@@ -1,6 +1,8 @@
 package app.cooka.cookapp.utils;
 
 
+
+import java.text.DecimalFormat;
 import java.util.Locale;
 
 import app.cooka.cookapp.model.RecipeStepIngredient;
@@ -16,8 +18,12 @@ public class RecipeUtils {
      */
     public static String ingredientAmountToString(RecipeStepIngredient ingredient, boolean useFullUnitTypeName) {
         if(ingredient == null || ingredient.getIngredientAmount() <= 0) return "";
+
+        DecimalFormat format = new DecimalFormat("#.##");
+        String amountNum = format.format(ingredient.getIngredientAmount());
+
         return String.format(Locale.getDefault(),
-                "%f %s", ingredient.getIngredientAmount(),
+                "%s %s", amountNum,
                 useFullUnitTypeName ? ingredient.getUnitTypeName() : ingredient.getUnitTypeAbbreviation());
     }
 
