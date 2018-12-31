@@ -96,6 +96,11 @@ public class ExploreFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), ProfileActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.action_login:
+                //Starting the Profile Activity
+                Intent intent2 = new Intent(getActivity(), LoginActivity.class);
+                startActivity(intent2);
+                return true;
         }
         return false;
     }

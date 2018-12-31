@@ -218,8 +218,7 @@
     <string name="btn_login">Login</string>
     <string name="title_activity_register">RegisterActivity</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Login -->
     <string name="btn_register">Register</string>
     <string name="register_with_alternative">or Register with</string>
     <string name="register_using_e_mail">Register with E-Mail</string>
@@ -239,5 +238,9 @@
     <string name="amount">Amount</string>
     <string name="unit">Unit</string>
     <string name="load_recipe_failed_msg">The recipe you requested could not be loaded.</string>
+    <string name="error_email_login">Invalid E-Mail or Username</string>
+    <string name="error_password_login">Invalid Password</string>
+    <string name="email_username_hint">E-Mail or Username</string>
+    <string name="login_invalid">Wrong E-Mail or Password</string>
 
 </resources>
