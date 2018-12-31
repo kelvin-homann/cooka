@@ -1,6 +1,8 @@
 package app.cooka.cookapp.view;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 
 import app.cooka.cookapp.GlideApp;
 import app.cooka.cookapp.R;
+import app.cooka.cookapp.UserProfileActivity;
 import app.cooka.cookapp.model.Followee;
 import app.cooka.cookapp.model.Follower;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -39,7 +42,7 @@ public class FollowerListViewAdapter extends RecyclerView.Adapter<FollowerListVi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
         String nameText = null;
         if (mFollowers.get(i).getProfileImageId() != 0){
             GlideApp.with(mContext)
@@ -67,10 +70,13 @@ public class FollowerListViewAdapter extends RecyclerView.Adapter<FollowerListVi
         viewHolder.userName.setText("@" + mFollowers.get(i).getUserName());
 
         viewHolder.parentLayout.setOnClickListener(new View.OnClickListener(){
-            // TODO redirect to user profile
             @Override
             public void onClick(View view){
-                Toast.makeText(mContext, "Click", Toast.LENGTH_LONG).show();
+                Bundle b = new Bundle();
+                b.putLong("userid", mFollowers.get(i).getUserId());
+                Intent intent = new Intent(mContext, UserProfileActivity.class);
+                intent.putExtras(b); //Put your id to your next Intent
+                mContext.startActivity(intent);
             }
         });
     }

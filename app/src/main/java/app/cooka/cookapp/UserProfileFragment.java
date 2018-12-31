@@ -5,10 +5,11 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.app.Fragment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.app.Fragment;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
@@ -19,22 +20,18 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,13 +41,14 @@ import app.cooka.cookapp.login.LoginManager;
 import app.cooka.cookapp.model.FeedMessage;
 import app.cooka.cookapp.model.IResultCallback;
 import app.cooka.cookapp.model.User;
+import app.cooka.cookapp.utils.StringUtils;
 import app.cooka.cookapp.view.FeedMessageRecyclerViewAdapter;
 import app.cooka.cookapp.view.LoadingScreenView;
 import app.cooka.cookapp.view.ProfileFeedAdapter;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
-public class ProfileFragment extends Fragment {
+public class UserProfileFragment extends android.support.v4.app.Fragment {
     // Data for the Feed
     ArrayList<FeedMessage> feed = new ArrayList<FeedMessage>();
 
@@ -64,24 +62,27 @@ public class ProfileFragment extends Fragment {
     private FollowerFragment followerFragment;
     private FolloweeFragment followeeFragment;
 
-    public ProfileFragment() {
+    public UserProfileFragment() {
         // Required empty public constructor
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         loginManager = LoginManager.Factory.getInstance(getApplicationContext());
 
-        if(loginManager.getUserId() != 0L) {
-            userid = loginManager.getUserId();
+        userid = 4;
+
+        Log.d("COOKALOG", "onAttach " + String.valueOf(userid));
+
+        if (getArguments() != null) {
+            userid = getArguments().getLong("userid");
         }
+        super.onCreate(savedInstanceState);
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_user_profile, container, false);
 
         // Set Arguments for followee and FollowerFragment
         Bundle bundle = new Bundle();
@@ -96,13 +97,14 @@ public class ProfileFragment extends Fragment {
         followerFragment.setArguments(bundle);
         followeeFragment.setArguments(bundle);
 
+
         // Loading Screen
         loadingScreen = new LoadingScreenView(getContext());
         loadingScreen = view.findViewById(R.id.loading_screen);
         loadingScreen.setVisible(true);
 
         // RecyclerView of the Feed
-        rvwFeed = view.findViewById(R.id.rvwProfileFeed);
+        rvwFeed = view.findViewById(R.id.rvwUserProfileFeed);
         feedListAdapter = new FeedMessageRecyclerViewAdapter(feed);
         rvwFeed.setAdapter(feedListAdapter);
         rvwFeed.setHasFixedSize(true);
@@ -114,12 +116,12 @@ public class ProfileFragment extends Fragment {
         rvwFeed.addItemDecoration(itemDecorator);
 
         // ViewHolders for the Profile
-        final TextView profileFullname = view.findViewById(R.id.tvwName);
-        final TextView profileUsername = view.findViewById(R.id.tvwUsername);
-        final TextView profileFollower = view.findViewById(R.id.tvwFollower);
-        final TextView profileFollowing = view.findViewById(R.id.tvwFollowing);
-        final ImageView profileAvatar = view.findViewById(R.id.ivwProfilePicFollower);
-        final CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.ctlProfileBar);
+        final TextView profileFullname = view.findViewById(R.id.tvwNameUser);
+        final TextView profileUsername = view.findViewById(R.id.tvwUsernameUser);
+        final TextView profileFollower = view.findViewById(R.id.tvwUserFollower);
+        final TextView profileFollowing = view.findViewById(R.id.tvwUserFollowing);
+        final ImageView profileAvatar = view.findViewById(R.id.ivwUserProfilePicFollower);
+        final CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.ctlUserProfileBar);
 
         // selectUser-Data to Display on Profile
         User.Factory.selectUser(getActivity(),userid, new IResultCallback<User>() {
@@ -191,9 +193,9 @@ public class ProfileFragment extends Fragment {
                                 .asBitmap()
                                 .load("https://www.sebastianzander.de/cooka/img/" + result.getProfileImageFileName())
                                 .apply(new RequestOptions()
-                                .placeholder(R.drawable.ic_default_profile_image_24dp)
-                                .error(R.drawable.ic_default_profile_image_24dp)
-                                .centerCrop())
+                                        .placeholder(R.drawable.ic_default_profile_image_24dp)
+                                        .error(R.drawable.ic_default_profile_image_24dp)
+                                        .centerCrop())
                                 .listener(new RequestListener<Bitmap>() {
                                     @Override
                                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
@@ -220,7 +222,7 @@ public class ProfileFragment extends Fragment {
                 FragmentTransaction transaction = null;
                 if (getFragmentManager() != null) {
                     transaction = getFragmentManager().beginTransaction();
-                    transaction.replace(R.id.fragment_frame_profile, followerFragment);
+                    transaction.replace(R.id.fragment_Userfollowerframe, followerFragment);
                     transaction.addToBackStack(null);
                     transaction.commit();
                 }
@@ -234,12 +236,13 @@ public class ProfileFragment extends Fragment {
                 FragmentTransaction transaction = null;
                 if (getFragmentManager() != null) {
                     transaction = getFragmentManager().beginTransaction();
-                    transaction.replace(R.id.fragment_frame_profile, followeeFragment);
+                    transaction.replace(R.id.fragment_Userfollowerframe, followeeFragment);
                     transaction.addToBackStack(null);
                     transaction.commit();
                 }
             }
         });
+
         return view;
     }
 
@@ -260,4 +263,5 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
+
 }

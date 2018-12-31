@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,12 +13,12 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.cooka.cookapp.login.LoginManager;
 import app.cooka.cookapp.model.Follower;
 import app.cooka.cookapp.model.IResultCallback;
 import app.cooka.cookapp.model.User;
 import app.cooka.cookapp.view.FollowerListViewAdapter;
 import app.cooka.cookapp.view.LoadingScreenView;
-
 
 public class FollowerFragment extends Fragment {
     // Data for the Followers
@@ -26,17 +27,25 @@ public class FollowerFragment extends Fragment {
     RecyclerView rvwFollower;
     FollowerListViewAdapter followerListViewAdapter;
     LoadingScreenView loadingScreen;
+    private LoginManager loginManager;
+    private long userid;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.d("COOKALOG", String.valueOf(getArguments()));
+
+        if (getArguments() != null) {
+            userid = getArguments().getLong("userid");
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_follower, container, false);
         // Initialisation of the FollowerList
-        initList(25);
+        initList(userid);
 
         // Init LoadingScreen
         loadingScreen = new LoadingScreenView(getContext());
@@ -53,7 +62,7 @@ public class FollowerFragment extends Fragment {
         final TextView followerNr = (TextView) view.findViewById(R.id.tvwFollowerNr);
 
         // Get followernr
-        User.Factory.selectUser(getActivity(),25, new IResultCallback<User>() {
+        User.Factory.selectUser(getActivity(),userid, new IResultCallback<User>() {
             @Override
             public void onSucceeded(User result) {
                 if (result != null){
@@ -77,7 +86,7 @@ public class FollowerFragment extends Fragment {
      * @param userid userId to set the User
      *
      */
-    private void initList(int userid){
+    private void initList(long userid){
         User.Factory.selectUserFollowers(getActivity(), userid, new IResultCallback<List<Follower>>() {
             @Override
             public void onSucceeded(List<Follower> result) {

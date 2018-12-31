@@ -1,9 +1,11 @@
 package app.cooka.cookapp.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -32,6 +34,7 @@ import java.util.Date;
 import java.util.List;
 
 import app.cooka.cookapp.R;
+import app.cooka.cookapp.UserProfileActivity;
 import app.cooka.cookapp.model.EFeedMessageType;
 import app.cooka.cookapp.model.FeedMessage;
 import app.cooka.cookapp.utils.TimeUtils;
@@ -361,7 +364,7 @@ public class FeedMessageRecyclerViewAdapter extends
         viewHolder.ivwContextMenuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Context context = view.getContext();
+                final Context context = view.getContext();
                 //creating a popup menu
                 PopupMenu popup = new PopupMenu(context, viewHolder.ivwContextMenuButton,
                     Gravity.TOP | Gravity.RIGHT);
@@ -425,12 +428,18 @@ public class FeedMessageRecyclerViewAdapter extends
                         int itemId = item.getItemId();
                         switch(itemId) {
                         case FMCM_VIEW_PERFORMER_PROFILE:
-                            Toast.makeText(viewHolder.context, String.format("view profile of %s",
-                                feedMessage.getUserName()), Toast.LENGTH_LONG).show();
+                            Bundle bundleProfile = new Bundle();
+                            bundleProfile.putLong("userid", feedMessage.getUserId());
+                            Intent profileIntent = new Intent(context, UserProfileActivity.class);
+                            profileIntent.putExtras(bundleProfile);
+                            context.startActivity(profileIntent);
                             return true;
                         case FMCM_VIEW_FOLLOWEE_PROFILE:
-                            Toast.makeText(viewHolder.context, String.format("view profile of %s",
-                                feedMessage.getObject1Name()), Toast.LENGTH_LONG).show();
+                            Bundle bundleProfile2 = new Bundle();
+                            bundleProfile2.putLong("userid", feedMessage.getUserId());
+                            Intent profileIntent2 = new Intent(context, UserProfileActivity.class);
+                            profileIntent2.putExtras(bundleProfile2);
+                            context.startActivity(profileIntent2);
                             return true;
                         case FMCM_VIEW_RECIPE:
                             Toast.makeText(viewHolder.context, String.format("view recipe %s",

@@ -1,6 +1,8 @@
 package app.cooka.cookapp.view;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
@@ -11,7 +13,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
 import app.cooka.cookapp.GlideApp;
+import app.cooka.cookapp.ProfileActivity;
 import app.cooka.cookapp.R;
+import app.cooka.cookapp.UserProfileActivity;
 import app.cooka.cookapp.model.EFolloweeType;
 import app.cooka.cookapp.model.Followee;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -36,7 +40,7 @@ public class FolloweeListViewAdapter extends RecyclerView.Adapter<FolloweeListVi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, final int i) {
         if (mFollowees.get(i).getType() == EFolloweeType.user){
             // Loads the ProfilePicture
             if (mFollowees.get(i).getImageId() != 0){
@@ -52,6 +56,17 @@ public class FolloweeListViewAdapter extends RecyclerView.Adapter<FolloweeListVi
             viewHolder.name.setText(mFollowees.get(i).getDetail1() + " " + mFollowees.get(i).getDetail2()); // TODO Replace with getFullName
             // Set username
             viewHolder.userName.setText("@" + mFollowees.get(i).getDisplayName());
+
+            viewHolder.parentLayout.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View view){
+                    Bundle b = new Bundle();
+                    b.putLong("userid", mFollowees.get(i).getId());
+                    Intent intent = new Intent(mContext, UserProfileActivity.class);
+                    intent.putExtras(b); //Put your id to your next Intent
+                    mContext.startActivity(intent);
+                }
+            });
         }
         else if (mFollowees.get(i).getType() == EFolloweeType.collection){
             String nameText = null;
@@ -95,14 +110,6 @@ public class FolloweeListViewAdapter extends RecyclerView.Adapter<FolloweeListVi
             // Set username
             viewHolder.userName.setText(null);
         }
-
-        viewHolder.parentLayout.setOnClickListener(new View.OnClickListener(){
-            // TODO redirect to Profile
-            @Override
-            public void onClick(View view){
-                Toast.makeText(mContext, "Click", Toast.LENGTH_LONG).show();
-            }
-        });
 
     }
 

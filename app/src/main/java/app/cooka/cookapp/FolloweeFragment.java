@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +13,14 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.cooka.cookapp.login.LoginManager;
 import app.cooka.cookapp.model.Followee;
 import app.cooka.cookapp.model.IResultCallback;
 import app.cooka.cookapp.model.User;
 import app.cooka.cookapp.view.FolloweeListViewAdapter;
 import app.cooka.cookapp.view.LoadingScreenView;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class FolloweeFragment extends Fragment {
     // Data for the Followees
@@ -25,17 +29,31 @@ public class FolloweeFragment extends Fragment {
     RecyclerView rvwFollowee;
     FolloweeListViewAdapter followeeListViewAdapter;
     LoadingScreenView loadingScreen;
+    private LoginManager loginManager;
+    private long userid;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.d("COOKALOG", String.valueOf(getArguments()));
+
+        if (getArguments() != null) {
+            userid = getArguments().getLong("userid");
+        }
+
+//        loginManager = LoginManager.Factory.getInstance(getApplicationContext());
+//
+//        if(loginManager.getUserId() != 0L) {
+//            userid = loginManager.getUserId();
+//        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_followee, container, false);
         // Initialisation of the FolloweeList
-        initList(25);
+        initList(userid);
 
         // LoadingScreen
         loadingScreen = new LoadingScreenView(getContext());
@@ -53,7 +71,7 @@ public class FolloweeFragment extends Fragment {
         final TextView followeeNr = view.findViewById(R.id.tvwFolloweeNr);
 
         // Get followeenr
-        User.Factory.selectUser(getActivity(),25, new IResultCallback<User>() {
+        User.Factory.selectUser(getActivity(),userid, new IResultCallback<User>() {
             @Override
             public void onSucceeded(User result) {
                 if (result != null){
@@ -73,7 +91,7 @@ public class FolloweeFragment extends Fragment {
      * @param userid userId to set the User
      *
      */
-    private void initList(int userid){
+    private void initList(long userid){
 
         User.Factory.selectUserFollowees(getActivity(), userid, new IResultCallback<List<Followee>>() {
             @Override

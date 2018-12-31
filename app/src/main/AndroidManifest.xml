@@ -110,6 +110,10 @@
         <activity android:name=".RegisterActivity" >
 
         </activity>
+            android:exported="true" />
+        <activity
+            android:name=".UserProfileActivity"
+            android:label="@string/title_activity_user_profile"></activity>
     </application>
 
 </manifest>
