@@ -33,5 +33,4 @@
         app:layout_constraintTop_toBottomOf="@+id/login_button"
         tools:text="login status" />
 
-
 </android.support.constraint.ConstraintLayout>

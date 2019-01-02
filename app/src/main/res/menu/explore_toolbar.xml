@@ -21,4 +21,9 @@
         android:id="@+id/action_login"
         android:title="Login"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_register"
+        android:title="Register"
+        app:showAsAction="never" />
 </menu>

@@ -1,6 +1,6 @@
 package app.cooka.cookapp;
 
-
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -28,11 +28,8 @@ import app.cooka.cookapp.login.ILoginCallback;
 import app.cooka.cookapp.login.LoginManager;
 import app.cooka.cookapp.model.AuthenticateUserResult;
 import app.cooka.cookapp.utils.StringUtils;
-import de.hdodenhof.circleimageview.CircleImageView;
-
 
 public class LoginActivity extends AppCompatActivity {
-
     private TextInputEditText etvEmail;
     private TextInputEditText etvPassword;
     private Button loginButton;
@@ -40,20 +37,20 @@ public class LoginActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
 
-    private boolean etvEmailReset = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        etvEmail = (TextInputEditText)findViewById(R.id.etvEmailLogin);
-        etvPassword = (TextInputEditText)findViewById(R.id.etvPasswordLogin);
-        loginButton = (Button)findViewById(R.id.btnUserLogin);
-        fbLoginButton = (LoginButton)findViewById(R.id.btnFacebookLogin);
-        final TextInputLayout tilEmail = (TextInputLayout) findViewById(R.id.tilEmailLogin);
-        final TextInputLayout tilPassword = (TextInputLayout) findViewById(R.id.tilPasswordLogin);
+        // Init Objects from Layout
+        etvEmail = findViewById(R.id.etvEmailLogin);
+        etvPassword = findViewById(R.id.etvPasswordLogin);
+        loginButton = findViewById(R.id.btnUserLogin);
+        fbLoginButton = findViewById(R.id.btnFacebookLogin);
+        final TextInputLayout tilEmail = findViewById(R.id.tilEmailLogin);
+        final TextInputLayout tilPassword = findViewById(R.id.tilPasswordLogin);
 
+        // TextWatcher for Email EditText
         TextWatcher textWatchEmail = new TextWatcher() {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -73,6 +70,7 @@ public class LoginActivity extends AppCompatActivity {
         };
         etvEmail.addTextChangedListener(textWatchEmail);
 
+        // TextWatcher for Password EditText
         TextWatcher textWatchPassword = new TextWatcher() {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -120,42 +118,26 @@ public class LoginActivity extends AppCompatActivity {
 
                             @Override
                             public void onFailed(int errorCode, String errorMessage, Throwable t) {
-                                if (errorCode == 11){ // Invalid Password and Username
-                                    if (!etvEmail.getText().toString().isEmpty()){
-                                        tilEmail.setErrorEnabled(true);
-                                        tilEmail.setError(getString(R.string.login_invalid));
-                                    }
-                                    else if(!etvPassword.getText().toString().isEmpty()){
-                                        tilPassword.setErrorEnabled(true);
-                                        tilPassword.setError(getString(R.string.login_invalid));
-                                    }
-
+                                if (!etvEmail.getText().toString().isEmpty()){
+                                    tilEmail.setErrorEnabled(true);
+                                    tilEmail.setError(getString(R.string.login_invalid));
                                 }
-                                else if (errorCode == 12){ // Invalid Password
-                                    if (!etvEmail.getText().toString().isEmpty()){
-                                        tilEmail.setErrorEnabled(true);
-                                        tilEmail.setError(getString(R.string.login_invalid));
-                                    }
-                                    else if(!etvPassword.getText().toString().isEmpty()){
-                                        tilPassword.setErrorEnabled(true);
-                                        tilPassword.setError(getString(R.string.login_invalid));
-                                    }
+                                else if(!etvPassword.getText().toString().isEmpty()){
+                                    tilPassword.setErrorEnabled(true);
+                                    tilPassword.setError(getString(R.string.login_invalid));
                                 }
                             }
                         });
             }
         });
 
-        // Facebook stuff
-
+        // Facebook Login Button
         callbackManager = CallbackManager.Factory.create();
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
 
         if(isLoggedIn)
             executePostLogin(accessToken);
-        else
-            Log.e("COOKALOG", "Please log in");
 
         fbLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -185,6 +167,18 @@ public class LoginActivity extends AppCompatActivity {
         accessTokenTracker.startTracking();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        accessTokenTracker.stopTracking();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     private void executePostLogin(AccessToken currentAccessToken) {
         GraphRequest request = GraphRequest.newMeRequest(currentAccessToken, new GraphRequest.GraphJSONObjectCallback() {
             @Override
@@ -197,11 +191,6 @@ public class LoginActivity extends AppCompatActivity {
                     String name = jsonObject.optString("name");
                     String email = jsonObject.optString("email");
                     String id = jsonObject.optString("id");
-
-//                    userProfile.setUsername(name);
-//                    userProfile.setEmail(email);
-//                    userProfile.setProfileLocation(ELinkedProfileType.RemoteFacebook);
-//                    userProfile.setLoggedIn(true);
 
                     Log.d("COOKALOG", "you have been logged in with your facebook account");
                     Log.d("COOKALOG", String.format("facebook user id = %s", id));
