@@ -19,11 +19,11 @@
             style="@style/ToolbarStyle"
             app:title="@string/title_cook"/>
 
-        <!-- TODO: Update blank fragment layout -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/title_cook" />
+        <android.support.design.button.MaterialButton
+            android:id="@+id/btn_cook_me"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cook Me"/>
 
     </LinearLayout>
 </FrameLayout>

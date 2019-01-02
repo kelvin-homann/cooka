@@ -34,6 +34,11 @@ public class CookModeCardAdapter extends PagerAdapter implements CardPagerAdapte
         views.add(null);
     }
 
+    public void clear() {
+        items.clear();
+        views.clear();
+    }
+
     public View getViewAt(int position) {
         if(getCount() <= position) return null;
         return views.get(position);

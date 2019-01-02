@@ -11,6 +11,11 @@
     android:id="@+id/fullscreen_content"
     android:keepScreenOn="true">
 
+    <app.cooka.cookapp.view.LoadingScreenView
+        android:id="@+id/loading_screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

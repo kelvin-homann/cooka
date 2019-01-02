@@ -204,5 +204,6 @@
     <string name="ingredient">Ingredient</string>
     <string name="amount">Amount</string>
     <string name="unit">Unit</string>
+    <string name="load_recipe_failed_msg">The recipe you requested could not be loaded.</string>
 
 </resources>

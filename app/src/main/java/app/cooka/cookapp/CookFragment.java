@@ -38,15 +38,16 @@ public class CookFragment extends Fragment {
             }
         });
 
+        //Button
+        fragmentView.findViewById(R.id.btn_cook_me).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cookMe_onClick(v);
+            }
+        });
+
         //Return the inflated view
         return fragmentView;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override
@@ -84,5 +85,9 @@ public class CookFragment extends Fragment {
 
         }
         return false;
+    }
+
+    public void cookMe_onClick(View view) {
+        CookModeActivity.startAndLoadRecipe(getContext(), 11);
     }
 }

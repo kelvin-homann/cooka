@@ -2,6 +2,9 @@ package app.cooka.cookapp;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.button.MaterialButton;
@@ -9,6 +12,7 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.transition.TransitionManager;
@@ -24,10 +28,15 @@ import android.widget.Toast;
 import com.rd.PageIndicatorView;
 import com.rd.utils.DensityUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import app.cooka.cookapp.model.IResultCallback;
 import app.cooka.cookapp.model.Recipe;
 import app.cooka.cookapp.model.RecipeStep;
+import app.cooka.cookapp.model.RecipeStepIngredient;
 import app.cooka.cookapp.view.IngredientsView;
+import app.cooka.cookapp.view.LoadingScreenView;
 
 public class CookModeActivity extends AppCompatActivity {
 
@@ -56,6 +65,11 @@ public class CookModeActivity extends AppCompatActivity {
 
     private static final int FAB_OVERVIEW_WIDTH = DensityUtils.dpToPx(155);
     private static final int FAB_STEPS_WIDTH = DensityUtils.dpToPx(125);
+
+    private static final String EXTRA_ID = "app.cooka.cookapp.EXTRA_ID";
+
+    //Loading screen
+    private LoadingScreenView loadingScreen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,12 +130,16 @@ public class CookModeActivity extends AppCompatActivity {
         detailsSheetContentContainer = findViewById(R.id.details_sheet_content);
         ingredientsView = (IngredientsView)findViewById(R.id.ingredients_view);
 
-        ingredientsView.setIngredients(new String[]{"300 g", "1", "1 halbe Scheibe", "1", "", "5 t", "1 Prise", "lel", "500 ml", "1 Glas", "1 Päckchen", "1 Dose", "20 g", "1", "", "5 t", "1 Prise"}, new String[]{"Salat mit gaaaaaaaanz viel geilem Shiiiiiit", "Fisch", "Zitrone", "Apfel", "Pfeffer", "Käse", "Salz", "Nichts", "Milch", "Gurken", "Backpulver", "Ananas", "Whatever", "Fisch", "Zitrone", "Apfel", "Pfeffer"});
+        //Loading screen
+        loadingScreen = findViewById(R.id.loading_screen);
+        loadingScreen.hide();
 
         //Hide the default system ui for this activity
         hideSystemUI();
 
-        loadRecipe(1);
+        //Try to load recipe id from Bundle
+        long recipeToLoad = getIntent().getExtras().getLong(EXTRA_ID, -1);
+        if(recipeToLoad != -1) loadRecipe(recipeToLoad);
     }
 
     @Override
@@ -215,6 +233,9 @@ public class CookModeActivity extends AppCompatActivity {
     }
 
     public void loadRecipe(long id) {
+        //Show loading screen before loading
+        loadingScreen.show(detailsSheet);
+
         Recipe.Factory.selectRecipe(this, id, new IResultCallback<Recipe>() {
             @Override
             public void onSucceeded(Recipe result) {
@@ -224,14 +245,60 @@ public class CookModeActivity extends AppCompatActivity {
     }
 
     public void loadRecipe(Recipe recipe) {
-        cardViewPager.setAdapter(null);
+        //If the provided recipe is null call onLoadRecipeFailed
+        if(recipe == null) {
+            onLoadRecipeFailed();
+            return;
+        }
 
+        //Reset the cardViewPager and cardAdapter
+        cardViewPager.setAdapter(null);
+        cardAdapter.clear();
+
+        //Prepare a list with all ingredients to display on the overview sheet
+        List<RecipeStepIngredient> ingredients = new ArrayList<RecipeStepIngredient>();
+
+        //Add the steps
         for(RecipeStep step : recipe.getRecipeSteps()){
             cardAdapter.addItem(step);
-            Log.d(LOG_TAG, "Step added: " + step.getStepTitle());
+            ingredients.addAll(step.getRecipeStepIngredients());
         }
-        Log.d(LOG_TAG, "Recipe received: " + recipe.getTitle() + " with " + recipe.getRecipeSteps().size() + " steps.");
 
+        //Reassign the adapter to refresh the card view
         cardViewPager.setAdapter(cardAdapter);
+
+        //Set the ingredients of the overview sheet
+        ingredientsView.clear();
+        ingredientsView.setIngredients(ingredients);
+
+        //Hide loading screen
+        loadingScreen.hide();
+    }
+
+    //Called if loading a recipe failed
+    private void onLoadRecipeFailed() {
+        //Show a dialog to inform the user that the loading process failed and close the activity
+        //if the 'ok' button is pressed
+        new AlertDialog.Builder(this, R.style.Dialog).
+                setMessage(R.string.load_recipe_failed_msg).
+                setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                }).show();
+    }
+
+    /**
+     * Start the cook mode and load the recipe with the given ID
+     * @param context the context to start the activity from
+     * @param recipeId the id of the recipe that should be loaded
+     */
+    public static void startAndLoadRecipe(Context context, long recipeId) {
+        Intent intent = new Intent(context, CookModeActivity.class);
+
+        //TODO: use URI and Intent filter to start activity
+        intent.putExtra(EXTRA_ID, recipeId);
+        context.startActivity(intent);
     }
 }

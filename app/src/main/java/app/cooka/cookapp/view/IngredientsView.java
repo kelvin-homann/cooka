@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.dynamic.OnDelegateCreatedListener;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -88,12 +89,33 @@ public class IngredientsView extends FrameLayout {
     }
 
     public void setIngredients(List<RecipeStepIngredient> ingredients) {
-        for (int i = 0; i < Math.max(ingredients.size(), minimumItemCount); i++) {
-            if(i >= ingredients.size()) {
-                addIngredient("", "");
-                continue;
+        //TODO: Use a better way to combine ingredients
+        RecipeStepIngredient iJ, iK;
+        ArrayList<Long> addedIds = new ArrayList<Long>();
+
+        for(int j = 0; j < ingredients.size(); j++) {
+            iJ = ingredients.get(j);
+            if(addedIds.contains(iJ.getIngredientId())) continue;
+
+            float amount = iJ.getIngredientAmount();
+
+            for(int k = 0; k < ingredients.size(); k++) {
+                if(k == j) continue;
+                iK = ingredients.get(k);
+
+                if(iJ.getIngredientId() == iK.getIngredientId()) {
+                    amount += iK.getIngredientAmount();
+                }
             }
-            addIngredient(ingredients.get(i));
+
+            addIngredient(iJ, amount);
+            addedIds.add(iJ.getIngredientId());
+        }
+
+        //Add filler
+        if(addedIds.size() < minimumItemCount) {
+            for(int i = 0; i < (minimumItemCount - addedIds.size()); i++)
+                addIngredient("", "");
         }
     }
 
@@ -126,10 +148,18 @@ public class IngredientsView extends FrameLayout {
 
     //Add ingredient by passing RecipeStepIngredient object
     public void addIngredient(RecipeStepIngredient ingredient) {
-        String amount = RecipeUtils.ingredientAmountToString(ingredient);
+        addIngredient(ingredient, ingredient.getIngredientAmount());
+    }
+
+    //Add ingredient by passing RecipeStepIngredient object but overwriting the amount
+    public void addIngredient(RecipeStepIngredient ingredient, float overwriteAmount) {
+        String amount = RecipeUtils.ingredientAmountToString(ingredient, overwriteAmount);
         String name = ingredient.getIngredientName();
 
         addIngredient(amount, name);
+
+        //TODO: Remove me
+        Log.d("IngredientsView", String.format("Adding ingredient '%s' with id %d", name, ingredient.getIngredientId()));
     }
 
     //Add ingredient by passing RecipeStepIngredient object as well as adding an OnDelete listener
@@ -138,6 +168,10 @@ public class IngredientsView extends FrameLayout {
         String name = ingredient.getIngredientName();
 
         addIngredient(amount, name, listener);
+    }
+
+    public void clear() {
+        table.removeAllViews();
     }
 
     private int getRowLayout() {
