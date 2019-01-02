@@ -6,6 +6,24 @@
     android:layout_width="match_parent"
     android:layout_height="75dp">
 
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="96dp"
+        android:layout_height="33dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="8dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:text="@string/profile_follow"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/tvwUsernameFollower"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/ivwProfilePicFollower"
         android:layout_width="50dp"
@@ -29,8 +47,8 @@
 
     <TextView
         android:id="@+id/tvwNameFollower"
-        android:layout_width="168dp"
-        android:layout_height="25dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
@@ -48,7 +66,7 @@
 
     <TextView
         android:id="@+id/tvwUsernameFollower"
-        android:layout_width="168dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/tvwNameFollower"
         android:layout_alignParentTop="true"

@@ -46,7 +46,7 @@ import app.cooka.cookapp.model.IResultCallback;
 import app.cooka.cookapp.model.User;
 import app.cooka.cookapp.view.FeedMessageRecyclerViewAdapter;
 import app.cooka.cookapp.view.LoadingScreenView;
-import app.cooka.cookapp.view.ProfileFeedAdapter;
+import app.cooka.cookapp.view.ProfileFeedViewAdapter;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -77,6 +77,8 @@ public class ProfileFragment extends Fragment {
         if(loginManager.getUserId() != 0L) {
             userid = loginManager.getUserId();
         }
+
+        Log.d("COOKALOG", "onAttach " + String.valueOf(userid));
     }
 
     @Override

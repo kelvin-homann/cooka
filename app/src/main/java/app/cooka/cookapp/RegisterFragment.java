@@ -123,6 +123,7 @@ public class RegisterFragment extends Fragment {
             }
 
             public void afterTextChanged(Editable s) {
+
             }
         };
 

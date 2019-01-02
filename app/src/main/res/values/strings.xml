@@ -198,6 +198,8 @@
     <string name="profile_following_text">%1$d Following</string>
     <string name="profile_follower_text">%1$d Follower</string>
     <string name="profile_adduser">Add User</string>
+    <string name="profile_follow">Follow</string>
+    <string name="profile_unfollow">Unfollow</string>
 
     <!-- Login and Register-->
     <string name="title_activity_login">Login</string>
@@ -277,7 +279,6 @@
     <string name="unit">Unit</string>
     <string name="title_activity_user_profile">UserProfileActivity</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="login_with_alternative">or Login with</string>
