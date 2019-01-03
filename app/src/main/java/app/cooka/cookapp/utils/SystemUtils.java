@@ -2,15 +2,21 @@ package app.cooka.cookapp.utils;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.os.Build;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import static android.support.v4.content.ContextCompat.getSystemService;
 
 public class SystemUtils {
 
@@ -55,4 +61,5 @@ public class SystemUtils {
 
         return Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
     }
+
 }

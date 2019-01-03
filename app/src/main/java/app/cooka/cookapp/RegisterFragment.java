@@ -1,8 +1,14 @@
 package app.cooka.cookapp;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
@@ -36,6 +42,9 @@ import app.cooka.cookapp.model.AuthenticateUserResult;
 import app.cooka.cookapp.model.CreateUserResult;
 import app.cooka.cookapp.model.User;
 import app.cooka.cookapp.utils.StringUtils;
+import app.cooka.cookapp.utils.SystemUtils;
+
+import static android.support.v4.content.ContextCompat.getSystemService;
 
 public class RegisterFragment extends Fragment {
 
@@ -58,6 +67,9 @@ public class RegisterFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_register, container, false);
 
+        // Error Sound
+        final MediaPlayer mp = MediaPlayer.create(getActivity(), R.raw.errorsound);
+
         etvEmail = view.findViewById(R.id.etvEmailRegister);
         etvUsername = view.findViewById(R.id.etvUsernameRegister);
         etvPassword1 = view.findViewById(R.id.etvPasswordRegister);
@@ -71,7 +83,6 @@ public class RegisterFragment extends Fragment {
         final TextInputLayout tilPassword = view.findViewById(R.id.tilPasswordRegister1);
         final TextInputLayout tilPassword2 = view.findViewById(R.id.tilPasswordRegister2);
 
-
         TextWatcher textWatchEmail = new TextWatcher() {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -81,6 +92,7 @@ public class RegisterFragment extends Fragment {
                     if (!StringUtils.isValidEmailAddress(etvEmail.getText().toString())){
                         tilEmail.setErrorEnabled(true);
                         tilEmail.setError(getString(R.string.error_email_login));
+                        vibrate(getActivity(),250, 10);
                     }
                     else {
                         tilEmail.setErrorEnabled(false);
@@ -165,6 +177,7 @@ public class RegisterFragment extends Fragment {
             }
         };
 
+        // Adding the TextChangeListener
         etvEmail.addTextChangedListener(textWatchEmail);
         etvUsername.addTextChangedListener(textWatchUsername);
         etvPassword1.addTextChangedListener(textWatchPassword);
@@ -176,6 +189,8 @@ public class RegisterFragment extends Fragment {
                 if (etvEmail.getText().toString().isEmpty()){
                     tilEmail.setErrorEnabled(true);
                     tilEmail.setError(getString(R.string.error_field_required));
+                    mp.start();
+                    vibrate(getActivity(),250, 10);
                 }
                 else {
                     tilEmail.setErrorEnabled(false);
@@ -184,6 +199,8 @@ public class RegisterFragment extends Fragment {
                 if (etvUsername.getText().toString().isEmpty()){
                     tilUsername.setErrorEnabled(true);
                     tilUsername.setError(getString(R.string.error_field_required));
+                    mp.start();
+                    vibrate(getActivity(),250, 10);
                 }
                 else {
                     tilUsername.setErrorEnabled(false);
@@ -192,6 +209,8 @@ public class RegisterFragment extends Fragment {
                 if (etvPassword1.getText().toString().isEmpty()){
                     tilPassword.setErrorEnabled(true);
                     tilPassword.setError(getString(R.string.error_field_required));
+                    mp.start();
+                    vibrate(getActivity(),250, 10);
                 }
                 else {
                     tilPassword.setErrorEnabled(false);
@@ -200,6 +219,8 @@ public class RegisterFragment extends Fragment {
                 if (etvPassword2.getText().toString().isEmpty()){
                     tilPassword2.setErrorEnabled(true);
                     tilPassword2.setError(getString(R.string.error_field_required));
+                    mp.start();
+                    vibrate(getActivity(),250, 10);
                 }
                 else {
                     tilPassword2.setErrorEnabled(false);
@@ -213,7 +234,6 @@ public class RegisterFragment extends Fragment {
                                     final String userName = etvUsername.getText().toString();
                                     final String emailAddress = etvEmail.getText().toString();
                                     final String password = etvPassword2.getText().toString();
-
                                     createAccount(userName, emailAddress, password);
                 }
             }
@@ -338,6 +358,7 @@ public class RegisterFragment extends Fragment {
      * @param password Password from an EditText View
      */
     private void createAccount(final String userName,final  String emailAddress,final  String password){
+        final MediaPlayer mp = MediaPlayer.create(getActivity(), R.raw.errorsound);
         LoginManager.Factory.getInstance(getContext()).createAccount(
                 userName, emailAddress, password, new ICreateAccountCallback() {
                     @Override
@@ -349,8 +370,26 @@ public class RegisterFragment extends Fragment {
                     @Override
                     public void onFailed(int errorCode, String errorMessage, Throwable t) {
                         Toast.makeText(getContext(), "Registration Failed", Toast.LENGTH_SHORT).show();
+                        mp.start();
                     }
                 });
+    }
+
+    // TODO Doesn't work yet, couldn't find the reason yet, should work
+
+    /** Vibration
+     * @param activity Passing Activity
+     * @param duration duration of the vibration
+     * @param amplitude strength of vibration
+     */
+    public void vibrate(Activity activity, int duration, int amplitude){
+        if (Build.VERSION.SDK_INT >= 26) {
+            ((Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(duration, amplitude));
+            Log.d("COOKALOG", "SystemUtils.vibrate()");
+        } else {
+            ((Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(duration);
+            Log.d("COOKALOG", "SystemUtils.vibrate()");
+        }
     }
 
 
