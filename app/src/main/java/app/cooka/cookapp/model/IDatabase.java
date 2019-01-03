@@ -91,6 +91,36 @@ public interface IDatabase {
         @Query("ofuserId") long ofuserId
     );
 
+    @POST("database.php?action=followUser")
+    Call<FollowUserResult> followUser(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Query("followUserId") long followUserId
+    );
+
+    @POST("database.php?action=followUser")
+    Call<FollowUserResult> followUser(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Query("followUserId") long followUserId,
+        @Query("foruserId") long foruserId
+    );
+
+    @POST("database.php?action=followUser")
+    Call<FollowUserResult> followUsers(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Body List<Long> followUserIds
+    );
+
+    @POST("database.php?action=followUser")
+    Call<FollowUserResult> followUsers(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Body List<Long> followUserIds,
+        @Query("foruserId") long foruserId
+    );
+
     @POST("database.php?action=existsUser")
     Call<ExistsUserResult> existsUser(
         @Query("loginId") String loginId,
@@ -205,6 +235,74 @@ public interface IDatabase {
         @Query("imageFileName") String imageFileName,
         @Query("sortPrefix") String sortPrefix,
         @Query("browsable") int browsable
+    );
+    
+    /*  ************************************************************************************  *
+     *  TAG METHODS
+     *  ************************************************************************************  */
+    
+    @POST("database.php?action=followTag")
+    Call<FollowTagResult> followTag(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Query("followTagId") long followTagId
+    );
+
+    @POST("database.php?action=followTag")
+    Call<FollowTagResult> followTag(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Query("followTagId") long followTagId,
+        @Query("foruserId") long foruserId
+    );
+
+    @POST("database.php?action=followTag")
+    Call<FollowTagResult> followTags(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Body List<Long> followTagIds
+    );
+
+    @POST("database.php?action=followTag")
+    Call<FollowTagResult> followTags(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Body List<Long> followTagIds,
+        @Query("foruserId") long foruserId
+    );
+    
+    /*  ************************************************************************************  *
+     *  COLLECTION METHODS
+     *  ************************************************************************************  */
+    
+    @POST("database.php?action=followCollection")
+    Call<FollowCollectionResult> followCollection(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Query("followCollectionId") long followCollectionId
+    );
+
+    @POST("database.php?action=followCollection")
+    Call<FollowCollectionResult> followCollection(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Query("followCollectionId") long followCollectionId,
+        @Query("foruserId") long foruserId
+    );
+
+    @POST("database.php?action=followCollection")
+    Call<FollowCollectionResult> followCollections(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Body List<Long> followCollectionIds
+    );
+
+    @POST("database.php?action=followCollection")
+    Call<FollowCollectionResult> followCollections(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Body List<Long> followCollectionIds,
+        @Query("foruserId") long foruserId
     );
 
 

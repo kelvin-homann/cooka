@@ -40,7 +40,7 @@
 
         if(!isset($json)) {
             $resultCode = 206000;
-            $resultMessage = "the request did not contain a valid json body";
+            $resultMessage = "the request does not contain a valid json body";
             throw new Exception($resultMessage);
         }
 
@@ -48,7 +48,7 @@
 
         if(!isset($recipe)) {
             $resultCode = 207000;
-            $resultMessage = "the request did not contain a valid recipe object";
+            $resultMessage = "the request does not contain a valid recipe object";
             throw new Exception($resultMessage);
         }
     
@@ -823,7 +823,7 @@
     }
     catch(Exception $e) {
         // rollback uncommited changes
-        if($database->inTransaction())
+        if($database != null && $database->inTransaction())
             $database->rollBack();
     }
 

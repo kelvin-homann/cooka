@@ -14,8 +14,9 @@
     $userId = $_getpost['userId'];
     $accessToken = $_getpost['accessToken'];
     $ofuserId = null;
-    $selectedTypes = 65535;
+    $selectedTypes = 65519;//65535 ^ 16;
     $onlyOwnMessages = false;
+    $conflateRelatedMessages = true;
     $startDate = null;
 
     if(isset($_getpost['ofuserId']))
@@ -24,6 +25,8 @@
         $selectedTypes = $_getpost['selectedTypes'];
     if(isset($_getpost['onlyOwnMessages']) && $_getpost['onlyOwnMessages'] == 'true')
         $onlyOwnMessages = true;
+    if(isset($_getpost['conflateRelatedMessages']) && $_getpost['conflateRelatedMessages'] == 'false')
+        $conflateRelatedMessages = false;
     if(isset($_getpost['startDate'])) {
         $inputDate = $_getpost['startDate'];
         $dateTimePattern = "/([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{0,2})([0-9]{0,2})([0-9]{0,2})/";
@@ -413,19 +416,35 @@
 
         $selectFeedMessagesSql = "";
         $selectFeedMessagesParams = array();
+
+        if($conflateRelatedMessages == true) {
+            $selectFeedMessagesSql .= "select type, count(*) as cnt, message, userId, userName, userImageFileName, " .
+                "group_concat(object1Id order by performedDateTime desc separator '|') as object1Id, " .
+                "group_concat(object1Name order by performedDateTime desc separator '|') as object1Name, " .
+                "group_concat(object1ImageFileName order by performedDateTime desc separator '|') as object1ImageFileName, object2Id, " .
+                "group_concat(performedDateTime order by performedDateTime desc separator '|') as performedDateTime from (";
+        }
+
+        $numUnions = 0;
             
         // concatenate requested part select queries
         foreach($partSelectSql as $key => $value) {
             if(($selectedTypes & $key) != 0) {
-                if(strlen($selectFeedMessagesSql) > 0) $selectFeedMessagesSql .= "union ";
+                if($numUnions > 0) $selectFeedMessagesSql .= "union ";
                 $selectFeedMessagesSql .= $value;
                 if(is_array($partSelectParams[$key]) && count($partSelectParams[$key]) > 0)
                     $selectFeedMessagesParams = $selectFeedMessagesParams + $partSelectParams[$key];
+                $numUnions++;
             }
         }
 
+        if($conflateRelatedMessages == true) {
+            $selectFeedMessagesSql .= ") as FeedMessages " .
+                "group by type, userId, date(performedDateTime), hour(performedDateTime) ";
+        }
+
         // order union results
-        $selectFeedMessagesSql .= "order by performedDateTime desc";
+        $selectFeedMessagesSql .= "order by date(performedDateTime) desc, hour(performedDateTime) desc, rand();";
 
         // extend and log sql query
         if($logdb || $logfile || $logscreen) {
@@ -450,6 +469,7 @@
         foreach($feedRows as $feedRow) {
             $snack = array(
                 'type' => isset($feedRow['type']) ? $feedRow['type'] : "unknown", 
+                'count' => $conflateRelatedMessages == true && isset($feedRow['cnt']) ? $feedRow['cnt'] : 1,
                 'message' => isset($feedRow['message']) ? $feedRow['message'] : "", 
                 'userId' => isset($feedRow['userId']) ? $feedRow['userId'] : 0, 
                 'userName' => isset($feedRow['userName']) ? $feedRow['userName'] : 0, 

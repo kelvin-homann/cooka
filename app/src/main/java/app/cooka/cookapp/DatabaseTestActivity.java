@@ -1,5 +1,20 @@
 package app.cooka.cookapp;
 
+import android.annotation.TargetApi;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,6 +28,11 @@ import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
@@ -32,6 +52,7 @@ import java.util.List;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
+import app.cooka.cookapp.firebase.MessagingService;
 import app.cooka.cookapp.login.ICreateAccountCallback;
 import app.cooka.cookapp.login.ILoginCallback;
 import app.cooka.cookapp.login.IRefreshLoginCallback;
@@ -44,6 +65,7 @@ import app.cooka.cookapp.model.CreateRecipeResult;
 import app.cooka.cookapp.model.EDifficultyType;
 import app.cooka.cookapp.model.EPublicationType;
 import app.cooka.cookapp.model.FeedMessage;
+import app.cooka.cookapp.model.FollowUserResult;
 import app.cooka.cookapp.model.ICreateRecipeCallback;
 import app.cooka.cookapp.model.IUpdateRecipeCallback;
 import app.cooka.cookapp.model.Recipe;
@@ -51,6 +73,7 @@ import app.cooka.cookapp.model.RecipeStep;
 import app.cooka.cookapp.model.RecipeStepIngredient;
 import app.cooka.cookapp.model.Tag;
 import app.cooka.cookapp.model.UpdateRecipeResult;
+import app.cooka.cookapp.utils.NotificationUtils;
 import app.cooka.cookapp.view.CategoryGridViewAdapter;
 import app.cooka.cookapp.view.CategoryListViewAdapter;
 import app.cooka.cookapp.model.CreateUserResult;
@@ -62,11 +85,15 @@ import app.cooka.cookapp.model.User;
 import app.cooka.cookapp.utils.SystemUtils;
 import app.cooka.cookapp.view.FeedMessageRecyclerViewAdapter;
 import app.cooka.cookapp.view.RecipeFeedCardItemAdapter;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+@TargetApi(26)
 public class DatabaseTestActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String LOGTAG = "COOKALOG";
@@ -98,6 +125,22 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_database_test);
         setTitle("Database Tests");
+
+        //if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            List<NotificationChannel> notificationChannels = new ArrayList<>();
+            notificationChannels.add(NotificationUtils.createAppNotificationChanel("usage",
+                "Usage recommendations", "Makes recommendations about how to use this app and how to improve your usage experience",
+                NotificationManager.IMPORTANCE_DEFAULT));
+            notificationChannels.add(NotificationUtils.createAppNotificationChanel("recipe",
+                "Recipe recommendations", "Makes recommendations about recipes that you may like",
+                NotificationManager.IMPORTANCE_DEFAULT));
+            notificationChannels.add(NotificationUtils.createAppNotificationChanel("followee",
+                "Followee notifications", "Gives you notifications about the people and topics that you follow",
+                NotificationManager.IMPORTANCE_DEFAULT));
+
+            NotificationUtils.registerNotificationChannels(this, notificationChannels);
+        //}
 
         loginManager = LoginManager.Factory.getInstance(getApplicationContext());
 
@@ -164,10 +207,12 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         findViewById(R.id.btnPollCategories).setOnClickListener(this);
         findViewById(R.id.btnPollRecipes).setOnClickListener(this);
         findViewById(R.id.btnPollFeedMessages).setOnClickListener(this);
+        findViewById(R.id.btnNotify).setOnClickListener(this);
 
         databaseClient = DatabaseClient.Factory.getInstance(this);
 
-        selectAndUpdateTestRecipe();
+        //selectAndUpdateTestRecipe();
+        testFirebase();
     }
 
     @Override
@@ -223,6 +268,9 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
             case R.id.btnPollFeedMessages:
                 pollFeedMessages();
                 break;
+
+            case R.id.btnNotify:
+                testNotification();
         }
     }
 
@@ -741,6 +789,148 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         });
     }
 
+    private void testFirebase() {
+
+        FirebaseInstanceId.getInstance().getInstanceId()
+            .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                @Override
+                public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                    if (!task.isSuccessful()) {
+                        Log.w(LOGTAG, "getInstanceId failed", task.getException());
+                        return;
+                    }
+
+                    String token = task.getResult().getToken();
+                    Log.d(LOGTAG, "Refreshed Firebase Cloud Messaging token: " + token);
+                }
+            });
+    }
+
+    private void testNotification() {
+
+        String channelId = "usage";
+        String title = "Welcome to Cooka";
+        String message = "Thank you for choosing Cooka. Please tell us what food you would like to cook and what food hashtags, collections and people you would like to follow.";
+
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+            PendingIntent.FLAG_ONE_SHOT);
+
+        PendingIntent explorePendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+            PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent hashtagsIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+            PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent peopleIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+            PendingIntent.FLAG_ONE_SHOT);
+
+        NotificationCompat.Builder notificationBuilder =
+            new NotificationCompat.Builder(this, channelId);
+
+        NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
+        bigText
+            .setBigContentTitle(title)
+            .setSummaryText(title)
+            .bigText(message);
+
+        Bitmap cookaLogo = BitmapFactory.decodeResource(getResources(),
+            R.drawable.ic_cooka_icon);
+
+        final NotificationCompat.Action exploreAction =
+            new NotificationCompat.Action(R.drawable.ic_explore_24px, getString(R.string.notif_action_explore),
+                explorePendingIntent);
+        final NotificationCompat.Action hashtagsAction =
+            new NotificationCompat.Action(R.drawable.ic_hashtag_24px, getString(R.string.notif_action_hashtags),
+                explorePendingIntent);
+        final NotificationCompat.Action peoplesAction =
+            new NotificationCompat.Action(R.drawable.ic_people_24dp, getString(R.string.notif_action_people),
+                explorePendingIntent);
+
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        notificationBuilder
+            .setContentIntent(pendingIntent)
+            .setLargeIcon(cookaLogo)
+            .setSmallIcon(R.drawable.ic_cooka_icon)
+            .setColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark))
+            .setContentTitle(title)
+            .setContentText(message)
+            .setPriority(Notification.PRIORITY_MAX)
+            .setStyle(bigText)
+            .setLights(Color.GREEN, 500, 500)
+            .setSound(defaultSoundUri)
+            .addAction(exploreAction)
+            .addAction(hashtagsAction)
+            .addAction(peoplesAction)
+            .setAutoCancel(true)
+            .setChannelId("usage");
+
+        NotificationManager notificationManager = (NotificationManager)getSystemService(
+            Context.NOTIFICATION_SERVICE);
+        Notification notification = notificationBuilder.build();
+        notificationManager.notify(MessagingService.getNextNotificationId(), notification);
+    }
+
+    private void testDatabaseRequest() {
+
+        databaseClient.followUser(46, 42)
+            .enqueue(new Callback<FollowUserResult>() {
+                @Override
+                public void onResponse(Call<FollowUserResult> call, Response<FollowUserResult>
+                    response)
+                {
+                    FollowUserResult result = response.body();
+                    if(result == null) {
+                        Log.e(LOGTAG, "follow user failed on response");
+                        return;
+                    }
+                    if(result.resultCode != 0) {
+                        Log.e(LOGTAG, String.format("follow user failed with code %d: %s",
+                            result.resultCode, result.resultMessage));
+                        return;
+                    }
+                    Log.d(LOGTAG, "follow user succeeded");
+                }
+
+                @Override
+                public void onFailure(Call<FollowUserResult> call, Throwable t) {
+                    Log.e(LOGTAG, "followUser: the web service did not respond");
+                    t.printStackTrace();
+                }
+            });
+
+        List<Long> followUserIds = new ArrayList<>();
+        followUserIds.add(39L);
+        followUserIds.add(44L);
+        followUserIds.add(33L);
+
+        databaseClient.followUsers(followUserIds, 42)
+            .enqueue(new Callback<FollowUserResult>() {
+                @Override
+                public void onResponse(Call<FollowUserResult> call, Response<FollowUserResult>
+                    response)
+                {
+                    FollowUserResult result = response.body();
+                    if(result == null) {
+                        Log.e(LOGTAG, "follow users failed on response");
+                        return;
+                    }
+                    if(result.resultCode != 0) {
+                        Log.e(LOGTAG, String.format("follow users failed with code %d: %s",
+                            result.resultCode, result.resultMessage));
+                        return;
+                    }
+                    Log.d(LOGTAG, "follow users succeeded");
+                }
+
+                @Override
+                public void onFailure(Call<FollowUserResult> call, Throwable t) {
+                    Log.e(LOGTAG, "followUsers: the web service did not respond");
+                    t.printStackTrace();
+                }
+            });
+    }
+
     /**
      * {{DEBUG}}
      * Installs and trusts Sebastian's local self-signed SSL certificate used by the development
@@ -760,8 +950,6 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
 
             certificate = certificateFactory.generateCertificate(certificateInputStream);
             X509Certificate x509Certificate = (X509Certificate)certificate;
-            //Log.d(LOGTAG, String.format("generating certificate from file \"%s\"", certificateFileName));
-            //Log.d(LOGTAG, String.format("certificate ca = %s", x509Certificate.getSubjectDN()));
 
             certificateInputStream.close();
 

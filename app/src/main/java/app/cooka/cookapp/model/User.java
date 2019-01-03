@@ -314,6 +314,35 @@ public class User extends java.util.Observable {
         }
 
         /**
+         * Selects multiple existing users from the database, creates connected user objects and
+         * adds them to the specified list.
+         * @param usersReceivingList the list that will receive the selected user objects
+         * @return a subscription object to the select request; null if an error occurred.
+         */
+        public static Subscription selectUsers(final Context context, final List<User>
+            usersReceivingList)
+        {
+            if(usersReceivingList == null) {
+                throw new NullPointerException("users receiving list is null");
+            }
+            return DatabaseClient.Factory.getInstance(context)
+                .selectUsers()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<User>>() {
+                    @Override public void onCompleted() {}
+                    @Override public void onError(Throwable e) {
+                        Log.e(LOGTAG, "User.Factory.selectUsers() failed");
+                        Log.e(LOGTAG, e.getMessage());
+                    }
+                    @Override public void onNext(List<User> users) {
+                        // todo: register all users at the update observer
+                        usersReceivingList.addAll(users);
+                    }
+                });
+        }
+
+        /**
          * Selects user followers of the given user id and calls the specified callback method on
          * success or failure.
          * @param context the Android context to the run the method on.
@@ -346,30 +375,93 @@ public class User extends java.util.Observable {
         }
 
         /**
-         * Selects multiple existing users from the database, creates connected user objects and
-         * adds them to the specified list.
-         * @param usersReceivingList the list that will receive the selected user objects
-         * @return a subscription object to the select request; null if an error occurred.
+         * Follows the user identified by followUserId and calls the corresponding callback methods
+         * if provided.
+         * @param context the Android context to the run the method on.
+         * @param followUserId the identifier of the user to be followed.
+         * @param followUserCallback the callback interface to be called on success or on failure
+         *      (may be null).
          */
-        public static Subscription selectUsers(final Context context, final List<User>
-            usersReceivingList)
+        public static void followUser(final Context context, final long followUserId, final
+            IFollowUserCallback followUserCallback)
         {
-            if(usersReceivingList == null) {
-                throw new NullPointerException("users receiving list is null");
-            }
-            return DatabaseClient.Factory.getInstance(context)
-                .selectUsers()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<User>>() {
-                    @Override public void onCompleted() {}
-                    @Override public void onError(Throwable e) {
-                        Log.e(LOGTAG, "User.Factory.selectUsers() failed");
-                        Log.e(LOGTAG, e.getMessage());
+            DatabaseClient.Factory.getInstance(context)
+                .followUser(followUserId)
+                .enqueue(new Callback<FollowUserResult>() {
+                    @Override
+                    public void onResponse(Call<FollowUserResult> call, Response<FollowUserResult>
+                        response)
+                    {
+                        final FollowUserResult result = response.body();
+                        if(result == null) {
+                            Log.e(LOGTAG, "User.Factory.followUser() failed on response");
+                            if(followUserCallback != null)
+                                followUserCallback.onFailed(null);
+                            return;
+                        }
+                        if(result.resultCode != 0) {
+                            Log.e(LOGTAG, String.format("User.Factory.followUser() failed with code %d: %s",
+                                result.resultCode, result.resultMessage));
+                            if(followUserCallback != null)
+                                followUserCallback.onFailed(result);
+                            return;
+                        }
+                        if(followUserCallback != null)
+                            followUserCallback.onSucceeded(result);
                     }
-                    @Override public void onNext(List<User> users) {
-                        // todo: register all users at the update observer
-                        usersReceivingList.addAll(users);
+
+                    @Override
+                    public void onFailure(Call<FollowUserResult> call, Throwable t) {
+                        Log.e(LOGTAG, "User.Factory.followUser() failed: the web service did not respond");
+                        t.printStackTrace();
+                        if(followUserCallback != null)
+                                followUserCallback.onFailed(null);
+                    }
+                });
+        }
+
+        /**
+         * Follows the users identified by the ids given in the followUserIds list and calls the
+         * corresponding callback methods if provided.
+         * @param context the Android context to the run the method on.
+         * @param followUserIds list of identifiers of the users to be followed.
+         * @param followUserCallback the callback interface to be called on success or on failure
+         *      (may be null).
+         */
+        public static void followUsers(final Context context, final List<Long> followUserIds, final
+            IFollowUserCallback followUserCallback)
+        {
+            DatabaseClient.Factory.getInstance(context)
+                .followUsers(followUserIds)
+                .enqueue(new Callback<FollowUserResult>() {
+                    @Override
+                    public void onResponse(Call<FollowUserResult> call, Response<FollowUserResult>
+                        response)
+                    {
+                        final FollowUserResult result = response.body();
+                        if(result == null) {
+                            Log.e(LOGTAG, "User.Factory.followUsers() failed on response");
+                            if(followUserCallback != null)
+                                followUserCallback.onFailed(null);
+                            return;
+                        }
+                        if(result.resultCode != 0) {
+                            Log.e(LOGTAG, String.format("User.Factory.followUsers() failed with code %d: %s",
+                                result.resultCode, result.resultMessage));
+                            if(followUserCallback != null)
+                                followUserCallback.onFailed(result);
+                            return;
+                        }
+                        if(followUserCallback != null)
+                            followUserCallback.onSucceeded(result);
+                    }
+
+                    @Override
+                    public void onFailure(Call<FollowUserResult> call, Throwable t) {
+                        Log.e(LOGTAG, "User.Factory.followUsers() failed: the web service did not respond");
+                        t.printStackTrace();
+                        if(followUserCallback != null)
+                                followUserCallback.onFailed(null);
                     }
                 });
         }

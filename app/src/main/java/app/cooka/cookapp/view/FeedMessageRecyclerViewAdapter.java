@@ -84,12 +84,12 @@ public class FeedMessageRecyclerViewAdapter extends
     public static final SimpleDateFormat feedMessageListDateFormat = new SimpleDateFormat("d MMMM yyyy, hh:mma");
 
     public static final int FMCM_VIEW_PERFORMER_PROFILE = 10000;
-    public static final int FMCM_VIEW_FOLLOWEE_PROFILE = 10001;
+    public static final int FMCM_VIEW_FOLLOWEE_PROFILE = 11000;
     public static final int FMCM_VIEW_RECIPE = 10010;
     public static final int FMCM_PIN_RECIPE = 10011;
     public static final int FMCM_COOK_RECIPE_NOW = 10012;
-    public static final int FMCM_BROWSE_COLLECTION = 10020;
-    public static final int FMCM_BROWSE_TAG = 10021;
+    public static final int FMCM_BROWSE_COLLECTION = 12000;
+    public static final int FMCM_BROWSE_TAG = 13000;
 
     private static String[] userTitles = {
         "cookie monster",
@@ -139,39 +139,130 @@ public class FeedMessageRecyclerViewAdapter extends
         viewHolder.tvwUserDescription.setText(userTitle);
 
         final EFeedMessageType messageType = feedMessage.getType();
+        final int count = feedMessage.getCount();
 
         // set message heading text view
         String message;
         Resources resources = viewHolder.context.getResources();
         if(resources != null) {
+            final int enumerateUpTo = 3;
             switch(messageType) {
             case followedUser:
-                message = resources.getString(R.string.is_now_following_user, feedMessage.getObject1Name());
+                if(count == 1)
+                    message = resources.getString(R.string.is_now_following_user,
+                        feedMessage.getObject1Name(), "");
+                else if(feedMessage.getCount() == 2)
+                    message = resources.getString(R.string.is_now_following_user_and_user,
+                        feedMessage.getObject1Name(0), "", feedMessage.getObject1Name(1), "");
+                else
+                    message = resources.getString(R.string.is_now_following_user_and_n_others,
+                        feedMessage.getObject1Name(), "", count - 1);
                 break;
+
             case followedTag:
-                message = resources.getString(R.string.is_now_following_tag, feedMessage.getObject1Name());
+                if(count == 1)
+                    message = resources.getString(R.string.is_now_following_tag,
+                        feedMessage.getObject1Name(), "");
+                else if(count <= enumerateUpTo) {
+                    message = resources.getString(R.string.is_now_following_tags) + " ";
+                    for(int i = 0; i < feedMessage.getObject1Names().size() && i < enumerateUpTo; i++) {
+                        if(i == enumerateUpTo - 1) message += " " + resources.getString(R.string.feed_message_and) + " #" + feedMessage.getObject1Names().get(i);
+                        else if(i > 0) message += ", #" + feedMessage.getObject1Names().get(i);
+                        else message += "#" + feedMessage.getObject1Names().get(i);
+                    }
+                }
+//                else if(feedMessage.getCount() == 2)
+//                    message = resources.getString(R.string.is_now_following_tag_and_tag,
+//                        feedMessage.getObject1Name(0), "", feedMessage.getObject1Name(1), "");
+                else
+                    message = resources.getString(R.string.is_now_following_tag_and_n_others,
+                        feedMessage.getObject1Name(), "", count - 1);
                 break;
+
             case followedCollection:
-                message = resources.getString(R.string.is_now_following_collection, feedMessage.getObject1Name());
+                if(count == 1)
+                    message = resources.getString(R.string.is_now_following_collection,
+                        feedMessage.getObject1Name(), "");
+                else if(feedMessage.getCount() == 2)
+                    message = resources.getString(R.string.is_now_following_collection_and_collection,
+                        feedMessage.getObject1Name(0), "", feedMessage.getObject1Name(1), "");
+                else
+                    message = resources.getString(R.string.is_now_following_collection_and_n_others,
+                        feedMessage.getObject1Name(), "", count - 1);
                 break;
+
             case createdRecipe:
-                message = resources.getString(R.string.created_recipe, feedMessage.getObject1Name());
+                if(count == 1)
+                    message = resources.getString(R.string.created_recipe, feedMessage.getObject1Name(), "");
+                else if(count <= enumerateUpTo) {
+                    message = resources.getString(R.string.created_recipes) + " ";
+                    for(int i = 0; i < feedMessage.getObject1Names().size() && i < enumerateUpTo; i++) {
+                        if(i == enumerateUpTo - 1) message += " " + resources.getString(R.string.feed_message_and) + " " + feedMessage.getObject1Names().get(i);
+                        else if(i > 0) message += ", " + feedMessage.getObject1Names().get(i);
+                        else message += feedMessage.getObject1Names().get(i);
+                    }
+                }
+                else
+                    message = resources.getString(R.string.created_recipe_and_n_more,
+                        feedMessage.getObject1Name(), "", count - 1);
                 break;
+
             case modifiedRecipe:
-                message = resources.getString(R.string.modified_recipe, feedMessage.getObject1Name());
+                if(count == 1)
+                    message = resources.getString(R.string.modified_recipe, feedMessage.getObject1Name(), "");
+                else if(count <= enumerateUpTo) {
+                    message = resources.getString(R.string.modified_recipes) + " ";
+                    for(int i = 0; i < feedMessage.getObject1Names().size() && i < enumerateUpTo; i++) {
+                        if(i == enumerateUpTo - 1) message += " " + resources.getString(R.string.feed_message_and) + " " + feedMessage.getObject1Names().get(i);
+                        else if(i > 0) message += ", " + feedMessage.getObject1Names().get(i);
+                        else message += feedMessage.getObject1Names().get(i);
+                    }
+                }
+                else
+                    message = resources.getString(R.string.modified_recipe_and_n_more,
+                        feedMessage.getObject1Name(), "", count - 1);
                 break;
+
             case cookedRecipe:
-                message = resources.getString(R.string.cooked_recipe, feedMessage.getObject1Name());
+                if(count == 1)
+                    message = resources.getString(R.string.cooked_recipe, feedMessage.getObject1Name(), "");
+                else if(count <= enumerateUpTo) {
+                    message = resources.getString(R.string.cooked_recipes) + " ";
+                    for(int i = 0; i < feedMessage.getObject1Names().size() && i < enumerateUpTo; i++) {
+                        if(i == enumerateUpTo - 1) message += " " + resources.getString(R.string.feed_message_and) + " " + feedMessage.getObject1Names().get(i);
+                        else if(i > 0) message += ", " + feedMessage.getObject1Names().get(i);
+                        else message += feedMessage.getObject1Names().get(i);
+                    }
+                }
+                else
+                    message = resources.getString(R.string.cooked_recipe_and_n_more,
+                        feedMessage.getObject1Name(), "", count - 1);
                 break;
+
             case createdCollection:
-                message = resources.getString(R.string.created_collection, feedMessage.getObject1Name());
+                if(count == 1)
+                    message = resources.getString(R.string.created_collection, feedMessage.getObject1Name(), "");
+                else if(count <= enumerateUpTo) {
+                    message = resources.getString(R.string.created_collections) + " ";
+                    for(int i = 0; i < feedMessage.getObject1Names().size() && i < enumerateUpTo; i++) {
+                        if(i == enumerateUpTo - 1) message += " " + resources.getString(R.string.feed_message_and) + " " + feedMessage.getObject1Names().get(i);
+                        else if(i > 0) message += ", " + feedMessage.getObject1Names().get(i);
+                        else message += feedMessage.getObject1Names().get(i);
+                    }
+                }
+                else
+                    message = resources.getString(R.string.created_collection_and_n_more,
+                        feedMessage.getObject1Name(), "", count - 1);
                 break;
+
             case addedRecipeToCollection:
-                message = resources.getString(R.string.added_recipe_to_collection, feedMessage.getObject1Name());
+                message = resources.getString(R.string.added_recipe_to_collection, feedMessage.getObject1Name(), "");
                 break;
+
             case addedImageToRecipe:
-                message = resources.getString(R.string.added_image_to_recipe, feedMessage.getObject1Name());
+                message = resources.getString(R.string.added_image_to_recipe, feedMessage.getObject1Name(), "");
                 break;
+
             // this should not happen
             default:
                 message = feedMessage.getMessage();
@@ -288,17 +379,31 @@ public class FeedMessageRecyclerViewAdapter extends
                     String viewFolloweeProfileText = context.getString(R.string.view_profile_of_user, feedMessage.getObject1Name());
                     menu.add(R.id.fmcm_context_group, FMCM_VIEW_FOLLOWEE_PROFILE, 0, viewFolloweeProfileText)
                         .setIcon(R.drawable.ic_user_24dp);
+                    // add up to two more followee users to the menu
+                    for(int i = 1; i < feedMessage.getObject1Names().size() && i <= 2; i++) {
+                        viewFolloweeProfileText = context.getString(R.string.view_profile_of_user, feedMessage.getObject1Name(i));
+                        menu.add(R.id.fmcm_context_group, FMCM_VIEW_FOLLOWEE_PROFILE + i, 0, viewFolloweeProfileText)
+                            .setIcon(R.drawable.ic_user_24dp);
+                    }
                     break;
                 case followedTag:
                     String browseTagText = context.getString(R.string.browse_tag_tag, feedMessage.getObject1Name());
-                    menu.add(R.id.fmcm_context_group, FMCM_BROWSE_TAG, 0, browseTagText);
+                    menu.add(R.id.fmcm_context_group, FMCM_BROWSE_TAG, 0, browseTagText)
+                        .setIcon(R.drawable.ic_hashtag_24px);
+                    // add up to two more followee tags to the menu
+                    for(int i = 1; i < feedMessage.getObject1Names().size() && i <= 2; i++) {
+                        browseTagText = context.getString(R.string.browse_tag_tag, feedMessage.getObject1Name(i));
+                        menu.add(R.id.fmcm_context_group, FMCM_BROWSE_TAG + i, 0, browseTagText)
+                            .setIcon(R.drawable.ic_hashtag_24px);
+                    }
                     break;
                 case followedCollection:
                 case createdCollection:
                 case addedRecipeToCollection:
                     String browseCollectionText = context.getString(R.string.browse_collection_name,
                         feedMessage.getObject1Name());
-                    menu.add(R.id.fmcm_context_group, FMCM_BROWSE_COLLECTION, 0, browseCollectionText);
+                    menu.add(R.id.fmcm_context_group, FMCM_BROWSE_COLLECTION, 0, browseCollectionText)
+                        .setIcon(R.drawable.ic_collection_24px);
                     break;
                 case createdRecipe:
                 case modifiedRecipe:
@@ -317,7 +422,8 @@ public class FeedMessageRecyclerViewAdapter extends
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        switch(item.getItemId()) {
+                        int itemId = item.getItemId();
+                        switch(itemId) {
                         case FMCM_VIEW_PERFORMER_PROFILE:
                             Toast.makeText(viewHolder.context, String.format("view profile of %s",
                                 feedMessage.getUserName()), Toast.LENGTH_LONG).show();
@@ -349,9 +455,25 @@ public class FeedMessageRecyclerViewAdapter extends
                         case R.id.fmcm_report:
                             Toast.makeText(viewHolder.context, "report feed message", Toast.LENGTH_LONG).show();
                             return true;
-                        default:
-                            return false;
                         }
+
+                        // handle addition followee user items
+                        if(itemId >= FMCM_VIEW_FOLLOWEE_PROFILE + 1 && itemId <= FMCM_VIEW_FOLLOWEE_PROFILE + 2) {
+                            int index = itemId - FMCM_VIEW_FOLLOWEE_PROFILE;
+                            Toast.makeText(viewHolder.context, String.format("view profile of %s",
+                                feedMessage.getObject1Name(index)), Toast.LENGTH_LONG).show();
+                            return true;
+                        }
+
+                        // handle addition followee tag items
+                        else if(itemId >= FMCM_BROWSE_TAG + 1 && itemId <= FMCM_BROWSE_TAG + 2) {
+                            int index = itemId - FMCM_BROWSE_TAG;
+                            Toast.makeText(viewHolder.context, String.format("browse tag %s",
+                                feedMessage.getObject1Name(index)), Toast.LENGTH_LONG).show();
+                            return true;
+                        }
+
+                        return false;
                     }
                 });
                 popup.show();

@@ -207,12 +207,25 @@
                 android:textStyle="bold" />
 
             <Button
-                android:id="@+id/btnPollFeedMessages"
+                android:id="@+id/btnNotify"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="6dp"
+                android:layout_marginRight="16dp"
+                android:clickable="false"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:text="Notify" />
+
+            <Button
+                android:id="@+id/btnPollFeedMessages"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="3dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginBottom="16dp"
                 android:clickable="false"
@@ -223,7 +236,7 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rvwFeedMessages"
                 android:layout_width="match_parent"
-                android:layout_height="650dp"
+                android:layout_height="858dp"
                 android:paddingBottom="16dp" />
 
         </LinearLayout>

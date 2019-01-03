@@ -172,6 +172,38 @@ public class DatabaseClient {
             sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L), ofuserId);
     }
 
+    public Call<FollowUserResult> followUser(final long followUserId) {
+
+        return databaseInterface.followUser(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
+            followUserId);
+    }
+
+    public Call<FollowUserResult> followUser(final long followUserId, final long foruserId) {
+
+        return databaseInterface.followUser(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
+            followUserId, foruserId);
+    }
+
+    public Call<FollowUserResult> followUsers(final List<Long> followUserIds) {
+
+        return databaseInterface.followUsers(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
+            followUserIds);
+    }
+
+    public Call<FollowUserResult> followUsers(final List<Long> followUserIds, final long foruserId) {
+
+        return databaseInterface.followUsers(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
+            followUserIds, foruserId);
+    }
+
     public Call<CreateUserResult> createUser(final String userName, final String firstName,
         final String lastName, final String emailAddress, final String hashedPassword,
         final String salt, final String accessToken, final ELinkedProfileType linkedProfileType,
@@ -382,5 +414,77 @@ public class DatabaseClient {
             (changeState & Category.CHANGED_IMAGEFILENAME) == Category.CHANGED_IMAGEFILENAME ? category.getImageFileName() : null,
             (changeState & Category.CHANGED_SORTPREFIX) == Category.CHANGED_SORTPREFIX ? category.getSortPrefix() : null,
             (changeState & Category.CHANGED_BROWSABLE) == Category.CHANGED_BROWSABLE ? (category.isBrowsable() ? 1 : 0 ) : -1);
+    }
+    
+    /*  ************************************************************************************  *
+     *  TAG METHODS
+     *  ************************************************************************************  */
+    
+    public Call<FollowTagResult> followTag(final long followTagId) {
+
+        return databaseInterface.followTag(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
+            followTagId);
+    }
+
+    public Call<FollowTagResult> followTag(final long followTagId, final long foruserId) {
+
+        return databaseInterface.followTag(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
+            followTagId, foruserId);
+    }
+
+    public Call<FollowTagResult> followTags(final List<Long> followTagIds) {
+
+        return databaseInterface.followTags(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
+            followTagIds);
+    }
+
+    public Call<FollowTagResult> followTags(final List<Long> followTagIds, final long foruserId) {
+
+        return databaseInterface.followTags(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
+            followTagIds, foruserId);
+    }
+    
+    /*  ************************************************************************************  *
+     *  COLLECTION METHODS
+     *  ************************************************************************************  */
+    
+    public Call<FollowCollectionResult> followCollection(final long followCollectionId) {
+
+        return databaseInterface.followCollection(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
+            followCollectionId);
+    }
+
+    public Call<FollowCollectionResult> followCollection(final long followCollectionId, final long foruserId) {
+
+        return databaseInterface.followCollection(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
+            followCollectionId, foruserId);
+    }
+
+    public Call<FollowCollectionResult> followCollections(final List<Long> followCollectionIds) {
+
+        return databaseInterface.followCollections(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
+            followCollectionIds);
+    }
+
+    public Call<FollowCollectionResult> followCollections(final List<Long> followCollectionIds, final long foruserId) {
+
+        return databaseInterface.followCollections(
+            sharedPreferences.getLong(LoginManager.SPK_USERID, 0L),
+            sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, ""),
+            followCollectionIds, foruserId);
     }
 }
