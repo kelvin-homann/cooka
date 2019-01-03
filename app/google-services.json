@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "177265685080",
+    "firebase_url": "https://cooka-1543529652130.firebaseio.com",
+    "project_id": "cooka-1543529652130",
+    "storage_bucket": "cooka-1543529652130.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:177265685080:android:4989a31524cf1704",
+        "android_client_info": {
+          "package_name": "app.cooka.cookapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "177265685080-husd9nretiecvvn3tfo6icimsft397u3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.cooka.cookapp",
+            "certificate_hash": "231b1c1ac8c062b9153f2d8117813385f964a997"
+          }
+        },
+        {
+          "client_id": "177265685080-hr6fma72qd4sh5f5mjg86kniirjoupj9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsDH4IwhMqc6MNfIZIFqYmIA9KCF02ICs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "177265685080-hr6fma72qd4sh5f5mjg86kniirjoupj9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

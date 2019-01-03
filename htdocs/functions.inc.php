@@ -84,4 +84,32 @@
 
         return ($numInsertedLoggedQueries != 0);
     }
+
+    function authenticateUser($database, $userId, $accessToken) {
+
+        global $action;
+
+        if(!isset($database))
+            return -1;
+
+        $selectUserRightsSql = 'select user.userRights ' . 
+            'from Users user ' .
+            'inner join Logins login on login.userId = user.userId and login.userId = :uid and accessToken = :at';
+        
+        $selectUserRightsStmt = $database->prepare($selectUserRightsSql);
+        $selectUserRightsStmt->bindValue(':uid', $userId, PDO::PARAM_INT);
+        $selectUserRightsStmt->bindValue(':at', $accessToken, PDO::PARAM_STR);
+        $selectUserRightsStmt->execute();
+        $selectUserRightsRows = $selectUserRightsStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if(count($selectUserRightsRows) == 0) {
+            return -2;
+        }
+
+        $userRights = $selectUserRightsRows[0]['userRights'];
+
+        // todo: check if the user has the right to perform the action
+
+        return $userRights;
+    }
 ?>

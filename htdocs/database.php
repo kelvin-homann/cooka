@@ -20,6 +20,7 @@
         exit();
 
     include($scriptDir . '/functions.inc.php');
+    $userRightsMap = include($scriptDir . '/userrights.inc.php');
 
     $action = $_getpost['action'];
     $prettyPrint = true;
@@ -143,6 +144,9 @@
     case 'selectCollectionFollowers':
         include($scriptDir . '/database_selectcollectionfollowers.inc.php');
         break;
+    case 'followCollection':
+        include($scriptDir . '/database_followcollection.inc.php');
+        break;
 
     /* TAG ACTIONS */
     
@@ -151,6 +155,9 @@
         break;
     case 'selectTagFollowers':
         include($scriptDir . '/database_selecttagfollowers.inc.php');
+        break;
+    case 'followTag':
+        include($scriptDir . '/database_followtag.inc.php');
         break;
 
     /* USER ACTIONS */
@@ -205,8 +212,8 @@
     if($logfile && isset($sqlQueries) && count($sqlQueries) > 0) {
         foreach($sqlQueries as $query) {
             $prefix = strlen($action) > 0 ? $action : 'unknown';
-            file_put_contents('./log/' . $prefix . '_' . date("Ynj") . '.log', 
-                date("Y-n-j H:i:s") . ';' . $userId . ';' . $accessToken . ';' . $query . ';' . $_SERVER['REQUEST_URI'] . ';' . 
+            file_put_contents('./log/' . $prefix . '_' . date("Ymd") . '.log', 
+                date("Y-m-d H:i:s") . ';' . $userId . ';' . $accessToken . ';' . $query . ';' . $_SERVER['REQUEST_URI'] . ';' . 
                 $_SERVER['REQUEST_METHOD'] . ';' . $_SERVER['HTTP_USER_AGENT'] . PHP_EOL, FILE_APPEND);
         }
     }

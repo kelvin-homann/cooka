@@ -25,6 +25,18 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_cooka_icon" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorPrimaryDark" />
+
+        <service android:name=".firebase.MessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
         <!-- Facebook Login stuff -->
         <activity
@@ -44,8 +56,8 @@
         <!-- Main activity -->
         <activity
             android:name=".MainActivity"
-            android:exported="true"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -63,9 +75,9 @@
         <!-- Database test activity -->
         <activity
             android:name=".DatabaseTestActivity"
-            android:exported="true"
             android:label="@string/database_test"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
@@ -80,12 +92,15 @@
         <activity
             android:name=".CookModeActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:exported="true"
             android:label="@string/title_activity_cook_mode"
             android:theme="@style/FullscreenTheme" />
+
         <activity
             android:name=".RecipeEditorActivity"
             android:exported="true"/>
+            android:theme="@style/FullscreenTheme" />
+
+        <activity android:name=".AdministrationActivity" />
     </application>
 
 </manifest>
