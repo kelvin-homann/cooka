@@ -255,13 +255,10 @@ public class CookModeActivity extends AppCompatActivity {
         cardViewPager.setAdapter(null);
         cardAdapter.clear();
 
-        //Prepare a list with all ingredients to display on the overview sheet
-        List<RecipeStepIngredient> ingredients = new ArrayList<RecipeStepIngredient>();
 
         //Add the steps
         for(RecipeStep step : recipe.getRecipeSteps()){
             cardAdapter.addItem(step);
-            ingredients.addAll(step.getRecipeStepIngredients());
         }
 
         //Reassign the adapter to refresh the card view
@@ -269,7 +266,7 @@ public class CookModeActivity extends AppCompatActivity {
 
         //Set the ingredients of the overview sheet
         ingredientsView.clear();
-        ingredientsView.setIngredients(ingredients);
+        ingredientsView.setIngredients(recipe);
 
         //Hide loading screen
         loadingScreen.hide();

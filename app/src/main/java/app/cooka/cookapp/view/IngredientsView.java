@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Locale;
 
 import app.cooka.cookapp.R;
+import app.cooka.cookapp.model.Recipe;
+import app.cooka.cookapp.model.RecipeStep;
 import app.cooka.cookapp.model.RecipeStepIngredient;
 import app.cooka.cookapp.utils.RecipeUtils;
 
@@ -117,6 +119,19 @@ public class IngredientsView extends FrameLayout {
             for(int i = 0; i < (minimumItemCount - addedIds.size()); i++)
                 addIngredient("", "");
         }
+    }
+
+    public void setIngredients(Recipe recipe) {
+        //Create a list for all ingredients of the recipe
+        List<RecipeStepIngredient> allIngredients = new ArrayList<>();
+
+        //Add all ingredients from each step to the list
+        for(RecipeStep step : recipe.getRecipeSteps()){
+            allIngredients.addAll(step.getRecipeStepIngredients());
+        }
+
+        //Add the ingredients to the IngredientsView (this will also combine ingredients)
+        setIngredients(allIngredients);
     }
 
     //Add ingredient by passing amount and name as string
