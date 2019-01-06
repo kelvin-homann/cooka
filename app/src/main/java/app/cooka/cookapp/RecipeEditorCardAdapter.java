@@ -34,6 +34,10 @@ public class RecipeEditorCardAdapter extends PagerAdapter implements CardPagerAd
 
     public void addItem() {
         RecipeStep step = RecipeStep.Factory.createRecipeStepDraft(getCount()+1, "", "", new ArrayList<RecipeStepIngredient>());
+        addItem(step);
+    }
+
+    public void addItem(RecipeStep step) {
         items.add(step);
         views.add(null);
     }
@@ -41,6 +45,11 @@ public class RecipeEditorCardAdapter extends PagerAdapter implements CardPagerAd
     public void removeItem(int position) {
         items.remove(position);
         views.remove(position);
+    }
+
+    public void clear() {
+        items.clear();
+        views.clear();
     }
 
     public View getViewAt(int position) {

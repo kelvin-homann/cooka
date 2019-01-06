@@ -13,14 +13,20 @@ import android.view.View;
 import com.rd.PageIndicatorView;
 import com.rd.utils.DensityUtils;
 
+import app.cooka.cookapp.model.IResultCallback;
 import app.cooka.cookapp.model.Recipe;
 import app.cooka.cookapp.model.RecipeStep;
 import app.cooka.cookapp.model.RecipeStepIngredient;
 import app.cooka.cookapp.view.IngredientsView;
+import app.cooka.cookapp.view.LoadingScreenView;
 
 public class RecipeEditorActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
+    private LoadingScreenView loadingScreen;
+
+    //The recipe that is currently beeing edited
+    private Recipe recipe;
 
     //View pager and page indicator
     private ViewPager cardViewPager;
@@ -82,6 +88,12 @@ public class RecipeEditorActivity extends AppCompatActivity {
         //Page Indicator
         pageIndicatorView = findViewById(R.id.pageIndicatorView);
         pageIndicatorView.setViewPager(cardViewPager);
+
+        //Loading screen
+        loadingScreen = findViewById(R.id.loading_screen);
+        loadingScreen.hide();
+
+        loadRecipe(11);
     }
 
     public void fab_onClick(View view) {
@@ -133,4 +145,33 @@ public class RecipeEditorActivity extends AppCompatActivity {
         cardAdapter.notifyDataSetChanged();
         cardViewPager.setCurrentItem(itemToRemove >= cardAdapter.getCount() ? cardAdapter.getCount()-1 : itemToRemove);
     }
+
+    public void loadRecipe(long id) {
+        //Show loading screen before loading
+        loadingScreen.show();
+
+        Recipe.Factory.selectRecipe(this, id, new IResultCallback<Recipe>() {
+            @Override
+            public void onSucceeded(Recipe result) {
+                loadRecipe(result);
+            }
+        });
+    }
+
+    public void loadRecipe(Recipe recipe) {
+        this.recipe = recipe;
+
+        cardViewPager.setAdapter(null);
+        cardAdapter.clear();
+
+        for(RecipeStep step : recipe.getRecipeSteps()) {
+            cardAdapter.addItem(step);
+        }
+
+        cardViewPager.setAdapter(cardAdapter);
+
+        loadingScreen.hide();
+    }
+
+
 }
