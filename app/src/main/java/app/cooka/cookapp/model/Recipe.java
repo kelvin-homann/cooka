@@ -471,6 +471,41 @@ public class Recipe extends java.util.Observable {
                 });
         }
 
+        /**
+         * Select recipes from the database filtered by the given filter keys and sorted by the
+         * given sort keys (see example).
+         *
+         * @param context the Android context to run this method in.
+         * @param filterKeys a list of strings representing "key:value" pairs that will be combined
+         *      to filter your recipe results. The following keys and their values are possible:
+         *      <li> contains:{text} (text: search string) </li>
+         *      <li> creatorId:{integer} (integer: user id) </li>
+         *      <li> difficulty:{simple|moderate|demanding} </li>
+         *      <li> category:{text|integer} (text: search string; integer: category id) </li>
+         *      <li> hasImage:{true|false} </li>
+         *      <li> wasVaried:{true|false} </li>
+         *      <li> flags:{integer} (exact combination of flags) </li>
+         *      <li> hasFlags:{integer} (contains given flags) </li>
+         * @param sortKeys a list of strings representing "key:value" pairs that will be combined
+         *      to build different levels of order in the recipe results. Value is either "asc"
+         *      or "desc". The following sort keys are possible:
+         *      <li> title </li>
+         *      <li> difficulty </li>
+         *      <li> preparationTime </li>
+         *      <li> cookedCount </li>
+         *      <li> pinnedCount </li>
+         *      <li> rating </li>
+         *      <li> fairRating </li>
+         *      <li> trendRating </li>
+         *      <li> created </li>
+         *      <li> lastCooked </li>
+         * @param limit the maximum number of recipes to fetch from the database
+         * @param offset the offset within the result set to start fetching the recipes from (i.e.
+         *      limit 10 and offset 11 selects recipes 11 to 20)
+         * @param selectRecipesCallback the select callback that will be called when the selection
+         *      succeeded and that will be given the recipe object.
+         * @return a subscription object to the select request; null if an error occurred.
+         */
         public static Subscription selectRecipes(final Context context, final List<String>
             filterKeys, final List<String> sortKeys, final long limit, final long offset,
             final IResultCallback<List<Recipe>> selectRecipesCallback)

@@ -863,7 +863,7 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
             .addAction(hashtagsAction)
             .addAction(peoplesAction)
             .setAutoCancel(true)
-            .setChannelId("usage");
+            .setChannelId(channelId);
 
         NotificationManager notificationManager = (NotificationManager)getSystemService(
             Context.NOTIFICATION_SERVICE);

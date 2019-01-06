@@ -22,6 +22,7 @@
     $accessToken = $_getpost['accessToken'];
     $numCategoriesRequested = -1;
     $numTagsRequested = -1;
+    $numIngredientsRequested = 0;
     $numRecipeStepsRequested = -1;
     $numRecipeRatingsRequested = 0;
     $recipe = null;
@@ -31,6 +32,8 @@
         $numCategoriesRequested = $_getpost['numCategoriesRequested'];
     if(isset($_getpost['numTagsRequested']) && is_numeric($_getpost['numTagsRequested']))
         $numTagsRequested = $_getpost['numTagsRequested'];
+    if(isset($_getpost['numIngredientsRequested']) && is_numeric($_getpost['numIngredientsRequested']))
+        $numIngredientsRequested = $_getpost['numIngredientsRequested'];
     if(isset($_getpost['numRecipeStepsRequested']) && is_numeric($_getpost['numRecipeStepsRequested']))
         $numRecipeStepsRequested = $_getpost['numRecipeStepsRequested'];
     if(isset($_getpost['numRecipeRatingsRequested']) && is_numeric($_getpost['numRecipeRatingsRequested']))
@@ -77,15 +80,31 @@
         $recipeRows = $selectRecipeStmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach($recipeRows as $recipeRow) {
+
+            $creatorName = "";
+            $recipeId = $recipeRow['recipeId'];
+            $flags = isset($recipeRow['flags']) ? $recipeRow['flags'] : 0;
+
+            if($flags & 1 == 1 && (!isset($recipeRow['creatorId']) || $recipeRow['creatorId'] == 0)) {
+                if(!isset($mockup_usernames)) {
+                    $mockup_usernames = include($scriptDir . '/mockup_usernames.inc.php');
+                }
+                $index = $recipeId % count($mockup_usernames);
+                $creatorName = $mockup_usernames[$index];
+            }
+            else if(isset($recipeRow['creatorName'])) {
+                $creatorName = $recipeRow['creatorName'];
+            }
+
             $recipe = array(
-                'recipeId' => isset($recipeRow['recipeId']) ? $recipeRow['recipeId'] : 0, 
+                'recipeId' => $recipeId, 
                 'languageId' => isset($recipeRow['languageId']) ? $recipeRow['languageId'] : 0, 
                 'title' => isset($recipeRow['title']) ? $recipeRow['title'] : "", 
                 'description' => isset($recipeRow['description']) ? $recipeRow['description'] : "", 
                 'originalRecipeId' => isset($recipeRow['originalRecipeId']) ? $recipeRow['originalRecipeId'] : 0, 
                 'originalTitle' => isset($recipeRow['originalTitle']) ? $recipeRow['originalTitle'] : "", 
                 'creatorId' => isset($recipeRow['creatorId']) ? $recipeRow['creatorId'] : 0, 
-                'creatorName' => isset($recipeRow['creatorName']) ? $recipeRow['creatorName'] : "", 
+                'creatorName' => $creatorName, 
                 'mainImageId' => isset($recipeRow['mainImageId']) ? $recipeRow['mainImageId'] : 0, 
                 'mainImageFileName' => isset($recipeRow['mainImageFileName']) ? $recipeRow['mainImageFileName'] : "", 
                 'mainCategoryId' => isset($recipeRow['mainCategoryId']) ? $recipeRow['mainCategoryId'] : 0, 
@@ -103,7 +122,7 @@
                 'createdDateTime' => isset($recipeRow['createdDateTime']) ? $recipeRow['createdDateTime'] : "", 
                 'lastModifiedDateTime' => isset($recipeRow['lastModifiedDateTime']) ? $recipeRow['lastModifiedDateTime'] : "", 
                 'lastCookedDateTime' => isset($recipeRow['lastCookedDateTime']) ? $recipeRow['lastCookedDateTime'] : "",
-                'flags' => isset($recipeRow['flags']) ? $recipeRow['flags'] : 0, 
+                'flags' => $flags
             );
 
             // query categories
@@ -182,6 +201,55 @@
                 $recipe['tags'] = array();
 
             $recipe['numTagsRequested'] = $numTagsRequested;
+
+            // query ingredients in sum
+            if($numIngredientsRequested != 0)
+            {
+                $selectIngredientsSql = "select recipeStepIngredient.ingredientId, ingredientNameString.originalValue as ingredientName, " .
+                    "ingredientDescriptionString.originalValue as ingredientDescription, sum(recipeStepIngredient.amount) as ingredientAmount, " .
+                    "recipeStepIngredient.unitTypeId, unitTypeNameString.originalValue as unitTypeName, unitType.abbreviation as unitTypeAbbreviation, " . 
+                    "recipeStepIngredient.customUnit " .
+                    "from RecipeStepIngredients recipeStepIngredient " .
+                    "inner join RecipeSteps recipeStep on recipeStep.recipeStepId = recipeStepIngredient.recipeStepId and recipeStep.recipeId = ? " .
+                    "left join Ingredients ingredient on ingredient.ingredientId = recipeStepIngredient.ingredientId " .
+                    "left join Strings ingredientNameString on ingredientNameString.stringId = ingredient.nameStringId " .
+                    "left join Strings ingredientDescriptionString on ingredientDescriptionString.stringId = ingredient.descriptionStringId " .
+                    "left join UnitTypes unitType on unitType.unitTypeId = recipeStepIngredient.unitTypeId " .
+                    "left join Strings unitTypeNameString on unitTypeNameString.stringId = unitType.nameStringId " . 
+                    "group by ingredient.ingredientId, recipeStepIngredient.unitTypeId, recipeStepIngredient.customUnit " .
+                    "order by ingredientAmount desc";
+
+                if($numIngredientsRequested > 0)
+                    $selectIngredientsSql .= " limit ?";
+
+                $selectIngredientsStmt = $database->prepare($selectIngredientsSql);
+                $selectIngredientsStmt->bindValue(1, $recipeId, PDO::PARAM_INT);
+                if($numIngredientsRequested > 0)
+                    $selectIngredientsStmt->bindValue(2, $numIngredientsRequested, PDO::PARAM_INT);
+                $selectIngredientsStmt->execute();
+                $ingredientRows = $selectIngredientsStmt->fetchAll(PDO::FETCH_ASSOC);
+                $ingredients = array();
+
+                foreach($ingredientRows as $ingredientRow) {
+                    $ingredient = array(
+                        'ingredientId' => isset($ingredientRow['ingredientId']) ? $ingredientRow['ingredientId'] : 0, 
+                        'ingredientName' => isset($ingredientRow['ingredientName']) ? $ingredientRow['ingredientName'] : "", 
+                        'ingredientDescription' => isset($ingredientRow['ingredientDescription']) ? $ingredientRow['ingredientDescription'] : "", 
+                        'ingredientAmount' => isset($ingredientRow['ingredientAmount']) ? $ingredientRow['ingredientAmount'] : 0, 
+                        'unitTypeId' => isset($ingredientRow['unitTypeId']) ? $ingredientRow['unitTypeId'] : 0,
+                        'unitTypeName' => isset($ingredientRow['unitTypeName']) ? $ingredientRow['unitTypeName'] : "",
+                        'unitTypeAbbreviation' => isset($ingredientRow['unitTypeAbbreviation']) ? $ingredientRow['unitTypeAbbreviation'] : "",
+                        'customUnit' => isset($ingredientRow['customUnit']) ? $ingredientRow['customUnit'] : ""
+                    );
+
+                    $ingredients[] = $ingredient;
+                }
+
+                $recipe['ingredients'] = $ingredients;
+                $recipe['numIngredientsRequested'] = $numIngredientsRequested;
+            }
+            //else
+            //    $recipe['ingredients'] = array();
 
             // query cooking steps
             if($numRecipeStepsRequested != 0)
@@ -272,6 +340,12 @@
 
             $recipe['recipeRatings'] = array();
             $recipe['numRecipeRatingsRequested'] = $numRecipeRatingsRequested;
+
+            // update viewed count
+            $updateRecipeSql = 'update Recipes set viewedCount = viewedCount + 1 where recipeId = ?';
+            $updateRecipeStmt = $database->prepare($updateRecipeSql);
+            $updateRecipeStmt->bindValue(1, $recipeId, PDO::PARAM_INT);
+            $updateRecipeStmt->execute();
 
             break; // there should be only one recipe row for a given recipeId anyway
         }

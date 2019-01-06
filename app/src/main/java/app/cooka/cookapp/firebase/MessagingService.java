@@ -62,7 +62,7 @@ public class MessagingService extends FirebaseMessagingService {
             // check if the message contains a notification type key
             if(messageData.containsKey(MDK_NOTIFICATIONTYPE)) {
 
-                // iterate through and handle different supported notification types
+                // switch through and handle different supported notification types
                 String notificationType = messageData.get(MDK_NOTIFICATIONTYPE);
                 switch(notificationType) {
                 case "welcome":
@@ -255,7 +255,7 @@ public class MessagingService extends FirebaseMessagingService {
             .addAction(hashtagsAction)
             .addAction(peoplesAction)
             .setAutoCancel(true)
-            .setChannelId("usage");
+            .setChannelId(channelId);
 
         NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
 
