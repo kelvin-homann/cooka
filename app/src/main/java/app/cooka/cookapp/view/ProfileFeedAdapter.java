@@ -26,13 +26,13 @@ import app.cooka.cookapp.model.EFeedMessageType;
 import app.cooka.cookapp.model.FeedMessage;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ProfileFeedViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ProfileFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     // Data for Feed
     private ArrayList<FeedMessage> mFeed;
     private Context mContext;
 
-    public ProfileFeedViewAdapter(ArrayList<FeedMessage> feed, Context context){
+    public ProfileFeedAdapter(ArrayList<FeedMessage> feed, Context context){
         mFeed = feed;
         mContext = context;
     }
@@ -110,8 +110,8 @@ public class ProfileFeedViewAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 GlideApp.with(mContext)
                         .asBitmap()
                         .load("https://www.sebastianzander.de/cooka/img/" + mFeed.get(i).getObject1ImageFileName())
-                        .placeholder(R.drawable.ic_account_circle_24dp)
-                        .error(R.drawable.ic_account_circle_24dp)
+                        .placeholder(R.drawable.ic_default_profile_image_24dp)
+                        .error(R.drawable.ic_default_profile_image_24dp)
                         .into(viewHolder1.imageView);
 
                 if (mFeed.get(i).getType() == EFeedMessageType.followedTag)
@@ -136,8 +136,8 @@ public class ProfileFeedViewAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                     GlideApp.with(mContext)
                             .asBitmap()
                             .load("https://www.sebastianzander.de/cooka/img/" + mFeed.get(i).getUserImageFileName())
-                            .placeholder(R.drawable.ic_account_circle_24dp)
-                            .error(R.drawable.ic_account_circle_24dp)
+                            .placeholder(R.drawable.ic_default_profile_image_24dp)
+                            .error(R.drawable.ic_default_profile_image_24dp)
                             .into(viewHolder2.imageView);
                 }
 
@@ -145,8 +145,8 @@ public class ProfileFeedViewAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                         .asBitmap()
                         .load("https://www.sebastianzander.de/cooka/img/" + mFeed.get(i).getObject1ImageFileName())
                         .centerCrop()
-                        .placeholder(R.drawable.ic_account_circle_24dp)
-                        .error(R.drawable.ic_account_circle_24dp)
+                        .placeholder(R.drawable.ic_default_profile_image_24dp)
+                        .error(R.drawable.ic_default_profile_image_24dp)
                         .into(viewHolder2.bigPicture);
 
                 viewHolder2.name.setText(mFeed.get(i).getUserName());

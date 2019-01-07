@@ -81,15 +81,15 @@
     </plurals>
 
     <!-- Feed: activity messages not leading with user name -->
-    <string name="is_now_following_user">is now following <a href="">@%1$s</a></string>
-    <string name="is_now_following_tag">is now following <a href="">#%1$s</a></string>
-    <string name="is_now_following_collection">is now following <a href="">%1$s</a></string>
-    <string name="created_recipe">created recipe <a href="">%1$s</a></string>
-    <string name="modified_recipe">modified recipe <a href="">%1$s</a></string>
-    <string name="cooked_recipe">cooked recipe <a href="">%1$s</a></string>
-    <string name="created_collection">created collection <a href="">%1$s</a></string>
-    <string name="added_recipe_to_collection">added a recipe to <a href="">%1$s</a></string>
-    <string name="added_image_to_recipe">added an image to recipe <a href="">%1$s</a></string>
+    <!--<string name="is_now_following_user">is now following <a href="">@%1$s</a></string>-->
+    <!--<string name="is_now_following_tag">is now following <a href="">#%1$s</a></string>-->
+    <!--<string name="is_now_following_collection">is now following <a href="">%1$s</a></string>-->
+    <!--<string name="created_recipe">created recipe <a href="">%1$s</a></string>-->
+    <!--<string name="modified_recipe">modified recipe <a href="">%1$s</a></string>-->
+    <!--<string name="cooked_recipe">cooked recipe <a href="">%1$s</a></string>-->
+    <!--<string name="created_collection">created collection <a href="">%1$s</a></string>-->
+    <!--<string name="added_recipe_to_collection">added a recipe to <a href="">%1$s</a></string>-->
+    <!--<string name="added_image_to_recipe">added an image to recipe <a href="">%1$s</a></string>-->
 
     <string name="feed_message_and">and</string>
     <string name="is_now_following_user">is now following <a href="%2$s">@%1$s</a></string>
@@ -119,15 +119,15 @@
     <string name="added_recipe_to_collection">added a recipe to <a href="%2$s">%1$s</a></string>
     <string name="added_image_to_recipe">added an image to recipe <a href="%2$s">%1$s</a></string>
     <!-- Feed: activity messages leading with user name -->
-    <string name="username_is_now_following_user">%1$s is now following <a href="">@%2$s</a></string>
-    <string name="username_is_now_following_tag">%1$s is now following <a href="">#%2$s</a></string>
-    <string name="username_is_now_following_collection">%1$s is now following <a href="">%2$s</a></string>
-    <string name="username_created_recipe">%1$s created recipe <a href="">%2$s</a></string>
-    <string name="username_modified_recipe">%1$s modified recipe <a href="">%2$s</a></string>
-    <string name="username_cooked_recipe">%1$s cooked recipe <a href="">%2$s</a></string>
-    <string name="username_created_collection">%1$s created collection <a href="">%2$s</a></string>
-    <string name="username_added_recipe_to_collection">%1$s added a recipe to <a href="">%2$s</a></string>
-    <string name="username_added_image_to_recipe">%1$s added an image to recipe <a href="">%2$s</a></string>
+    <!--<string name="username_is_now_following_user">%1$s is now following <a href="">@%2$s</a></string>-->
+    <!--<string name="username_is_now_following_tag">%1$s is now following <a href="">#%2$s</a></string>-->
+    <!--<string name="username_is_now_following_collection">%1$s is now following <a href="">%2$s</a></string>-->
+    <!--<string name="username_created_recipe">%1$s created recipe <a href="">%2$s</a></string>-->
+    <!--<string name="username_modified_recipe">%1$s modified recipe <a href="">%2$s</a></string>-->
+    <!--<string name="username_cooked_recipe">%1$s cooked recipe <a href="">%2$s</a></string>-->
+    <!--<string name="username_created_collection">%1$s created collection <a href="">%2$s</a></string>-->
+    <!--<string name="username_added_recipe_to_collection">%1$s added a recipe to <a href="">%2$s</a></string>-->
+    <!--<string name="username_added_image_to_recipe">%1$s added an image to recipe <a href="">%2$s</a></string>-->
 
     <string name="username_is_now_following_user">%1$s is now following <a href="%3$s">@%2$s</a></string>
     <string name="username_is_now_following_users">%1$s is now following </string>
@@ -196,14 +196,14 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions." </string>
     <string name="login_background_desc">Login Background</string>
     <string name="profile_cookbook_ivw">Cookbook Imageview</string>
-    <string name="btn_register">Register</string>
-    <string name="register_with_alternative">or Register with</string>
-    <string name="register_using_e_mail">Register with E-Mail</string>
-    <string name="register_with_facebook">Register with Facebook</string>
-    <string name="error_email_login">Invalid E-Mail or Username</string>
-    <string name="error_password_login">Invalid Password</string>
-    <string name="email_username_hint">E-Mail or Username</string>
-    <string name="login_invalid">Wrong E-Mail or Password</string>
+    <!--<string name="btn_register">Register</string>-->
+    <!--<string name="register_with_alternative">or Register with</string>-->
+    <!--<string name="register_using_e_mail">Register with E-Mail</string>-->
+    <!--<string name="register_with_facebook">Register with Facebook</string>-->
+    <!--<string name="error_email_login">Invalid E-Mail or Username</string>-->
+    <!--<string name="error_password_login">Invalid Password</string>-->
+    <!--<string name="email_username_hint">E-Mail or Username</string>-->
+    <!--<string name="login_invalid">Wrong E-Mail or Password</string>-->
 
     <!-- FollowerFragment -->
     <string name="headertext_follower">Follower</string>
@@ -228,7 +228,7 @@
     <string name="ingredients_section_title">Ingredients for this step</string>
     <string name="login_with_alternative">or Login with</string>
     <string name="btn_login">Login</string>
-    <string name="title_activity_register">RegisterActivity</string>
+    <!--<string name="title_activity_register">RegisterActivity</string>-->
 
     <!-- Login -->
     <string name="btn_register">Register</string>

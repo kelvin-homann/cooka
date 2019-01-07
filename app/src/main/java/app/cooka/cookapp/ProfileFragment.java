@@ -32,7 +32,7 @@ import app.cooka.cookapp.model.FeedMessage;
 import app.cooka.cookapp.model.IResultCallback;
 import app.cooka.cookapp.model.User;
 import app.cooka.cookapp.view.LoadingScreenView;
-import app.cooka.cookapp.view.ProfileFeedViewAdapter;
+import app.cooka.cookapp.view.ProfileFeedAdapter;
 
 public class ProfileFragment extends Fragment {
     // Data for the Feed
@@ -43,7 +43,7 @@ public class ProfileFragment extends Fragment {
     private FolloweeFragment followeeFragment;
 
     RecyclerView rvwFeed;
-    ProfileFeedViewAdapter feedListAdapter;
+    ProfileFeedAdapter feedListAdapter;
     LoadingScreenView loadingScreen;
 
 
@@ -63,7 +63,7 @@ public class ProfileFragment extends Fragment {
 
         // RecyclerView of the Feed
         rvwFeed = view.findViewById(R.id.rvwProfileFeed);
-        feedListAdapter = new ProfileFeedViewAdapter(feed, getContext());
+        feedListAdapter = new ProfileFeedAdapter(feed, getContext());
         rvwFeed.setAdapter(feedListAdapter);
         rvwFeed.setHasFixedSize(true);
         rvwFeed.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -107,8 +107,8 @@ public class ProfileFragment extends Fragment {
                                 .asBitmap()
                                 .load("https://www.sebastianzander.de/cooka/img/" + result.getProfileImageFileName())
                                 .apply(new RequestOptions()
-                                .placeholder(R.drawable.ic_account_circle_24dp)
-                                .error(R.drawable.ic_account_circle_24dp)
+                                .placeholder(R.drawable.ic_default_profile_image_24dp)
+                                .error(R.drawable.ic_default_profile_image_24dp)
                                 .centerCrop())
                                 .listener(new RequestListener<Bitmap>() {
                                     @Override

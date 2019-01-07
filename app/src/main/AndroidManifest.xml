@@ -102,6 +102,14 @@
             android:theme="@style/FullscreenTheme" />
 
         <activity android:name=".AdministrationActivity" />
+
+        <activity android:name=".LoginActivity" >
+
+        </activity>
+
+        <activity android:name=".RegisterActivity" >
+
+        </activity>
     </application>
 
 </manifest>

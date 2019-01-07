@@ -44,8 +44,8 @@ public class FollowerListViewAdapter extends RecyclerView.Adapter<FollowerListVi
             GlideApp.with(mContext)
                     .asBitmap()
                     .load("https://www.sebastianzander.de/cooka/img/" + mFollowers.get(i).getProfileImageFileName())
-                    .placeholder(R.drawable.ic_account_circle_24dp)
-                    .error(R.drawable.ic_account_circle_24dp)
+                    .placeholder(R.drawable.ic_default_profile_image_24dp)
+                    .error(R.drawable.ic_default_profile_image_24dp)
                     .into(viewHolder.imageView);
         }
 
