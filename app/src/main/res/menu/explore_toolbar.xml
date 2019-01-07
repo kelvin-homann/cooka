@@ -26,4 +26,9 @@
         android:id="@+id/action_register"
         android:title="Register"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_tutorial"
+        android:title="Tutorial"
+        app:showAsAction="never" />
 </menu>

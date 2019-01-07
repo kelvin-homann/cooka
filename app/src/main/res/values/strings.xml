@@ -322,4 +322,14 @@
     <string name="register_loginredirect">Already have an account?</string>
     <!--<string name="title_activity_register">Register</string>-->
     <!--<string name="register_loginredirect">Already have an account?</string>-->
+
+    <!-- Tutorial -->
+    <string name="title_activity_tutorial">Tutorial</string>
+    <string name="tut_header1">EXPLORE RECIPES AND FRIENDS ACTIVITY\'S</string>
+    <string name="tut_header2">FOLLOW YOUR FRIENDS</string>
+    <string name="tut_header3">EFFICIENT COOKING</string>
+    <string name="tut_get_started">GET STARTED</string>
+    <string name="tut_desc1">Swipe through your feed to see what your friends are cooking and explore recommended recipes!</string>
+    <string name="tut_desc2">Follow your friends and take a look at their Profile to see what they are cooking and who they follow!</string>
+    <string name="tut_desc3">Use the cook mode to cook your favorite recipes in no time!</string>
 </resources>
