@@ -22,29 +22,32 @@
 
     <ImageView
         android:id="@+id/ivwLoginLogo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
+        android:background="@drawable/ic_cooka_icon"
+        android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tilEmailLogin"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@tools:sample/avatars[6]" />
+        tools:src="@tools:sample/avatars[6]"
+        tools:srcCompat="@drawable/ic_cooka_icon" />
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/tilEmailLogin"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="64dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="64dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/etvEmailLogin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_marginStart="8dp"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="8dp"
@@ -65,7 +68,7 @@
     <android.support.design.widget.TextInputLayout
         android:id="@+id/tilPasswordLogin"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="64dp"
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -73,8 +76,8 @@
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/etvPasswordLogin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
@@ -117,15 +120,14 @@
         app:layout_constraintTop_toBottomOf="@+id/tvwLoginAlternative"
         app:layout_constraintVertical_bias="0.0" />
 
-    <Button
+    <android.support.design.button.MaterialButton
         android:id="@+id/btnUserLogin"
-        android:layout_width="135dp"
-        android:layout_height="37dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:background="@color/colorPrimary"
-        android:backgroundTint="@color/colorPrimary"
+        android:backgroundTint="@color/colorAccent"
         android:text="@string/btn_login"
         android:textAlignment="center"
         android:textAllCaps="true"
