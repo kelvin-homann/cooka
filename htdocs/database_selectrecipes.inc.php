@@ -100,8 +100,8 @@
 
         /* FILTERING: WHERES */
 
-        $selectRecipesSql .= "where recipe.publicationType = ? ";
-        $selectRecipesParams[$p++] = array('public', PDO::PARAM_STR);
+        $selectRecipesSql .= "where recipe.publicationType = 'public' ";
+        //$selectRecipesParams[$p++] = array('public', PDO::PARAM_STR);
 
         if(isset($_getpost['filterKey'])) {
             $selectRecipesFilterSql = "";

@@ -1243,220 +1243,273 @@ public class Recipe extends java.util.Observable {
             in.nextName();
             String title = in.nextString();
 
-            in.nextName();
-            String description = in.nextString();
+            String nextName = in.nextName();
+            // differentiate between recipe detail and recipe list output
 
-            in.nextName();
-            long originalRecipeId = in.nextLong();
+            // if the input json represents a detailed recipe item
+            if(nextName.equalsIgnoreCase("description")) {
 
-            in.nextName();
-            String originalRecipeTitle = in.nextString();
+                String description = in.nextString();
 
-            in.nextName();
-            long creatorId = in.nextLong();
-
-            in.nextName();
-            String creatorName = in.nextString();
-
-            in.nextName();
-            long mainImageId = in.nextLong();
-
-            in.nextName();
-            String mainImageFileName = in.nextString();
-
-            in.nextName();
-            long mainCategoryId = in.nextLong();
-
-            in.nextName();
-            String mainCategoryName = in.nextString();
-
-            in.nextName();
-            String publicationType = in.nextString();
-
-            in.nextName();
-            String difficultyType = in.nextString();
-
-            in.nextName();
-            int preparationTime = in.nextInt();
-
-            in.nextName();
-            int viewedCount = in.nextInt();
-
-            in.nextName();
-            int cookedCount = in.nextInt();
-
-            in.nextName();
-            int pinnedCount = in.nextInt();
-
-            in.nextName();
-            int modifiedCount = in.nextInt();
-
-            in.nextName();
-            int variedCount = in.nextInt();
-
-            in.nextName();
-            int sharedCount = in.nextInt();
-
-            in.nextName();
-            float rating = (float)in.nextDouble();
-
-            in.nextName();
-            String createdDateTime = in.nextString();
-
-            in.nextName();
-            String lastModifiedDateTime = in.nextString();
-
-            in.nextName();
-            String lastCookedDateTime = in.nextString();
-
-            in.nextName();
-            int flags = in.nextInt();
-
-            // categories
-            in.nextName();
-            in.beginArray();
-            List<Category> categories = new ArrayList<>();
-            while(in.hasNext()) {
-                JsonToken categoryToken = in.peek();
-                if(categoryToken == JsonToken.END_ARRAY)
-                    break;
-
-                in.beginObject();
                 in.nextName();
-                final long categoryId = in.nextLong();
+                long originalRecipeId = in.nextLong();
+
                 in.nextName();
-                String categoryName = in.nextString();
-                in.endObject();
+                String originalRecipeTitle = in.nextString();
 
-                categories.add(new Category(categoryId, languageId, categoryName));
-            }
-            in.endArray();
-
-            in.nextName();
-            int numCategoriesRequested = in.nextInt();
-
-            // tags
-            in.nextName();
-            in.beginArray();
-            List<Tag> tags = new ArrayList<>();
-            while(in.hasNext()) {
-                JsonToken tagToken = in.peek();
-                if(tagToken == JsonToken.END_ARRAY)
-                    break;
-
-                in.beginObject();
                 in.nextName();
-                final long tagId = in.nextLong();
-                in.nextName();
-                String tagName = in.nextString();
-                in.endObject();
+                long creatorId = in.nextLong();
 
-                tags.add(Tag.Factory.createTag(tagId, tagName));
-            }
-            in.endArray();
-
-            in.nextName();
-            int numTagsRequested = in.nextInt();
-
-            // steps
-            in.nextName();
-            in.beginArray();
-            List<RecipeStep> recipeSteps = new ArrayList<>();
-            while(in.hasNext()) {
-                JsonToken rsToken = in.peek();
-                if(rsToken == JsonToken.END_ARRAY)
-                    break;
-
-                in.beginObject();
                 in.nextName();
-                final long recipeStepId = in.nextLong();
-                in.nextName();
-                int stepNumber = in.nextInt();
-                in.nextName();
-                String stepTitle = in.nextString();
-                in.nextName();
-                String stepDescription = in.nextString();
+                String creatorName = in.nextString();
 
-                // ingredients
+                in.nextName();
+                long mainImageId = in.nextLong();
+
+                in.nextName();
+                String mainImageFileName = in.nextString();
+
+                in.nextName();
+                long mainCategoryId = in.nextLong();
+
+                in.nextName();
+                String mainCategoryName = in.nextString();
+
+                in.nextName();
+                String publicationType = in.nextString();
+
+                in.nextName();
+                String difficultyType = in.nextString();
+
+                in.nextName();
+                int preparationTime = in.nextInt();
+
+                in.nextName();
+                int viewedCount = in.nextInt();
+
+                in.nextName();
+                int cookedCount = in.nextInt();
+
+                in.nextName();
+                int pinnedCount = in.nextInt();
+
+                in.nextName();
+                int modifiedCount = in.nextInt();
+
+                in.nextName();
+                int variedCount = in.nextInt();
+
+                in.nextName();
+                int sharedCount = in.nextInt();
+
+                in.nextName();
+                float rating = (float)in.nextDouble();
+
+                in.nextName();
+                String createdDateTime = in.nextString();
+
+                in.nextName();
+                String lastModifiedDateTime = in.nextString();
+
+                in.nextName();
+                String lastCookedDateTime = in.nextString();
+
+                in.nextName();
+                int flags = in.nextInt();
+
+                // categories
                 in.nextName();
                 in.beginArray();
-                List<RecipeStepIngredient> recipeStepIngredients = new ArrayList<>();
+                List<Category> categories = new ArrayList<>();
                 while(in.hasNext()) {
-                    JsonToken rsiToken = in.peek();
-                    if(rsiToken == JsonToken.END_ARRAY)
+                    JsonToken categoryToken = in.peek();
+                    if(categoryToken == JsonToken.END_ARRAY)
                         break;
 
                     in.beginObject();
                     in.nextName();
-                    final long ingredientId = in.nextLong();
+                    final long categoryId = in.nextLong();
                     in.nextName();
-                    String ingredientName = in.nextString();
-                    in.nextName();
-                    String ingredientDescription = in.nextString();
-                    in.nextName();
-                    float ingredientAmount = (float)in.nextDouble();
-                    in.nextName();
-                    final long unitTypeId = in.nextLong();
-                    in.nextName();
-                    String unitTypeName = in.nextString();
-                    in.nextName();
-                    String unitTypeAbbreviation = in.nextString();
-                    in.nextName();
-                    String customUnit = in.nextString();
+                    String categoryName = in.nextString();
                     in.endObject();
 
-                    recipeStepIngredients.add(RecipeStepIngredient.Factory
-                        .createRecipeStepIngredient(ingredientId, ingredientName,
-                            ingredientDescription, ingredientAmount, unitTypeId, unitTypeName,
-                            unitTypeAbbreviation, customUnit));
+                    categories.add(new Category(categoryId, languageId, categoryName));
                 }
                 in.endArray();
+
+                in.nextName();
+                int numCategoriesRequested = in.nextInt();
+
+                // tags
+                in.nextName();
+                in.beginArray();
+                List<Tag> tags = new ArrayList<>();
+                while(in.hasNext()) {
+                    JsonToken tagToken = in.peek();
+                    if(tagToken == JsonToken.END_ARRAY)
+                        break;
+
+                    in.beginObject();
+                    in.nextName();
+                    final long tagId = in.nextLong();
+                    in.nextName();
+                    String tagName = in.nextString();
+                    in.endObject();
+
+                    tags.add(Tag.Factory.createTag(tagId, tagName));
+                }
+                in.endArray();
+
+                in.nextName();
+                int numTagsRequested = in.nextInt();
+
+                // steps
+                in.nextName();
+                in.beginArray();
+                List<RecipeStep> recipeSteps = new ArrayList<>();
+                while(in.hasNext()) {
+                    JsonToken rsToken = in.peek();
+                    if(rsToken == JsonToken.END_ARRAY)
+                        break;
+
+                    in.beginObject();
+                    in.nextName();
+                    final long recipeStepId = in.nextLong();
+                    in.nextName();
+                    int stepNumber = in.nextInt();
+                    in.nextName();
+                    String stepTitle = in.nextString();
+                    in.nextName();
+                    String stepDescription = in.nextString();
+
+                    // ingredients
+                    in.nextName();
+                    in.beginArray();
+                    List<RecipeStepIngredient> recipeStepIngredients = new ArrayList<>();
+                    while(in.hasNext()) {
+                        JsonToken rsiToken = in.peek();
+                        if(rsiToken == JsonToken.END_ARRAY)
+                            break;
+
+                        in.beginObject();
+                        in.nextName();
+                        final long ingredientId = in.nextLong();
+                        in.nextName();
+                        String ingredientName = in.nextString();
+                        in.nextName();
+                        String ingredientDescription = in.nextString();
+                        in.nextName();
+                        float ingredientAmount = (float)in.nextDouble();
+                        in.nextName();
+                        final long unitTypeId = in.nextLong();
+                        in.nextName();
+                        String unitTypeName = in.nextString();
+                        in.nextName();
+                        String unitTypeAbbreviation = in.nextString();
+                        in.nextName();
+                        String customUnit = in.nextString();
+                        in.endObject();
+
+                        recipeStepIngredients.add(RecipeStepIngredient.Factory
+                            .createRecipeStepIngredient(ingredientId, ingredientName,
+                                ingredientDescription, ingredientAmount, unitTypeId, unitTypeName,
+                                unitTypeAbbreviation, customUnit));
+                    }
+                    in.endArray();
+                    in.endObject();
+
+                    RecipeStep newRecipeStep = RecipeStep.Factory.createRecipeStep(recipeStepId, stepNumber, stepTitle,
+                        stepDescription, recipeStepIngredients);
+
+                    recipeSteps.add(newRecipeStep);
+                }
+                in.endArray();
+
+                in.nextName();
+                int numRecipeStepsRequested = in.nextInt();
+
+                // ratings
+                in.nextName();
+                in.beginArray();
+                //List<Rating> ratings = new ArrayList<>();
+                while(in.hasNext()) {
+                    JsonToken categoryToken = in.peek();
+                    if(categoryToken == JsonToken.END_ARRAY)
+                        break;
+                }
+                in.endArray();
+
+                in.nextName();
+                int numRecipeRatingsRequested = in.nextInt();
+
                 in.endObject();
 
-                RecipeStep newRecipeStep = RecipeStep.Factory.createRecipeStep(recipeStepId, stepNumber, stepTitle,
-                    stepDescription, recipeStepIngredients);
+                Recipe newRecipe = new Recipe(recipeId, languageId, title, description, originalRecipeId,
+                    originalRecipeTitle, creatorId, creatorName, mainImageId, mainImageFileName,
+                    mainCategoryId, mainCategoryName, publicationType, difficultyType, preparationTime,
+                    viewedCount, cookedCount, pinnedCount, modifiedCount, variedCount, sharedCount,
+                    rating, createdDateTime, lastModifiedDateTime, lastCookedDateTime);
 
-                recipeSteps.add(newRecipeStep);
+                newRecipe.categories = categories;
+                newRecipe.numCategoriesRequested = numCategoriesRequested;
+
+                newRecipe.tags = tags;
+                newRecipe.numTagsRequested = numTagsRequested;
+
+                newRecipe.recipeSteps = recipeSteps;
+                newRecipe.numRecipeStepsRequested = numRecipeStepsRequested;
+
+                newRecipe.setFlags(flags);
+
+                return newRecipe;
             }
-            in.endArray();
+            // if the input json string represents a list recipe item
+            else {
+                long creatorId = in.nextLong();
 
-            in.nextName();
-            int numRecipeStepsRequested = in.nextInt();
+                in.nextName();
+                String creatorName = in.nextString();
 
-            // ratings
-            in.nextName();
-            in.beginArray();
-            //List<Rating> ratings = new ArrayList<>();
-            while(in.hasNext()) {
-                JsonToken categoryToken = in.peek();
-                if(categoryToken == JsonToken.END_ARRAY)
-                    break;
+                in.nextName();
+                long mainImageId = in.nextLong();
+
+                in.nextName();
+                String mainImageFileName = in.nextString();
+
+                in.nextName();
+                long mainCategoryId = in.nextLong();
+
+                in.nextName();
+                String mainCategoryName = in.nextString();
+
+                in.nextName();
+                String difficultyType = in.nextString();
+
+                in.nextName();
+                int preparationTime = in.nextInt();
+
+                in.nextName();
+                int cookedCount = in.nextInt();
+
+                in.nextName();
+                int pinnedCount = in.nextInt();
+
+                in.nextName();
+                float rating = (float)in.nextDouble();
+
+                in.nextName();
+                int flags = in.nextInt();
+
+                in.endObject();
+
+                Recipe newRecipe = new Recipe(recipeId, languageId, title, creatorId, creatorName, mainImageId,
+                    mainImageFileName, mainCategoryId, mainCategoryName, difficultyType,
+                    preparationTime, cookedCount, pinnedCount, rating);
+
+                newRecipe.setFlags(flags);
+
+                return newRecipe;
             }
-            in.endArray();
-
-            in.nextName();
-            int numRecipeRatingsRequested = in.nextInt();
-
-            in.endObject();
-
-            Recipe newRecipe = new Recipe(recipeId, languageId, title, description, originalRecipeId,
-                originalRecipeTitle, creatorId, creatorName, mainImageId, mainImageFileName,
-                mainCategoryId, mainCategoryName, publicationType, difficultyType, preparationTime,
-                viewedCount, cookedCount, pinnedCount, modifiedCount, variedCount, sharedCount,
-                rating, createdDateTime, lastModifiedDateTime, lastCookedDateTime);
-
-            newRecipe.categories = categories;
-            newRecipe.numCategoriesRequested = numCategoriesRequested;
-
-            newRecipe.tags = tags;
-            newRecipe.numTagsRequested = numTagsRequested;
-
-            newRecipe.recipeSteps = recipeSteps;
-            newRecipe.numRecipeStepsRequested = numRecipeStepsRequested;
-
-            newRecipe.setFlags(flags);
-
-            return newRecipe;
         }
     }
 
