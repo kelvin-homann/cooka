@@ -8,13 +8,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import app.cooka.cookapp.login.LoginManager;
+import app.cooka.cookapp.model.FollowUserResult;
 import app.cooka.cookapp.model.Followee;
+import app.cooka.cookapp.model.IFollowUserCallback;
 import app.cooka.cookapp.model.IResultCallback;
 import app.cooka.cookapp.model.User;
 import app.cooka.cookapp.view.FolloweeListViewAdapter;
@@ -36,17 +39,11 @@ public class FolloweeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.d("COOKALOG", String.valueOf(getArguments()));
+        Log.d("COOKALOG", "FolloweeFragment onCreate Arguments" + String.valueOf(getArguments()));
 
         if (getArguments() != null) {
             userid = getArguments().getLong("userid");
         }
-
-//        loginManager = LoginManager.Factory.getInstance(getApplicationContext());
-//
-//        if(loginManager.getUserId() != 0L) {
-//            userid = loginManager.getUserId();
-//        }
     }
 
     @Override
@@ -69,6 +66,7 @@ public class FolloweeFragment extends Fragment {
 
         // ViewHolder for the Followee count
         final TextView followeeNr = view.findViewById(R.id.tvwFolloweeNr);
+
 
         // Get followeenr
         User.Factory.selectUser(getActivity(),userid, new IResultCallback<User>() {

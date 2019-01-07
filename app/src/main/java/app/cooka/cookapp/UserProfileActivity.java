@@ -14,9 +14,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_profile);
-
+        UserProfileFragment userProfileFragment = new UserProfileFragment();
         Bundle b = getIntent().getExtras();
         if(b != null)
             mUserid = b.getLong("userid");
@@ -24,9 +22,15 @@ public class UserProfileActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putLong("userid", mUserid);
 
-        Log.d("COOKALOG", String.valueOf(mUserid));
-
-        UserProfileFragment userProfileFragment = new UserProfileFragment();
+        Log.d("COOKALOG", "UserProfileActivity userid: " + String.valueOf(mUserid));
+        Log.d("COOKALOG", "UserProfileActivity bundle: " + String.valueOf(bundle));
         userProfileFragment.setArguments(bundle);
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_user_profile);
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_userprofile, userProfileFragment).commit();
     }
+
+
 }

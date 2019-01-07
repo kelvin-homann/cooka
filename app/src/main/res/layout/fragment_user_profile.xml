@@ -34,20 +34,40 @@
             app:expandedTitleMarginStart="64dp"
             app:expandedTitleMarginEnd="64dp">
 
-            <ImageView
-                android:id="@+id/ivwUserProfileHeader"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/default_header"
-                android:contentDescription="@string/profile_avatar_desc"
-                android:scaleType="centerCrop"
-                app:layout_collapseMode="pin"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/ctlUserProfileHeader"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/ivwUserProfileHeader"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@mipmap/default_header"
+                    android:contentDescription="@string/profile_avatar_desc"
+                    android:scaleType="centerCrop"
+                    app:layout_collapseMode="pin"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/ivwFollowButtonProfile"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:src="@drawable/ic_add_circle"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/ivwUserProfilePicFollower"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="1.0" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/ivwUserProfilePicFollower"
@@ -58,7 +78,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/default_avatar"
+                    android:src="@mipmap/default_avatar"
                     app:civ_border_color="@android:color/white"
                     app:civ_border_width="0dp"
                     app:layout_constraintBottom_toBottomOf="parent"

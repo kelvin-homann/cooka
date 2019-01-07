@@ -26,13 +26,13 @@ import app.cooka.cookapp.model.EFeedMessageType;
 import app.cooka.cookapp.model.FeedMessage;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ProfileFeedViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ProfileFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     // Data for Feed
     private ArrayList<FeedMessage> mFeed;
     private Context mContext;
 
-    public ProfileFeedViewAdapter(ArrayList<FeedMessage> feed, Context context){
+    public ProfileFeedAdapter(ArrayList<FeedMessage> feed, Context context){
         mFeed = feed;
         mContext = context;
     }

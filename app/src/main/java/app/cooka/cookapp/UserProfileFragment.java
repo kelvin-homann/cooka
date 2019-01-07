@@ -1,15 +1,13 @@
 package app.cooka.cookapp;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
@@ -26,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -39,12 +38,12 @@ import java.util.Objects;
 
 import app.cooka.cookapp.login.LoginManager;
 import app.cooka.cookapp.model.FeedMessage;
+import app.cooka.cookapp.model.FollowUserResult;
+import app.cooka.cookapp.model.IFollowUserCallback;
 import app.cooka.cookapp.model.IResultCallback;
 import app.cooka.cookapp.model.User;
-import app.cooka.cookapp.utils.StringUtils;
 import app.cooka.cookapp.view.FeedMessageRecyclerViewAdapter;
 import app.cooka.cookapp.view.LoadingScreenView;
-import app.cooka.cookapp.view.ProfileFeedViewAdapter;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -57,6 +56,7 @@ public class UserProfileFragment extends android.support.v4.app.Fragment {
     LoadingScreenView loadingScreen;
     private LoginManager loginManager;
     private long userid;
+    private ImageView followButton;
 
     // Fragments for the Follower and Followee lists
     private FollowerFragment followerFragment;
@@ -67,12 +67,13 @@ public class UserProfileFragment extends android.support.v4.app.Fragment {
     }
 
     @Override
+    public void onAttachFragment(Fragment childFragment) {
+        super.onAttachFragment(childFragment);
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         loginManager = LoginManager.Factory.getInstance(getApplicationContext());
-
-        userid = 4;
-
-        Log.d("COOKALOG", "onAttach " + String.valueOf(userid));
 
         if (getArguments() != null) {
             userid = getArguments().getLong("userid");
@@ -83,6 +84,25 @@ public class UserProfileFragment extends android.support.v4.app.Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user_profile, container, false);
+
+        // Follow Button on Profile
+        followButton = view.findViewById(R.id.ivwFollowButtonProfile);
+        followButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                User.Factory.followUser(getContext(), userid, new IFollowUserCallback() {
+                    @Override
+                    public void onSucceeded(FollowUserResult followUserResult) {
+                        followButton.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onFailed(FollowUserResult followUserResult) {
+                        Toast.makeText(getContext(), "You are already following this User", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
 
         // Set Arguments for followee and FollowerFragment
         Bundle bundle = new Bundle();

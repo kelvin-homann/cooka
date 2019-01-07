@@ -34,20 +34,24 @@
             app:expandedTitleMarginStart="64dp"
             app:expandedTitleMarginEnd="64dp">
 
-            <ImageView
-                android:id="@+id/ivwProfileHeader"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/default_header_tablet"
-                android:contentDescription="@string/profile_avatar_desc"
-                android:scaleType="centerCrop"
-                app:layout_collapseMode="pin"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/ctlProfileHeader"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/ivwProfileHeader"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@mipmap/default_header_tablet"
+                    android:contentDescription="@string/profile_avatar_desc"
+                    android:scaleType="centerCrop"
+                    app:layout_collapseMode="pin"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/ivwProfilePicFollower"
@@ -58,7 +62,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/default_avatar"
+                    android:src="@mipmap/default_avatar"
                     app:civ_border_color="@android:color/white"
                     app:civ_border_width="0dp"
                     app:layout_constraintBottom_toBottomOf="parent"

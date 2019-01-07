@@ -76,7 +76,6 @@
         <!-- Database test activity -->
         <activity
             android:name=".DatabaseTestActivity"
-            android:label="@string/database_test"
             android:windowSoftInputMode="stateHidden"
             android:exported="true">
             <intent-filter>
@@ -107,13 +106,15 @@
 
         </activity>
 
-        <activity android:name=".RegisterActivity" >
+        <!--<activity android:name=".RegisterActivity" >-->
 
-        </activity>
+        <!--</activity>-->
             android:exported="true" />
         <activity
             android:name=".UserProfileActivity"
-            android:label="@string/title_activity_user_profile"></activity>
+            android:label="@string/title_activity_user_profile">
+
+        </activity>
     </application>
 
 </manifest>

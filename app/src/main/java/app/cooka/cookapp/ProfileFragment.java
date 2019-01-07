@@ -1,6 +1,5 @@
 package app.cooka.cookapp;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -19,15 +18,12 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -46,7 +42,6 @@ import app.cooka.cookapp.model.IResultCallback;
 import app.cooka.cookapp.model.User;
 import app.cooka.cookapp.view.FeedMessageRecyclerViewAdapter;
 import app.cooka.cookapp.view.LoadingScreenView;
-import app.cooka.cookapp.view.ProfileFeedViewAdapter;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -78,7 +73,7 @@ public class ProfileFragment extends Fragment {
             userid = loginManager.getUserId();
         }
 
-        Log.d("COOKALOG", "onAttach " + String.valueOf(userid));
+        Log.d("COOKALOG", "ProfileFragment userid: " + String.valueOf(userid));
     }
 
     @Override

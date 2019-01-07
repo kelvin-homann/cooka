@@ -8,8 +8,8 @@
 
     <fragment
         android:id="@+id/fragment"
-        android:name="app.cooka.cookapp.ProfileFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:name="app.cooka.cookapp.ProfileFragment"/>
 
 </RelativeLayout>

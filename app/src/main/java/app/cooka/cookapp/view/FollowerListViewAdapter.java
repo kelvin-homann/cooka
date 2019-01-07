@@ -6,9 +6,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,14 +21,18 @@ import java.util.ArrayList;
 import app.cooka.cookapp.GlideApp;
 import app.cooka.cookapp.R;
 import app.cooka.cookapp.UserProfileActivity;
+import app.cooka.cookapp.model.FollowUserResult;
 import app.cooka.cookapp.model.Followee;
 import app.cooka.cookapp.model.Follower;
+import app.cooka.cookapp.model.IFollowUserCallback;
+import app.cooka.cookapp.model.User;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FollowerListViewAdapter extends RecyclerView.Adapter<FollowerListViewAdapter.ViewHolder> {
     // Data for Followers
     private ArrayList<Follower> mFollowers;
     private Context mContext;
+    private Button followButton;
 
     public FollowerListViewAdapter(ArrayList<Follower> followers, Context context){
         mFollowers = followers;
@@ -38,12 +44,31 @@ public class FollowerListViewAdapter extends RecyclerView.Adapter<FollowerListVi
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.custom_listview_follower, viewGroup, false);
         ViewHolder holder = new ViewHolder(view);
+        followButton = view.findViewById(R.id.btnFollowFollower);
         return holder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
         String nameText = null;
+
+        followButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                User.Factory.followUser(mContext, mFollowers.get(i).getUserId(), new IFollowUserCallback() {
+                    @Override
+                    public void onSucceeded(FollowUserResult followUserResult) {
+                        followButton.setText(R.string.profile_followed);
+                    }
+
+                    @Override
+                    public void onFailed(FollowUserResult followUserResult) {
+
+                    }
+                });
+            }
+        });
+
         if (mFollowers.get(i).getProfileImageId() != 0){
             GlideApp.with(mContext)
                     .asBitmap()

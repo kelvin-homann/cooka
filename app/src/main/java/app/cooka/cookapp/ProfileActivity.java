@@ -20,10 +20,10 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        Log.d("COOKALOG", "onCreate " + String.valueOf(mUserid));
-
         Bundle b = getIntent().getExtras();
         if(b != null)
             mUserid = b.getLong("userid");
+
+        Log.d("COOKALOG", "ProfileActivity userid: " + String.valueOf(mUserid));
     }
 }
