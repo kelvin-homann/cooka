@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:alpha="0.7"
         android:scaleType="centerCrop"
-        android:src="@drawable/login_background_tablet" />
+        android:src="@mipmap/login_background_tablet" />
 
     <ImageView
         android:id="@+id/ivwRegisterLogo"

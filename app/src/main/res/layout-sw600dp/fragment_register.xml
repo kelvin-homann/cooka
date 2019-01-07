@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:alpha="0.7"
         android:scaleType="centerCrop"
-        android:src="@drawable/login_background_tablet"
+        android:src="@mipmap/login_background_tablet"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

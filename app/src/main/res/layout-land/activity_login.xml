@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:alpha="0.7"
         android:scaleType="centerCrop"
-        android:src="@drawable/login_background_landscape"
+        android:src="@mipmap/login_background_landscape"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

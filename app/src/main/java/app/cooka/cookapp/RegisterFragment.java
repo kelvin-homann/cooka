@@ -59,6 +59,8 @@ public class RegisterFragment extends Fragment {
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
 
+    MediaPlayer mp;
+
     public RegisterFragment() {
         // Required empty public constructor
     }
@@ -68,7 +70,7 @@ public class RegisterFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_register, container, false);
 
         // Error Sound
-        final MediaPlayer mp = MediaPlayer.create(getActivity(), R.raw.errorsound);
+        mp = MediaPlayer.create(getActivity(), R.raw.errorsound);
 
         etvEmail = view.findViewById(R.id.etvEmailRegister);
         etvUsername = view.findViewById(R.id.etvUsernameRegister);
@@ -358,18 +360,15 @@ public class RegisterFragment extends Fragment {
      * @param password Password from an EditText View
      */
     private void createAccount(final String userName,final  String emailAddress,final  String password){
-        final MediaPlayer mp = MediaPlayer.create(getActivity(), R.raw.errorsound);
         LoginManager.Factory.getInstance(getContext()).createAccount(
                 userName, emailAddress, password, new ICreateAccountCallback() {
                     @Override
                     public void onSucceeded(CreateUserResult result, User createdUser) {
-                        Toast.makeText(getContext(), "Successfully Registered", Toast.LENGTH_SHORT).show();
                         login(userName, password);
                     }
 
                     @Override
                     public void onFailed(int errorCode, String errorMessage, Throwable t) {
-                        Toast.makeText(getContext(), "Registration Failed", Toast.LENGTH_SHORT).show();
                         mp.start();
                     }
                 });
@@ -385,10 +384,10 @@ public class RegisterFragment extends Fragment {
     public void vibrate(Activity activity, int duration, int amplitude){
         if (Build.VERSION.SDK_INT >= 26) {
             ((Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(duration, amplitude));
-            Log.d("COOKALOG", "SystemUtils.vibrate()");
+            Log.d("COOKALOG", "vibrate()");
         } else {
             ((Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(duration);
-            Log.d("COOKALOG", "SystemUtils.vibrate()");
+            Log.d("COOKALOG", "vibrate()");
         }
     }
 

@@ -1,10 +1,17 @@
 package app.cooka.cookapp;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -36,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
     private LoginButton fbLoginButton;
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
+    private MediaPlayer mp; // To play errorsound
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +57,10 @@ public class LoginActivity extends AppCompatActivity {
         fbLoginButton = findViewById(R.id.btnFacebookLogin);
         final TextInputLayout tilEmail = findViewById(R.id.tilEmailLogin);
         final TextInputLayout tilPassword = findViewById(R.id.tilPasswordLogin);
+
+        final Activity activity = this;
+
+        mp = MediaPlayer.create(this, R.raw.errorsound);
 
         // TextWatcher for Email EditText
         TextWatcher textWatchEmail = new TextWatcher() {
@@ -118,6 +130,8 @@ public class LoginActivity extends AppCompatActivity {
 
                             @Override
                             public void onFailed(int errorCode, String errorMessage, Throwable t) {
+                                mp.start();
+                                vibrate(activity,250, 10);
                                 if (!etvEmail.getText().toString().isEmpty()){
                                     tilEmail.setErrorEnabled(true);
                                     tilEmail.setError(getString(R.string.login_invalid));
@@ -214,5 +228,15 @@ public class LoginActivity extends AppCompatActivity {
     private void executePostLogout(AccessToken oldAccessToken) {
         //userProfile.setLoggedIn(false);
         Log.d("COOKALOG", "you have been logged out");
+    }
+
+    public void vibrate(Activity activity, int duration, int amplitude){
+        if (Build.VERSION.SDK_INT >= 26) {
+            ((Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(duration, amplitude));
+            Log.d("COOKALOG", "vibrate()");
+        } else {
+            ((Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(duration);
+            Log.d("COOKALOG", "vibrate()");
+        }
     }
 }
