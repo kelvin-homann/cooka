@@ -115,8 +115,10 @@
             android:label="@string/title_activity_user_profile">
 
         </activity>
-        <activity android:name=".TutorialActivity" >
-
+        <activity
+            android:name=".TutorialActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden" >
         </activity>
 
     </application>

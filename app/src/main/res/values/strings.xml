@@ -80,6 +80,9 @@
     </plurals>
 
     <!-- Feed: activity messages not leading with user name -->
+    <string name="added_recipe_to_collection">added a recipe to <a href="">%1$s</a></string>
+    <string name="added_image_to_recipe">added an image to recipe <a href="">%1$s</a></string>
+
     <string name="feed_message_and">and</string>
     <string name="is_now_following_user">is now following <a href="%2$s">@%1$s</a></string>
     <string name="is_now_following_users">is now following </string>
@@ -108,6 +111,7 @@
     <string name="added_recipe_to_collection">added a recipe to <a href="%2$s">%1$s</a></string>
     <string name="added_image_to_recipe">added an image to recipe <a href="%2$s">%1$s</a></string>
     <!-- Feed: activity messages leading with user name -->
+
     <string name="username_is_now_following_user">%1$s is now following <a href="%3$s">@%2$s</a></string>
     <string name="username_is_now_following_users">%1$s is now following </string>
     <string name="username_is_now_following_user_and_user">%1$s is now following <a href="%3$s">@%2$s</a> and <a href="%5$s">@%4$s</a></string>
@@ -134,6 +138,7 @@
     <string name="username_created_collection_and_n_more">%1$s created collection <a href="%3$s">%2$s</a> and %4$d more</string>
     <string name="username_added_recipe_to_collection">%1$s added a recipe to <a href="%3$s">%2$s</a></string>
     <string name="username_added_image_to_recipe">%1$s added an image to recipe <a href="%3$s">%2$s</a></string>
+
     <!-- Feed: activity message context menu entries -->
     <string name="view_user_profile">View user profile</string>
     <string name="view_profile_of_user">View profile of %1$s</string>
@@ -188,11 +193,9 @@
     <!-- FollowerFragment -->
     <string name="headertext_follower">Follower</string>
     <string name="headertext_following">Following</string>
-
     <string name="headertextnr_follower">"%1$d "</string>
     <string name="text_name_customlvw">Name</string>
     <string name="text_username_customlvw">\@%1$s</string>
-
     <string name="custom_followees_name">Name</string>
     <string name="custom_followees_username">\@%1$s</string>
     <string name="error_email_login">Invalid E-Mail or Username</string>
@@ -208,6 +211,16 @@
     <string name="steps_fab_text">Steps</string>
     <string name="ingredients">Ingredients</string>
     <string name="ingredients_section_title">Ingredients for this step</string>
+    <string name="title_activity_user_profile">UserProfileActivity</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="login_with_alternative">or Login with</string>
+    <string name="btn_login">Login</string>
+
+    <!-- Login -->
+    <string name="btn_register">Register</string>
+    <string name="register_with_alternative">or Register with</string>
+    <string name="register_using_e_mail">Register with E-Mail</string>
+    <string name="register_with_facebook">Register with Facebook</string>
     <string name="card_title_hint"><i>Enter title</i></string>
     <string name="card_body_hint"><i>Enter description</i></string>
     <string name="delete_step_warning_message">Are you sure you want to delete the current step?</string>
@@ -257,11 +270,8 @@
     <string name="error_password_login">Invalid Password</string>
     <string name="email_username_hint">Username</string>
     <string name="login_invalid">Wrong E-Mail or Password</string>
-
     <string name="title_activity_register">Register</string>
     <string name="register_loginredirect">Already have an account?</string>
-    <!--<string name="title_activity_register">Register</string>-->
-    <!--<string name="register_loginredirect">Already have an account?</string>-->
 
     <!-- Tutorial -->
     <string name="title_activity_tutorial">Tutorial</string>
