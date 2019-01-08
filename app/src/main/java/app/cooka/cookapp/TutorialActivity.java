@@ -81,12 +81,11 @@ public class TutorialActivity extends AppCompatActivity {
         btnGetStarted.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(TutorialActivity.this,"Start MainActivity",Toast.LENGTH_LONG).show();
+                finish();
             }
         });
 
         setUiPageViewController();
-
     }
 
     // Load data into the viewpager
@@ -129,9 +128,7 @@ public class TutorialActivity extends AppCompatActivity {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-
                 btnGetStarted.clearAnimation();
-
             }
 
         });

@@ -1,10 +1,13 @@
 package app.cooka.cookapp;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 public class UserProfileActivity extends AppCompatActivity {
+    public static final String USERID = "userid";
 
     public long mUserid = 0;
 
@@ -32,5 +35,11 @@ public class UserProfileActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_userprofile, userProfileFragment).commit();
     }
 
-
+    public static void startUserProfile(final Context context, final long userid){
+        Bundle b = new Bundle();
+        b.putLong(USERID, userid);
+        Intent intent = new Intent(context, UserProfileActivity.class);
+        intent.putExtras(b);
+        context.startActivity(intent);
+    }
 }

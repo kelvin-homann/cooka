@@ -11,13 +11,11 @@ import android.os.Vibrator;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatDelegate;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
@@ -37,7 +35,7 @@ import app.cooka.cookapp.model.AuthenticateUserResult;
 import app.cooka.cookapp.utils.StringUtils;
 
 public class LoginActivity extends AppCompatActivity {
-    private TextInputEditText etvEmail;
+    private TextInputEditText etvUsername;
     private TextInputEditText etvPassword;
     private Button loginButton;
     private LoginButton fbLoginButton;
@@ -51,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         // Init Objects from Layout
-        etvEmail = findViewById(R.id.etvEmailLogin);
+        etvUsername = findViewById(R.id.etvEmailLogin);
         etvPassword = findViewById(R.id.etvPasswordLogin);
         loginButton = findViewById(R.id.btnUserLogin);
         fbLoginButton = findViewById(R.id.btnFacebookLogin);
@@ -68,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             public void onTextChanged(CharSequence s, int start, int before,int count) {
-                if (!StringUtils.isValidEmailAddress(etvEmail.getText().toString()) && !StringUtils.isValidUserName(etvEmail.getText().toString())){
+                if (!StringUtils.isValidUserName(etvUsername.getText().toString())){
                     tilEmail.setErrorEnabled(true);
                     tilEmail.setError(getString(R.string.error_email_login));
                 }
@@ -80,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
             }
         };
-        etvEmail.addTextChangedListener(textWatchEmail);
+        etvUsername.addTextChangedListener(textWatchEmail);
 
         // TextWatcher for Password EditText
         TextWatcher textWatchPassword = new TextWatcher() {
@@ -104,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (etvEmail.getText().toString().isEmpty()){
+                if (etvUsername.getText().toString().isEmpty()){
                     tilEmail.setErrorEnabled(true);
                     tilEmail.setError(getString(R.string.error_field_required));
                 }
@@ -120,19 +118,19 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
                 LoginManager.Factory.getInstance(getApplicationContext())
-                        .login(etvEmail.getText().toString(), etvPassword.getText().toString(), new ILoginCallback() {
+                        .login(etvUsername.getText().toString(), etvPassword.getText().toString(), new ILoginCallback() {
                             @Override
                             public void onSucceeded(AuthenticateUserResult result) {
-                                Toast.makeText(getApplicationContext(), "Successfully logged in", Toast.LENGTH_SHORT).show();
                                 tilEmail.setErrorEnabled(false);
                                 tilPassword.setErrorEnabled(false);
+                                finish();
                             }
 
                             @Override
                             public void onFailed(int errorCode, String errorMessage, Throwable t) {
                                 mp.start();
                                 vibrate(activity,250, 10);
-                                if (!etvEmail.getText().toString().isEmpty()){
+                                if (!etvUsername.getText().toString().isEmpty()){
                                     tilEmail.setErrorEnabled(true);
                                     tilEmail.setError(getString(R.string.login_invalid));
                                 }

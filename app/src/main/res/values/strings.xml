@@ -253,6 +253,10 @@
         <item>Moderate</item>
         <item>Demanding</item>
     </string-array>
+    <string name="error_email_login">Invalid Username</string>
+    <string name="error_password_login">Invalid Password</string>
+    <string name="email_username_hint">Username</string>
+    <string name="login_invalid">Wrong E-Mail or Password</string>
 
     <string name="title_activity_register">Register</string>
     <string name="register_loginredirect">Already have an account?</string>

@@ -366,6 +366,7 @@ public class RegisterFragment extends Fragment {
                     @Override
                     public void onSucceeded(CreateUserResult result, User createdUser) {
                         login(userName, password);
+                        getActivity().finish();
                     }
 
                     @Override

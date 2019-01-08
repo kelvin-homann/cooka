@@ -181,8 +181,13 @@ public class ProfileFragment extends Fragment {
                     profileUsername.setText(userNameText);
                     collapsingToolbarLayout.setTitle(nameText);
 
+                    // if ProfilePicture Empty
+                    if (result.getProfileImageId() == 0){
+                        loadingScreen.setVisible(false);
+                    }
+
                     // If getProfileImageId() == 0 the user did not upload a profile picture
-                    if (result.getProfileImageId() != 0){
+                    else if (result.getProfileImageId() != 0){
                         // Load ProfileImage
                         GlideApp.with(profileAvatar.getContext())
                                 .asBitmap()

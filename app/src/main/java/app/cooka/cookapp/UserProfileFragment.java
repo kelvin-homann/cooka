@@ -1,5 +1,6 @@
 package app.cooka.cookapp;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -206,8 +207,12 @@ public class UserProfileFragment extends android.support.v4.app.Fragment {
                     profileUsername.setText(userNameText);
                     collapsingToolbarLayout.setTitle(nameText);
 
+                    if (result.getProfileImageId() == 0){
+                        loadingScreen.setVisible(false);
+                    }
+
                     // If getProfileImageId() == 0 the user did not upload a profile picture
-                    if (result.getProfileImageId() != 0){
+                    else if (result.getProfileImageId() != 0){
                         // Load ProfileImage
                         GlideApp.with(profileAvatar.getContext())
                                 .asBitmap()
@@ -242,7 +247,7 @@ public class UserProfileFragment extends android.support.v4.app.Fragment {
                 FragmentTransaction transaction = null;
                 if (getFragmentManager() != null) {
                     transaction = getFragmentManager().beginTransaction();
-                    transaction.replace(R.id.fragment_Userfollowerframe, followerFragment);
+                    transaction.replace(R.id.fragment_container_userprofile, followerFragment);
                     transaction.addToBackStack(null);
                     transaction.commit();
                 }
@@ -256,7 +261,7 @@ public class UserProfileFragment extends android.support.v4.app.Fragment {
                 FragmentTransaction transaction = null;
                 if (getFragmentManager() != null) {
                     transaction = getFragmentManager().beginTransaction();
-                    transaction.replace(R.id.fragment_Userfollowerframe, followeeFragment);
+                    transaction.replace(R.id.fragment_container_userprofile, followeeFragment);
                     transaction.addToBackStack(null);
                     transaction.commit();
                 }
@@ -283,5 +288,4 @@ public class UserProfileFragment extends android.support.v4.app.Fragment {
             }
         });
     }
-
 }
