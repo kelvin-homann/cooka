@@ -56,11 +56,11 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         cookFragment = new CookFragment();
 
         // load intended fragment
-        if(intentAction.equalsIgnoreCase(VIEW_COLLECTION)) {
+        if(intentAction != null && intentAction.equalsIgnoreCase(VIEW_COLLECTION)) {
             loadFragment(cookbookFragment);
             navigationView.setSelectedItemId(R.id.navigation_cookbook);
         }
-        else if(intentAction.equalsIgnoreCase(VIEW_GROCERYLIST)) {
+        else if(intentAction != null && intentAction.equalsIgnoreCase(VIEW_GROCERYLIST)) {
             loadFragment(planFragment);
             navigationView.setSelectedItemId(R.id.navigation_plan);
         }
