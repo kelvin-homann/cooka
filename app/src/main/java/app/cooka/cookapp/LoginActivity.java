@@ -3,6 +3,7 @@ package app.cooka.cookapp;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,6 +12,8 @@ import android.os.Vibrator;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
+import android.support.v7.preference.PreferenceManagerFix;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -42,11 +45,15 @@ public class LoginActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
     private MediaPlayer mp; // To play errorsound
+    SharedPreferences settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // Get SharedPreferences
+        settings = PreferenceManagerFix.getDefaultSharedPreferences(this);
 
         // Init Objects from Layout
         etvUsername = findViewById(R.id.etvEmailLogin);
@@ -128,7 +135,8 @@ public class LoginActivity extends AppCompatActivity {
 
                             @Override
                             public void onFailed(int errorCode, String errorMessage, Throwable t) {
-                                mp.start();
+                                if(soundIsEnabled())
+                                    mp.start();
                                 vibrate(activity,250, 10);
                                 if (!etvUsername.getText().toString().isEmpty()){
                                     tilEmail.setErrorEnabled(true);
@@ -236,5 +244,9 @@ public class LoginActivity extends AppCompatActivity {
             ((Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(duration);
             Log.d("COOKALOG", "vibrate()");
         }
+    }
+
+    public boolean soundIsEnabled(){
+        return settings.getBoolean("soundCheckBox", true);
     }
 }

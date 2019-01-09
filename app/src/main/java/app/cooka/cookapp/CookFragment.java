@@ -82,7 +82,8 @@ public class CookFragment extends Fragment {
         switch (item.getItemId()){
             case R.id.action_settings:
                 //Settings action
-                Toast.makeText(this.getActivity(), R.string.action_settings, Toast.LENGTH_LONG).show();
+                Intent intent_settings = new Intent(getActivity(), SettingsActivity.class);
+                startActivity(intent_settings);
                 return true;
             case R.id.action_profile:
                 //Starting the Profile Activity

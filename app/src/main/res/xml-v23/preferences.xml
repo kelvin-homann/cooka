@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/pref_title_general">
+
+        <CheckBoxPreference
+            android:key="tutorialCheckBox"
+            android:title="@string/pref_title_tutorial"
+            android:defaultValue="@string/pref_tutorial_default_value"/>
+
+        <CheckBoxPreference
+            android:key="soundCheckBox"
+            android:title="@string/pref_title_sound"
+            android:defaultValue="@string/pref_sound_default_value"/>
+
+        <Preference
+            android:key="btnLogout"
+            android:widgetLayout="@layout/pref_logout_button"
+            android:title="@string/pref_logout_title">
+
+        </Preference>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_title_profile">
+
+        <EditTextPreference
+            android:key="usernameEditText"
+            android:title="@string/pref_title_username"
+            android:summary="@string/pref_summary_username"
+            android:dialogTitle="@string/pref_dialog_username" />
+
+        <EditTextPreference
+            android:key="emailEditText"
+            android:title="@string/pref_title_email"
+            android:summary="@string/pref_summary_email"
+            android:dialogTitle="@string/pref_dialog_email" />
+
+        <EditTextPreference
+            android:key="passwordEditText"
+            android:title="@string/pref_title_password"
+            android:summary="@string/pref_summary_password"
+            android:dialogTitle="@string/pref_dialog_password" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

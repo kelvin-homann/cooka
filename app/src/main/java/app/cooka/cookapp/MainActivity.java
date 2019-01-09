@@ -1,5 +1,6 @@
 package app.cooka.cookapp;
 
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -7,6 +8,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManagerFix;
 import android.view.MenuItem;
 
 import app.cooka.cookapp.view.LoadingScreenView;
@@ -22,6 +24,9 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private PlanFragment planFragment;
     private CookFragment cookFragment;
 
+    // Settings
+    SharedPreferences settings;
+
     //Generic loading screen
     private LoadingScreenView loadingScreen;
 
@@ -29,6 +34,9 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Get SharedPreferences
+        settings = PreferenceManagerFix.getDefaultSharedPreferences(this);
 
         //Init fragments
         exploreFragment = new ExploreFragment();

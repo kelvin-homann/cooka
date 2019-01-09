@@ -3,6 +3,7 @@ package app.cooka.cookapp;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.preference.PreferenceManagerFix;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -59,6 +61,7 @@ public class RegisterFragment extends Fragment {
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
 
+    SharedPreferences settings;
     MediaPlayer mp;
 
     public RegisterFragment() {
@@ -68,6 +71,9 @@ public class RegisterFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_register, container, false);
+
+        // Get Preferences
+        settings = PreferenceManagerFix.getDefaultSharedPreferences(getContext());
 
         // Error Sound
         mp = MediaPlayer.create(getActivity(), R.raw.errorsound);
@@ -192,7 +198,8 @@ public class RegisterFragment extends Fragment {
                 if (etvEmail.getText().toString().isEmpty()){
                     tilEmail.setErrorEnabled(true);
                     tilEmail.setError(getString(R.string.error_field_required));
-                    mp.start();
+                    if(soundIsEnabled())
+                        mp.start();
                     vibrate(getActivity(),250, 10);
                 }
                 else {
@@ -202,7 +209,8 @@ public class RegisterFragment extends Fragment {
                 if (etvUsername.getText().toString().isEmpty()){
                     tilUsername.setErrorEnabled(true);
                     tilUsername.setError(getString(R.string.error_field_required));
-                    mp.start();
+                    if(soundIsEnabled())
+                        mp.start();
                     vibrate(getActivity(),250, 10);
                 }
                 else {
@@ -212,7 +220,8 @@ public class RegisterFragment extends Fragment {
                 if (etvPassword1.getText().toString().isEmpty()){
                     tilPassword.setErrorEnabled(true);
                     tilPassword.setError(getString(R.string.error_field_required));
-                    mp.start();
+                    if(soundIsEnabled())
+                        mp.start();
                     vibrate(getActivity(),250, 10);
                 }
                 else {
@@ -222,7 +231,8 @@ public class RegisterFragment extends Fragment {
                 if (etvPassword2.getText().toString().isEmpty()){
                     tilPassword2.setErrorEnabled(true);
                     tilPassword2.setError(getString(R.string.error_field_required));
-                    mp.start();
+                    if(soundIsEnabled())
+                        mp.start();
                     vibrate(getActivity(),250, 10);
                 }
                 else {
@@ -371,7 +381,8 @@ public class RegisterFragment extends Fragment {
 
                     @Override
                     public void onFailed(int errorCode, String errorMessage, Throwable t) {
-                        mp.start();
+                        if(soundIsEnabled())
+                            mp.start();
                     }
                 });
     }
@@ -391,6 +402,10 @@ public class RegisterFragment extends Fragment {
             ((Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(duration);
             Log.d("COOKALOG", "vibrate()");
         }
+    }
+
+    public boolean soundIsEnabled(){
+        return settings.getBoolean("soundCheckBox", true);
     }
 
 

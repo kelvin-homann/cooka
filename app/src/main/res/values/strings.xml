@@ -282,6 +282,33 @@
     <string name="tut_desc1">Swipe through your feed to see what your friends are cooking and explore recommended recipes!</string>
     <string name="tut_desc2">Follow your friends and take a look at their Profile to see what they are cooking and who they follow!</string>
     <string name="tut_desc3">Use the cook mode to cook your favorite recipes in no time!</string>
+
+    <!--Settings-->
+    <string name="pref_title_general">General Preferences</string>
+    <string name="pref_title_profile">Profile Preferences</string>
+    <string name="pref_title_tutorial">Tutorial</string>
+    <string name="pref_title_sound">Sound</string>
+    <string name="pref_tutorial_default_value">true</string>
+    <string name="pref_sound_default_value">true</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="pref_logout_btn">Logout</string>
+    <string name="pref_logout_title">Logout</string>
+    <string name="pref_logout_summary">Click to logout</string>
+
+    <string name="pref_title_username">Username</string>
+    <string name="pref_summary_username">Click to change your Username</string>
+    <string name="pref_dialog_username">Not yet implemented</string>
+
+    <string name="pref_title_email">E-Mail</string>
+    <string name="pref_summary_email">Click to change your E-Mail</string>
+    <string name="pref_dialog_email">Not yet implemented</string>
+
+    <string name="pref_title_password">Password</string>
+    <string name="pref_summary_password">Click to change your Password</string>
+    <string name="pref_dialog_password">Not yet implemented</string>
+
+
+
     <string name="recipe_upload_failed_msg">Your recipe could not be uploaded.</string>
     <string name="retry">Retry</string>
     <string name="recipe_uploaded_msg">Recipe uploaded</string>
