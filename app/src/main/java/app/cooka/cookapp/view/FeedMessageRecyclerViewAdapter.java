@@ -261,11 +261,11 @@ public class FeedMessageRecyclerViewAdapter extends
                 break;
 
             case addedRecipeToCollection:
-                message = resources.getString(R.string.added_recipe_to_collection, feedMessage.getObject1Name());
+                message = resources.getString(R.string.added_recipe_to_collection, feedMessage.getObject1Name(), "");
                 break;
 
             case addedImageToRecipe:
-                message = resources.getString(R.string.added_image_to_recipe, feedMessage.getObject1Name());
+                message = resources.getString(R.string.added_image_to_recipe, feedMessage.getObject1Name(), "");
                 break;
 
             // this should not happen
@@ -358,8 +358,12 @@ public class FeedMessageRecyclerViewAdapter extends
                                     case createdRecipe:
                                     case modifiedRecipe:
                                     case cookedRecipe:
+                                    case addedRecipeToCollection:
                                         RecipeDetailsActivity.startAndLoadRecipe(viewHolder.context,
                                             feedMessage.getObject1Id());
+
+                                    case followedUser:
+
                                 }
                             }
                         });
@@ -373,6 +377,29 @@ public class FeedMessageRecyclerViewAdapter extends
         {
             viewHolder.ivwImage.setVisibility(View.GONE);
         }
+
+        // set on click listener for ProfileImage and Username
+        viewHolder.ivwUserProfileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle bundleProfile = new Bundle();
+                bundleProfile.putLong("userid", feedMessage.getUserId());
+                Intent profileIntent = new Intent(viewHolder.context, UserProfileActivity.class);
+                profileIntent.putExtras(bundleProfile);
+                viewHolder.context.startActivity(profileIntent);
+            }
+        });
+
+        viewHolder.tvwUserName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle bundleProfile = new Bundle();
+                bundleProfile.putLong("userid", feedMessage.getUserId());
+                Intent profileIntent = new Intent(viewHolder.context, UserProfileActivity.class);
+                profileIntent.putExtras(bundleProfile);
+                viewHolder.context.startActivity(profileIntent);
+            }
+        });
 
         // set on click listener
         viewHolder.ivwContextMenuButton.setOnClickListener(new View.OnClickListener() {

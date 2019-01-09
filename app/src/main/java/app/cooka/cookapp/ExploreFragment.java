@@ -4,12 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,13 +19,26 @@ public class ExploreFragment extends Fragment {
     //Represents parent activity
     private OnFragmentInteractionListener mListener;
     private Toolbar toolbar;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+
+    private View fragmentView;
+    private  ViewPagerAdapter adapter;
+
+    private ExploreHomeFragment exploreHomeFragment;
+    private ExploreTrendingFragment exploreTrendingFragment;
+    private ExploreFollowingFragment exploreFollowingFragment;
+
 
     public ExploreFragment() {
         // Required empty public constructor
+
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
 
     }
@@ -34,12 +46,35 @@ public class ExploreFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        exploreHomeFragment = new ExploreHomeFragment();
+        exploreTrendingFragment = new ExploreTrendingFragment();
+        exploreFollowingFragment = new ExploreFollowingFragment();
+
+
         //Inflate the fragment view
-        View fragmentView = inflater.inflate(R.layout.fragment_explore, container, false);
+        fragmentView = inflater.inflate(R.layout.fragment_explore, container, false);
+        viewPager = (ViewPager)fragmentView.findViewById(R.id.viewPager_id);
+
+        adapter = new ViewPagerAdapter(getChildFragmentManager());
+
+        viewPager.setOffscreenPageLimit(4);
 
         //Get the toolbar from the inflated layout and assign the menu
         toolbar = fragmentView.findViewById(R.id.explore_toolbar);
         toolbar.inflateMenu(R.menu.explore_toolbar);
+
+        tabLayout = fragmentView.findViewById(R.id.tablayout_id);
+        viewPager = fragmentView.findViewById(R.id.viewPager_id);
+
+        //Adding Fragments
+        adapter.addFragment(exploreHomeFragment,"Home");
+        adapter.addFragment(exploreTrendingFragment,"Trending");
+        adapter.addFragment(exploreFollowingFragment,"Following");
+
+
+        viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
+
 
         //Setup the MenuItem click listener to handle toolbar menu actions
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {

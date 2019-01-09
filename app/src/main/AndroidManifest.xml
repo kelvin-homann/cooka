@@ -76,6 +76,9 @@
             android:exported="true"
             android:label="@string/app_name">
 
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
 
         <!-- Facebook Login test activity -->
@@ -127,6 +130,12 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
+
+        <activity android:name=".RecipeDetailsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
 
     </application>
 

@@ -80,8 +80,8 @@
     <string name="one_day_ago">vor einem Tag</string>
     <string name="one_week_ago">vor einer Woche</string>
     <string name="one_year_ago">vor einem Jahr</string>
-    <string name="added_recipe_to_collection">fügte Rezept zu <a href="">%1$s</a></string>
-    <string name="added_image_to_recipe">fügte ein Bild zum Rezept <a href="">%1$s</a></string>
+    <string name="added_recipe_to_collection">fügte Rezept zu <a href="%2$s">%1$s</a></string>
+    <string name="added_image_to_recipe">fügte ein Bild zum Rezept <a href="%2$s">%1$s</a></string>
     <string name="feed_message_and">und</string>
     <string name="is_now_following_user">folgt jetzt <a href="%2$s">@%1$s</a></string>
     <string name="is_now_following_user_and_user">folgt jetzt <a href="%2$s">@%1$s</a> und <a href="%4$s">@%3$s</a></string>
@@ -183,4 +183,32 @@
     <string name="description">Beschreibung</string>
     <string name="title">Titel</string>
     <string name="save">Speichern</string>
+    <string name="database_test">Datenbanktest</string>
+
+    <!-- Recipe Details -->
+    <string name="recipe_details_by">von</string>
+    <string name="recipe_details_rating">Bewertung</string>
+    <string name="recipe_details_difficulty">Schwierigkeit</string>
+    <string name="recipe_details_difficulty_simple">Einfach</string>
+    <string name="recipe_details_difficulty_moderate">Moderat</string>
+    <string name="recipe_details_difficulty_demanding">Anspruchsvoll</string>
+    <string name="recipe_details_preparation_time">Zubereitungszeit</string>
+    <string name="recipe_details_preparation_time_n_min">%1$d min.</string>
+    <string name="recipe_details_ingredients">Zutaten</string>
+    <string name="recipe_details_for_n_servings">für %1$d Portionen</string>
+    <string name="recipe_details_steps">Kochschritte</string>
+    <string name="recipe_details_step_n">Schritt %1$d</string>
+    <string name="recipe_details_images">Bilder</string>
+    <string name="recipe_details_ratings">Bewertungen</string>
+    <string name="recipe_details_similar_recipes">Ähnliche Rezepte</string>
+    <string name="recipe_details_creator_profile_is_mockup">Der Erstellernutzer @%1$s ist nur eine Attrappe und besitzt kein Profil.</string>
+    <string name="recipe_details_could_not_load_image">Konnte Hauptrezeptbild nicht laden.</string>
+    <string name="recipe_details_image_missing">Dieses Rezept besitzt kein Hauptbild.</string>
+    <string name="recipe_details_has_no_ingredients_yet">Dieses Rezept hat noch keine Zutaten.</string>
+    <string name="recipe_details_has_no_steps_yet">Diese Rezept hat noch keine Kochscritte.</string>
+    <string name="recipe_details_has_no_other_images">Dieses Rezept besitzt keine anderen Bilder.</string>
+    <string name="recipe_details_has_no_ratings_yet">Dieses Rezept hat noch keine Bewertungen.</string>
+    <string name="recipe_details_could_not_find_any_similar_recipes">Keine ähnlichen Rezepte verfügbar.</string>
+    <string name="recipe_details_no_tags_added">Es wurden keine Tags zu diesem Rezept hinzugefügt.</string>
+    <string name="recipe_details_no_categories_added">Dieses Rezept wurde nicht kategorisiert.</string>
 </resources>
