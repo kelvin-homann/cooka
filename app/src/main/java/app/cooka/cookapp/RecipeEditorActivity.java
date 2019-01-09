@@ -1,13 +1,16 @@
 package app.cooka.cookapp;
 
 import android.content.DialogInterface;
-import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.rd.PageIndicatorView;
@@ -65,6 +68,12 @@ public class RecipeEditorActivity extends AppCompatActivity {
 
         //Adapter
         cardAdapter = new RecipeEditorCardAdapter(this);
+        cardAdapter.setDeleteIngredientListener(new IngredientsView.OnDeleteIngredientListener() {
+            @Override
+            public void onDelete(int index) {
+                onDeleteIngredient(index);
+            }
+        });
         cardAdapter.addItem();
 
         //Setup view pager margin/padding
@@ -111,17 +120,21 @@ public class RecipeEditorActivity extends AppCompatActivity {
         dialog.show(getSupportFragmentManager(), false, new IngredientDialogFragment.OnSubmitListener() {
             @Override
             public void onSubmit(RecipeStepIngredient ingredient) {
-                View currentView = cardAdapter.getViewAt(cardViewPager.getCurrentItem());
-                ((IngredientsView)currentView.findViewById(R.id.ingredients_section_ingredients)).
-                        addIngredient(ingredient, new IngredientsView.OnDeleteIngredientListener() {
-                            @Override
-                            public void onDelete(int index) {
-                                Log.d("Recipe Editor", "Attempting to delete item at index " + index);
-                            }
-                        });
+                onAddIngredient(ingredient);
             }
         });
 
+    }
+
+    private void onAddIngredient(RecipeStepIngredient ingredient) {
+        getCurrentStep().getRecipeStepIngredients().add(ingredient);
+        cardAdapter.refreshIngredients(cardViewPager.getCurrentItem());
+    }
+
+    private void onDeleteIngredient(int index) {
+        Log.d("Recipe Editor", "Attempting to delete item at index " + index);
+        getCurrentStep().getRecipeStepIngredients().remove(index);
+        cardAdapter.refreshIngredients(cardViewPager.getCurrentItem());
     }
 
     private void showDeleteStepDialog() {
@@ -173,5 +186,47 @@ public class RecipeEditorActivity extends AppCompatActivity {
         loadingScreen.hide();
     }
 
+    private void saveRecipe() {
+        //Create save recipe dialog
+//        SaveRecipeDialogFragment dialog = new SaveRecipeDialogFragment();
+//        dialog.show(getSupportFragmentManager(), recipe, new SaveRecipeDialogFragment.OnSubmitListener() {
+//            @Override
+//            public void onSubmit() {
+//
+//            }
+//        });
 
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        SaveRecipeDialogFragment saveFragment = new SaveRecipeDialogFragment();
+        saveFragment.setRecipe(recipe);
+        saveFragment.setOnSubmitListener(new SaveRecipeDialogFragment.OnSubmitListener() {
+            @Override
+            public void onSubmit() {
+
+            }
+        });
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.add(android.R.id.content, saveFragment).addToBackStack(null).commit();
+    }
+
+    private RecipeStep getCurrentStep() {
+        return recipe.getRecipeSteps().get(cardViewPager.getCurrentItem());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.recipe_editor_toolbar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_save:
+                saveRecipe();
+                return true;
+        }
+        return false;
+    }
 }

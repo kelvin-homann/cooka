@@ -29,7 +29,8 @@
             android:hint="@string/card_body_hint"
             android:textColorHint="@color/card_hint"
             android:nestedScrollingEnabled="false"
-            android:background="@null"/>
+            android:background="@null"
+            android:gravity="top"/>
 
         <LinearLayout
             android:id="@+id/ingredients_section"

@@ -25,6 +25,7 @@ public class RecipeEditorCardAdapter extends PagerAdapter implements CardPagerAd
     private ArrayList<RecipeStep> items;
     private ArrayList<View> views;
     private float baseCardElevation;
+    private IngredientsView.OnDeleteIngredientListener deleteIngredientListener;
 
     public RecipeEditorCardAdapter(Context context) {
         items = new ArrayList<>();
@@ -105,7 +106,21 @@ public class RecipeEditorCardAdapter extends PagerAdapter implements CardPagerAd
         ((TextView)view.findViewById(R.id.card_step_title)).setText(stepTitle);
         ((EditText)view.findViewById(R.id.card_title)).setText(step.getStepTitle());
         ((EditText)view.findViewById(R.id.card_body)).setText(step.getStepDescription());
-        //((IngredientsView)view.findViewById(R.id.ingredients_section_ingredients)).setIngredients(new String[]{"1", "300 g"}, new String[]{"Fisch", "Salat"});
+
+        refreshIngredients(view, step);
+    }
+
+    public void refreshIngredients(View card, RecipeStep step) {
+        IngredientsView ingredientsView = ((IngredientsView)card.findViewById(R.id.ingredients_section_ingredients));
+        ingredientsView.clear();
+
+        for(RecipeStepIngredient ingredient : step.getRecipeStepIngredients()) {
+            ingredientsView.addIngredient(ingredient, deleteIngredientListener);
+        }
+    }
+
+    public void refreshIngredients(int position) {
+        refreshIngredients(getViewAt(position), items.get(position));
     }
 
     public void syncSteps() {
@@ -117,6 +132,10 @@ public class RecipeEditorCardAdapter extends PagerAdapter implements CardPagerAd
             items.get(i).setStepDescription(body);
             items.get(i).setStepNumber(i+1);
         }
+    }
+
+    public void setDeleteIngredientListener(IngredientsView.OnDeleteIngredientListener deleteIngredientListener) {
+        this.deleteIngredientListener = deleteIngredientListener;
     }
 
     public float getBaseCardElevation() {

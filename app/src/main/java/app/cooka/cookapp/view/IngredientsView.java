@@ -153,7 +153,9 @@ public class IngredientsView extends FrameLayout {
         final int index = table.getChildCount()-1;
 
         ImageView button = table.getChildAt(index).findViewById(R.id.delete_button);
-        button.setOnClickListener(new OnClickListener() {
+
+        if(listener != null)
+            button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 listener.onDelete(index);
