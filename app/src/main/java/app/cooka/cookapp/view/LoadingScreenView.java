@@ -19,6 +19,7 @@ public class LoadingScreenView extends FrameLayout {
     private View[] hiddenViews;
     private boolean hidable = true;
     private boolean wasHidden = false;
+    private boolean actionSuccessful = true;
     private OnHideListener onHideListener;
 
     private Runnable hideRunnable = new Runnable() {
@@ -31,7 +32,7 @@ public class LoadingScreenView extends FrameLayout {
         @Override
         public void run() {
             hidable = true;
-            if(wasHidden) hide();
+            if(wasHidden) setVisible(false);
         }
     };
 
@@ -94,15 +95,20 @@ public class LoadingScreenView extends FrameLayout {
             }
         }
 
-        if(!visible && onHideListener != null) onHideListener.onHide();
+        if(!visible && onHideListener != null) onHideListener.onHide(actionSuccessful);
     }
 
     public boolean isVisible() {
         return visible;
     }
 
-    public void hide() {
+    public void hide(boolean actionSuccessful) {
+        this.actionSuccessful = actionSuccessful;
         setVisible(false);
+    }
+
+    public void hide() {
+        hide(true);
     }
 
     //Different variations of show method
@@ -155,7 +161,7 @@ public class LoadingScreenView extends FrameLayout {
     }
 
     public interface OnHideListener {
-        void onHide();
+        void onHide(boolean actionSuccessful);
     }
 
 }

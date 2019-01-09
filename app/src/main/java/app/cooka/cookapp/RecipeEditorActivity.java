@@ -257,8 +257,23 @@ public class RecipeEditorActivity extends AppCompatActivity {
     private void uploadRecipe() {
         loadingScreen.showForAtLeast(LoadingScreenView.MIN_LOADING_TIME, new LoadingScreenView.OnHideListener() {
             @Override
-            public void onHide() {
-                Toast.makeText(getApplicationContext(), R.string.recipe_uploaded_msg, Toast.LENGTH_LONG).show();
+            public void onHide(boolean actionSuccessful) {
+                //Show toast if upload was successful
+                if(actionSuccessful) Toast.makeText(getApplicationContext(),
+                        R.string.recipe_uploaded_msg, Toast.LENGTH_LONG).show();
+
+                //Or show dialog with option to retry
+                else {
+                    new AlertDialog.Builder(RecipeEditorActivity.this, R.style.Dialog).
+                            setMessage(R.string.recipe_upload_failed_msg).
+                            setPositiveButton(R.string.ok, null).
+                            setNegativeButton(R.string.retry, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    uploadRecipe();
+                                }
+                            }).show();
+                }
             }
         });
 
@@ -269,22 +284,14 @@ public class RecipeEditorActivity extends AppCompatActivity {
                 new ICreateRecipeCallback() {
                     @Override
                     public void onSucceeded(CreateRecipeResult createRecipeResult, Recipe createdRecipe) {
-                        loadingScreen.hide();
+                        loadingScreen.hide(true);
+                        Log.d("RecipeEditor", "Upload succeeded");
                     }
 
                     @Override
                     public void onFailed(CreateRecipeResult createRecipeResult) {
-                        loadingScreen.hide();
+                        loadingScreen.hide(false);
                         Log.d("RecipeEditor", createRecipeResult.resultMessage);
-                        new AlertDialog.Builder(RecipeEditorActivity.this, R.style.Dialog).
-                                setMessage(R.string.recipe_upload_failed_msg).
-                                setPositiveButton(R.string.ok, null).
-                                setNegativeButton(R.string.retry, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        uploadRecipe();
-                                    }
-                                }).show();
                     }
                 });
     }
