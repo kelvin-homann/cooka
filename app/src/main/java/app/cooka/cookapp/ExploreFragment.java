@@ -97,21 +97,6 @@ public class ExploreFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), ProfileActivity.class);
                 startActivity(intent);
                 return true;
-            case R.id.action_login:
-                //Starting the Profile Activity
-                Intent intent2 = new Intent(getActivity(), LoginActivity.class);
-                startActivity(intent2);
-                return true;
-            case R.id.action_register:
-                //Starting the Profile Activity
-                Intent intent3 = new Intent(getActivity(), RegisterActivity.class);
-                startActivity(intent3);
-                return true;
-            case R.id.action_tutorial:
-                //Starting the Profile Activity
-                Intent intent4 = new Intent(getActivity(), TutorialActivity.class);
-                startActivity(intent4);
-                return true;
         }
         return false;
     }

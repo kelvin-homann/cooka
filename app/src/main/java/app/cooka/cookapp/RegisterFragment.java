@@ -377,6 +377,16 @@ public class RegisterFragment extends Fragment {
                     @Override
                     public void onSucceeded(CreateUserResult result, User createdUser) {
                         login(userName, password);
+                        // If Tutorial Enabled in the Settings tutorial is started at the start of the app
+                        if (tutorialIsEnabled()){
+                            Intent intent_tutorial = new Intent(getContext(), TutorialActivity.class);
+                            startActivity(intent_tutorial);
+                        }
+
+                        else{
+                            Intent intent_main = new Intent(getContext(), MainActivity.class);
+                            startActivity(intent_main);
+                        }
                         getActivity().finish();
                     }
 
@@ -387,8 +397,6 @@ public class RegisterFragment extends Fragment {
                     }
                 });
     }
-
-    // TODO Doesn't work yet, couldn't find the reason yet, should work
 
     /** Vibration
      * @param activity Passing Activity
@@ -407,6 +415,14 @@ public class RegisterFragment extends Fragment {
 
     public boolean soundIsEnabled(){
         return settings.getBoolean("soundCheckBox", true);
+    }
+
+    /**
+     * If the tutorial is enabled in the settings it returns true, when its disable it returns false
+     * @return boolean
+     */
+    public boolean tutorialIsEnabled(){
+        return settings.getBoolean("tutorialCheckBox", true);
     }
 
 

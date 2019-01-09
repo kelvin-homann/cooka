@@ -1,5 +1,6 @@
 package app.cooka.cookapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -10,7 +11,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManagerFix;
+import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import app.cooka.cookapp.login.LoginManager;
 import app.cooka.cookapp.view.LoadingScreenView;
@@ -26,37 +30,15 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private PlanFragment planFragment;
     private CookFragment cookFragment;
 
-    // Settings
-    SharedPreferences settings;
-
-    // LoginManager
-    private LoginManager loginManager;
 
     //Generic loading screen
     private LoadingScreenView loadingScreen;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // Get SharedPreferences
-        settings = PreferenceManagerFix.getDefaultSharedPreferences(this);
-
-        // Login Manager
-        loginManager = LoginManager.Factory.getInstance(getApplicationContext());
-
-        // If no user is logged in the registerFragment is started
-        if (!isLoggedIn()){
-            Intent intent_register = new Intent(this, RegisterActivity.class);
-            startActivity(intent_register);
-        }
-
-        // If Tutorial Enabled in the Settings tutorial is started at the start of the app
-        if (tutorialIsEnabled()){
-            Intent intent_tutorial = new Intent(this, TutorialActivity.class);
-            startActivity(intent_tutorial);
-        }
 
         //Init fragments
         exploreFragment = new ExploreFragment();
@@ -82,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         loadingScreen = findViewById(R.id.loading_screen);
         loadingScreen.hide();
     }
+
 
     //Change out the current fragment
     private void loadFragment(Fragment fragment) {
@@ -116,19 +99,19 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
     }
 
-    /**
-     * if no user is logged in it returns false, if someone is logged in it returns true
-     * @return boolean
-     */
-    public boolean isLoggedIn(){
-        return loginManager.getUserId() != 0L;
-    }
-
-    /**
-     * If the tutorial is enabled in the settings it returns true, when its disable it returns false
-     * @return boolean
-     */
-    public boolean tutorialIsEnabled(){
-        return settings.getBoolean("tutorialCheckBox", true);
-    }
+//    /**
+//     * if no user is logged in it returns false, if someone is logged in it returns true
+//     * @return boolean
+//     */
+//    public boolean isLoggedIn(){
+//        return loginManager.getUserId() != 0L;
+//    }
+//
+//    /**
+//     * If the tutorial is enabled in the settings it returns true, when its disable it returns false
+//     * @return boolean
+//     */
+//    public boolean tutorialIsEnabled(){
+//        return settings.getBoolean("tutorialCheckBox", true);
+//    }
 }

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Cooka</string>
+    <string name="pref_summary_password">Klick um dein Passwort zu ändern</string>
+    <string name="pref_dialog_password">Noch nicht implementiert</string>
+    <string name="pref_title_password">Passwort</string>
+    <string name="pref_dialog_email">Noch nicht implementiert</string>
+    <string name="pref_summary_email">Klick um deine E-Mail zu ändern</string>
+    <string name="pref_title_email">E-Mail</string>
+    <string name="pref_dialog_username">Noch nicht implementiert</string>
+    <string name="pref_summary_username">Klick um deinen Nutzernamen zu ändern</string>
+    <string name="pref_title_username">Nutzernamen</string>
+    <string name="pref_logout_summary">Klick um auszuloggen</string>
+    <string name="pref_logout_title">Logout</string>
+    <string name="pref_logout_btn">Logout</string>
+    <string name="title_activity_settings">Einstellungen</string>
+    <string name="pref_title_sound">Sound</string>
+    <string name="pref_title_tutorial">Tutorial</string>
+    <string name="pref_title_profile">Profil</string>
+    <string name="pref_title_general">Allgemeine</string>
+    <string name="tut_desc3">Nutze den Kochmodus um in ganz schnell deine Lieblingsrezepte zu kochen !</string>
+    <string name="tut_desc2">Folge deinen Freunden und schau dir ihre Aktivität auf ihren Profilen an!</string>
+    <string name="tut_desc1">Nutze deinen Feed um zu sehen was deine Freunde kochen und entdecke neue Rezepte!</string>
+    <string name="tut_get_started">LOS</string>
+    <string name="tut_header3">EFFIZIENTES KOCHEN</string>
+    <string name="tut_header2">FOLGE DEINEN FREUNDEN</string>
+    <string name="tut_header1">ENTDECKE REZEPTE UND DIE AKTIVIÄTEN DEINER FREUNDE</string>
+    <string name="register_loginredirect">Du hast bereits einen Account?</string>
+    <string name="title_activity_register">Registrieren</string>
+    <string name="login_invalid">Falsche E-Mail oder Passwort</string>
+    <string name="email_username_hint">Nutzername</string>
+    <string name="error_password_login">Falsches Passwort</string>
+    <string name="error_email_login">Falscher Nutzername</string>
+    <string name="btn_register">Registrieren</string>
+    <string name="btn_login">Login</string>
+    <string name="login_with_alternative">oder einloggen mit</string>
+    <string name="action_profile">Profil</string>
+    <string name="prompt_username">Nutzername</string>
+    <string name="prompt_repeat_password">Passwort</string>
+    <string name="prompt_password">Passwort</string>
+    <string name="prompt_email">E-Mail</string>
+    <string name="title_activity_login">Login</string>
+    <string name="profile_followed">Folgt</string>
+    <string name="profile_unfollow">Entfolgt</string>
+    <string name="profile_follow">Folgen</string>
+    <string name="profile_adduser">Nutzer hinzufügen</string>
+    <string name="profile_follower_text">%1$d Follower</string>
+    <string name="profile_following_text">%1$d Folgt</string>
+    <string name="profile_avatar_desc">Profil Avatar</string>
+    <string name="title_activity_profile">Profil</string>
+    <string name="shortcut_not_available">Shortcut nicht verfügbar</string>
+    <string name="shortcut_explore">Entdecke</string>
+    <string name="shortcut_explore_long">Entdecke</string>
+    <string name="shortcut_collection">Kollektion</string>
+    <string name="shortcut_collection_long">Kollektion</string>
+    <string name="shortcut_grocery_list">Einkaufsliste</string>
+    <string name="shortcut_grocery_list_long">Einkaufsliste</string>
+    <string name="shortcut_profile">Profil</string>
+    <string name="shortcut_profile_long">Dein Profil</string>
+    <string name="notif_welcome_title">Willkommen bei Cooka</string>
+    <string name="notif_welcome_messagebody">Danke das du Cooka nutzt. Bitte sag uns was du gerne Kochen möchtest und was du folgen möchtest</string>
+    <string name="notif_action_explore">Entdecke</string>
+    <string name="notif_action_people">Leute</string>
+    <string name="title_explore">Entdecke</string>
+    <string name="title_cookbook">Kochbuch</string>
+    <string name="title_plan">Plan</string>
+    <string name="title_cook">Kochen</string>
+    <string name="action_search">Suche</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="a_couple_of_seconds_ago">vor ein paar Sekunden</string>
+    <string name="less_than_a_minute_ago">vor weniger als einer Minute</string>
+    <string name="some_seconds_ago">vor wenigen Sekunden</string>
+    <string name="minutes_ago">vor %1$d Minuten</string>
+    <string name="hours_ago">vor %1$d Stunden</string>
+    <string name="days_ago">vor %1$d Tagen</string>
+    <string name="weeks_ago">vor %1$d Wochen</string>
+    <string name="years_ago">vor %1$d Jahren</string>
+    <string name="one_minute_ago">vor einer Minute</string>
+    <string name="one_hour_ago">vor einer Stunde</string>
+    <string name="one_day_ago">vor einem Tag</string>
+    <string name="one_week_ago">vor einer Woche</string>
+    <string name="one_year_ago">vor einem Jahr</string>
+    <string name="added_recipe_to_collection">fügte Rezept zu <a href="">%1$s</a></string>
+    <string name="added_image_to_recipe">fügte ein Bild zum Rezept <a href="">%1$s</a></string>
+    <string name="feed_message_and">und</string>
+    <string name="is_now_following_user">folgt jetzt <a href="%2$s">@%1$s</a></string>
+    <string name="is_now_following_user_and_user">folgt jetzt <a href="%2$s">@%1$s</a> und <a href="%4$s">@%3$s</a></string>
+    <string name="is_now_following_users">folgt jetzt</string>
+    <string name="is_now_following_user_and_n_others">folgt jetzt <a href="%2$s">@%1$s</a> und %3$d others</string>
+    <string name="is_now_following_tag">folgt jetzt <a href="%2$s">#%1$s</a></string>
+    <string name="is_now_following_tags">folgt jetzt</string>
+    <string name="load_recipe_failed_msg">Das Rezept konnte nicht geladen werden.</string>
+    <string name="unit">Einheit</string>
+    <string name="amount">Menge</string>
+    <string name="ingredient">Zutat</string>
+    <string name="edit_ingredient">Zutat bearbeiten</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="add">Hinzufügen</string>
+    <string name="ok">Ok</string>
+    <string name="add_ingredient">Zutat hinzufügen</string>
+    <string name="step_title">Schritt %1$d</string>
+    <string name="no">Nein</string>
+    <string name="yes">Ja</string>
+    <string name="delete_step_warning_message">Bist du sicher das diesen Schritt löschen möchtest?</string>
+    <string name="card_body_hint"><i>Beschreibung hinzufügen </i></string>
+    <string name="card_title_hint"><i>Titel hinzufügen </i></string>
+    <string name="register_with_facebook">Mit Facebook anmelden</string>
+    <string name="register_using_e_mail">Mit E-Mail anmelden</string>
+    <string name="register_with_alternative">oder anmelden mit</string>
+    <string name="ingredients_section_title">Zutaten für diesen Schritt</string>
+    <string name="ingredients">Zutaten</string>
+    <string name="steps_fab_text">Schritte</string>
+    <string name="overview_fab_text">Übersicht</string>
+    <string name="title_activity_cook_mode">Koch Modus</string>
+    <string name="headertext_following">Folge ich</string>
+    <string name="profile_cookbook_ivw">Kochbuch Bildansicht</string>
+    <string name="login_background_desc">Login Hintergrund</string>
+    <string name="permission_rationale">"Kontakt Berechtigungen werden für die Autovervollständigung benötigt. "</string>
+    <string name="error_field_required">Pflichtfeld</string>
+    <string name="error_notsame_password">Passwörter sind nicht gleich</string>
+    <string name="error_incorrect_password">Falsches Passwort</string>
+    <string name="error_invalid_username">Falscher Nutzername</string>
+    <string name="error_invalid_password">Das Passwort ist zu kurz</string>
+    <string name="error_invalid_email">Falsche E-Mail Adresse</string>
+    <string name="report_this_feed_message">Nachricht melden</string>
+    <string name="browse_tag_tag">Tag browsen %1$s</string>
+    <string name="browse_tag">Tag browsen</string>
+    <string name="browse_collection_name">browsen %1$s</string>
+    <string name="browse_collection">Kollektion browsen</string>
+    <string name="cook_this_recipe_now">Dieses Rezept jetzt kochen</string>
+    <string name="pin_recipe">Rezept pinnen</string>
+    <string name="view_recipe">Rezept anschauen</string>
+    <string name="view_profile_of_user">Profil von %1$s anschauen</string>
+    <string name="view_user_profile">Nutzerprofil anschauen</string>
+    <string name="username_created_collection_and_n_more">%1$s erstelle Kollektion <a href="%3$s">%2$s</a> und %4$d mehr</string>
+    <string name="username_created_collections">%1$s erstelle Kollektion</string>
+    <string name="is_now_following_tag_and_tag">folgt jetzt <a href="%2$s">#%1$s</a> und <a href="%4$s">#%3$s</a></string>
+    <string name="is_now_following_tag_and_n_others">folgt jetzt <a href="%2$s">#%1$s</a> und %3$d others</string>
+    <string name="is_now_following_collection">folgt jetzt <a href="%2$s">%1$s</a></string>
+    <string name="is_now_following_collections">"folgt jetzt "</string>
+    <string name="is_now_following_collection_and_collection">folgt jetzt <a href="%2$s">%1$s</a> und <a href="%4$s">%3$s</a></string>
+    <string name="is_now_following_collection_and_n_others">folgt jetzt <a href="%2$s">%1$s</a> und %3$d others</string>
+    <string name="created_recipe">erstellte Rezept <a href="%2$s">%1$s</a></string>
+    <string name="created_recipes">erstellte Rezepte</string>
+    <string name="created_recipe_and_n_more">erstellte Rezept <a href="%2$s">#%1$s</a> und %3$d mehr</string>
+    <string name="modified_recipe">bearbeitete Rezept <a href="%2$s">%1$s</a></string>
+    <string name="modified_recipes">bearbeitete Rezepte</string>
+    <string name="modified_recipe_and_n_more">bearbeitete Rezept <a href="%2$s">#%1$s</a> und %3$d mehr</string>
+    <string name="cooked_recipe">kochte Rezept <a href="%2$s">%1$s</a></string>
+    <string name="cooked_recipes">kochte Rezepte</string>
+    <string name="cooked_recipe_and_n_more">kochte Rezept <a href="%2$s">#%1$s</a> und %3$d mehr</string>
+    <string name="created_collection">erstellte Kollektion <a href="%2$s">%1$s</a></string>
+    <string name="created_collections">erstellte Kollektionen</string>
+    <string name="created_collection_and_n_more">erstellte Kollektion <a href="%2$s">#%1$s</a> und %3$d mehr</string>
+    <string name="username_is_now_following_user">%1$s folgt jetzt <a href="%3$s">@%2$s</a></string>
+    <string name="username_is_now_following_users">%1$s folgt jetzt</string>
+    <string name="username_is_now_following_user_and_user">%1$s folgt jetzt <a href="%3$s">@%2$s</a> und <a href="%5$s">@%4$s</a></string>
+    <string name="username_is_now_following_user_and_n_others">%1$s folgt jetzt <a href="%3$s">@%2$s</a> und %4$d anderen</string>
+    <string name="username_is_now_following_tag">%1$s folgt jetzt <a href="%3$s">#%2$s</a></string>
+    <string name="username_is_now_following_tags">%1$s folgt jetzt</string>
+    <string name="username_is_now_following_tag_and_tag">%1$s folgt jetzt <a href="%3$s">#%2$s</a> und <a href="%5$s">@%4$s</a></string>
+    <string name="username_is_now_following_tag_and_n_others">%1$s folgt jetzt <a href="%3$s">#%2$s</a> und %4$d anderen</string>
+    <string name="username_is_now_following_collection_and_n_others">%1$s folgt jetzt <a href="%3$s">%2$s</a> und %4$d anderen</string>
+    <string name="username_is_now_following_collection_and_collection">%1$s folgt jetzt <a href="%3$s">%2$s</a> und <a href="%5$s">@%4$s</a></string>
+    <string name="username_is_now_following_collections">%1$s folgt jetzt</string>
+    <string name="username_is_now_following_collection">%1$s folgt jetzt <a href="%3$s">%2$s</a></string>
+    <string name="username_created_recipe">%1$s erstellte Rezept <a href="%3$s">%2$s</a></string>
+    <string name="username_created_recipes">%1$s erstellte Rezepte</string>
+    <string name="username_created_recipe_and_n_more">%1$s erstellte Rezept <a href="%3$s">%2$s</a> und %4$d andere</string>
+    <string name="username_modified_recipe">%1$s bearbeitete Rezept <a href="%3$s">%2$s</a></string>
+    <string name="username_modified_recipes">"%1$s bearbeitete Rezept "</string>
+    <string name="username_modified_recipe_and_n_more">%1$s bearbeitete Rezept <a href="%3$s">%2$s</a> und %4$d andere</string>
+    <string name="username_cooked_recipe">%1$s kochte Rezept <a href="%3$s">%2$s</a></string>
+    <string name="username_cooked_recipes">%1$s kochte Rezepte</string>
+    <string name="username_cooked_recipe_and_n_more">%1$s kochte Rezept <a href="%3$s">%2$s</a> und %4$d andere</string>
+    <string name="username_created_collection">%1$s erstelle Kollektion <a href="%3$s">%2$s</a></string>
+</resources>

@@ -54,9 +54,9 @@
             </intent-filter>
         </activity>
 
-        <!-- Main activity -->
+        <!--Launcher Activity-->
         <activity
-            android:name=".MainActivity"
+            android:name=".LauncherActivity"
             android:exported="true"
             android:label="@string/app_name">
             <intent-filter>
@@ -64,6 +64,14 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+        </activity>
+
+        <!-- Main activity -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name">
 
             <meta-data
                 android:name="android.app.shortcuts"
@@ -112,6 +120,7 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
+
     </application>
 
 </manifest>

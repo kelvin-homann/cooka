@@ -1,5 +1,6 @@
 package app.cooka.cookapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
@@ -81,6 +82,8 @@ public class TutorialActivity extends AppCompatActivity {
         btnGetStarted.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent_main = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent_main);
                 finish();
             }
         });

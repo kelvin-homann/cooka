@@ -130,6 +130,16 @@ public class LoginActivity extends AppCompatActivity {
                             public void onSucceeded(AuthenticateUserResult result) {
                                 tilEmail.setErrorEnabled(false);
                                 tilPassword.setErrorEnabled(false);
+                                // If Tutorial Enabled in the Settings tutorial is started at the start of the app
+                                if (tutorialIsEnabled()){
+                                    Intent intent_tutorial = new Intent(getApplicationContext(), TutorialActivity.class);
+                                    startActivity(intent_tutorial);
+                                }
+
+                                else{
+                                    Intent intent_main = new Intent(getApplicationContext(), MainActivity.class);
+                                    startActivity(intent_main);
+                                }
                                 finish();
                             }
 
@@ -248,5 +258,9 @@ public class LoginActivity extends AppCompatActivity {
 
     public boolean soundIsEnabled(){
         return settings.getBoolean("soundCheckBox", true);
+    }
+
+    public boolean tutorialIsEnabled(){
+        return settings.getBoolean("tutorialCheckBox", true);
     }
 }

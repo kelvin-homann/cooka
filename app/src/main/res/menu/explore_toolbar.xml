@@ -16,19 +16,4 @@
         android:id="@+id/action_profile"
         android:title="@string/action_profile"
         app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_login"
-        android:title="Login"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_register"
-        android:title="Register"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_tutorial"
-        android:title="Tutorial"
-        app:showAsAction="never" />
 </menu>
