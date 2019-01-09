@@ -25,6 +25,7 @@ public class LauncherActivity extends AppCompatActivity {
 
         // Get SharedPreferences
         settings = PreferenceManagerFix.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = settings.edit();
 
         // Login Manager
         loginManager = LoginManager.Factory.getInstance(getApplicationContext());
@@ -40,6 +41,8 @@ public class LauncherActivity extends AppCompatActivity {
         else{
             // if tutorial is enabled
             if (tutorialIsEnabled()){
+                editor.putBoolean("tutorialCheckBox", false);
+                editor.apply();
                 Intent intent_tutorial = new Intent(this, TutorialActivity.class);
                 startActivity(intent_tutorial);
             }

@@ -54,7 +54,7 @@
             </intent-filter>
         </activity>
 
-        <!-- Main activity -->
+        <!--Launcher Activity-->
         <activity
             android:name=".LauncherActivity"
             android:exported="true"
@@ -76,9 +76,6 @@
             android:exported="true"
             android:label="@string/app_name">
 
-            <meta-data
-                android:name="android.app.shortcuts"
-                android:resource="@xml/shortcuts" />
         </activity>
 
         <!-- Facebook Login test activity -->
@@ -87,10 +84,8 @@
         <!-- Database test activity -->
         <activity
             android:name=".DatabaseTestActivity"
-            android:label="@string/database_test"
-            android:windowSoftInputMode="stateHidden"
-            android:exported="true">
-
+            android:exported="true"
+            android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
@@ -119,19 +114,13 @@
 
         <activity android:name=".RegisterActivity" />
 
-        <activity android:name=".RecipeDetailsActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
-
         <activity
             android:name=".UserProfileActivity"
             android:label="@string/title_activity_user_profile"
             android:exported="true" />
 
-        <activity android:name=".TutorialActivity" />
-            android:label="@string/title_activity_user_profile" />
+        <activity
+            android:name=".TutorialActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait" />
 

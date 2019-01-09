@@ -75,6 +75,7 @@ public class RegisterFragment extends Fragment {
         // Get Preferences
         settings = PreferenceManagerFix.getDefaultSharedPreferences(getContext());
 
+
         // Error Sound
         mp = MediaPlayer.create(getActivity(), R.raw.errorsound);
 
@@ -372,6 +373,7 @@ public class RegisterFragment extends Fragment {
      * @param password Password from an EditText View
      */
     private void createAccount(final String userName,final  String emailAddress,final  String password){
+        final SharedPreferences.Editor editor = settings.edit();
         LoginManager.Factory.getInstance(getContext()).createAccount(
                 userName, emailAddress, password, new ICreateAccountCallback() {
                     @Override
@@ -379,6 +381,8 @@ public class RegisterFragment extends Fragment {
                         login(userName, password);
                         // If Tutorial Enabled in the Settings tutorial is started at the start of the app
                         if (tutorialIsEnabled()){
+                            editor.putBoolean("tutorialCheckBox", false);
+                            editor.apply();
                             Intent intent_tutorial = new Intent(getContext(), TutorialActivity.class);
                             startActivity(intent_tutorial);
                         }

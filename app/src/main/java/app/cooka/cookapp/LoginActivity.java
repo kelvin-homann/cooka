@@ -54,6 +54,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // Get SharedPreferences
         settings = PreferenceManagerFix.getDefaultSharedPreferences(this);
+        final SharedPreferences.Editor editor = settings.edit();
 
         // Init Objects from Layout
         etvUsername = findViewById(R.id.etvEmailLogin);
@@ -132,6 +133,8 @@ public class LoginActivity extends AppCompatActivity {
                                 tilPassword.setErrorEnabled(false);
                                 // If Tutorial Enabled in the Settings tutorial is started at the start of the app
                                 if (tutorialIsEnabled()){
+                                    editor.putBoolean("tutorialCheckBox", false);
+                                    editor.apply();
                                     Intent intent_tutorial = new Intent(getApplicationContext(), TutorialActivity.class);
                                     startActivity(intent_tutorial);
                                 }
