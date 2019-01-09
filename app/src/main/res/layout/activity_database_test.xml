@@ -219,6 +219,37 @@
                 android:paddingRight="16dp"
                 android:text="Notify" />
 
+            <EditText
+                android:id="@+id/etRecipeId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="4dp"
+                android:clickable="false"
+                android:ems="10"
+                android:fontFamily="sans-serif"
+                android:hint="recipe ID"
+                android:inputType="number"
+                android:maxLength="32"
+                android:textColorHint="#cccccc"
+                android:textSize="16sp"
+                android:typeface="serif" />
+
+            <Button
+                android:id="@+id/btnViewRecipe"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginRight="16dp"
+                android:clickable="false"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:text="View Recipe" />
+
             <Button
                 android:id="@+id/btnPollFeedMessages"
                 style="@style/Widget.AppCompat.Button.Colored"

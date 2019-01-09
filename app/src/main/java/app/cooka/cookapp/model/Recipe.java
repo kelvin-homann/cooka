@@ -99,8 +99,16 @@ public class Recipe extends java.util.Observable {
     private int numCategoriesRequested = -1;
     private List<Tag> tags;
     private int numTagsRequested = -1;
+    private List<RecipeStepIngredient> ingredients;
+    private int numIngredientsRequested = -1;
     private List<RecipeStep> recipeSteps;
     private int numRecipeStepsRequested = -1;
+//    private List<Rating> recipeRatings;
+//    private int numRecipeRatingsRequested = 0;
+    private List<Image> recipeImages;
+    private int numRecipeImagesRequested = 0;
+    private List<Recipe> similarRecipes;
+    private int numSimilarRecipesRequested = 0;
 
     private Recipe(final long recipeId, long languageId, String title, String description) {
 
@@ -454,14 +462,64 @@ public class Recipe extends java.util.Observable {
                 throw new NullPointerException("select recipe callback is null");
             }
             return DatabaseClient.Factory.getInstance(context)
-                .selectRecipe(recipeId, numCategoriesRequested, numTagsRequested,
-                    numRecipeStepsRequested, numRecipeRatingsRequested)
+                .selectRecipe(recipeId, numCategoriesRequested, numTagsRequested, 0,
+                    numRecipeStepsRequested, numRecipeRatingsRequested, 0, 0)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Recipe>() {
                     @Override public void onCompleted() {}
                     @Override public void onError(Throwable e) {
                         Log.e(LOGTAG, "Recipe.Factory.selectRecipes() failed");
+                        Log.e(LOGTAG, e.getMessage());
+                    }
+                    @Override public void onNext(Recipe recipe) {
+                        // todo: register recipe at the update observer
+                        selectRecipeCallback.onSucceeded(recipe);
+                    }
+                });
+        }
+
+        /**
+         * Selects a recipe from the database given its recipe identifier.
+         * @param context the Android context to run this method in.
+         * @param recipeId the identifier of the recipe to be selected.
+         * @param numCategoriesRequested the maximum number of categories associated with this
+         *      recipe to be fetched with the recipe.
+         * @param numTagsRequested the maximum number of tags that this recipe is tagged with to be
+         *      fetched with the recipe.
+         * @param numIngredientsRequested the maximum number of ingredients to be fetched with the
+         *      recipe.
+         * @param numRecipeStepsRequested the maximum number of recipe steps to be fetched with the
+         *      recipe.
+         * @param numRecipeRatingsRequested the maximum number of recipe ratings to be fetched with
+         *      the recipe.
+         * @param numRecipeImagesRequested the maximum number of additional recipe images to be
+         *      fetched with the recipe.
+         * @param numSimilarRecipesRequested the maximum number of similar recipes to be fetched
+         *      with the recipe.
+         * @param selectRecipeCallback the select callback that will be called when the
+         *      selection succeeded and that will be given the recipe object.
+         * @return a subscription object to the select request; null if an error occurred.
+         */
+        public static Subscription selectRecipe(final Context context, final long recipeId,
+            final int numCategoriesRequested, final int numTagsRequested, final int
+            numIngredientsRequested, final int numRecipeStepsRequested, final int
+            numRecipeRatingsRequested, final int numRecipeImagesRequested, final int
+            numSimilarRecipesRequested, final IResultCallback<Recipe> selectRecipeCallback)
+        {
+            if(selectRecipeCallback == null) {
+                throw new NullPointerException("select recipe callback is null");
+            }
+            return DatabaseClient.Factory.getInstance(context)
+                .selectRecipe(recipeId, numCategoriesRequested, numTagsRequested,
+                    numIngredientsRequested, numRecipeStepsRequested, numRecipeRatingsRequested,
+                    numRecipeImagesRequested, numSimilarRecipesRequested)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Recipe>() {
+                    @Override public void onCompleted() {}
+                    @Override public void onError(Throwable e) {
+                        Log.e(LOGTAG, "Recipe.Factory.selectRecipe() failed");
                         Log.e(LOGTAG, e.getMessage());
                     }
                     @Override public void onNext(Recipe recipe) {
@@ -522,6 +580,31 @@ public class Recipe extends java.util.Observable {
                     @Override public void onError(Throwable e) {
                         Log.e(LOGTAG, "Recipe.Factory.selectRecipes() failed");
                         Log.e(LOGTAG, e.getMessage());
+                        selectRecipesCallback.onFailed(e);
+                    }
+                    @Override public void onNext(List<Recipe> recipes) {
+                        // todo: register all recipes at the update observer
+                        selectRecipesCallback.onSucceeded(recipes);
+                    }
+                });
+        }
+
+        public static Subscription selectFeedRecipes(final Context context,
+            final IResultCallback<List<Recipe>> selectRecipesCallback)
+        {
+            if(selectRecipesCallback == null) {
+                throw new NullPointerException("select recipes callback is null");
+            }
+            return DatabaseClient.Factory.getInstance(context)
+                .selectFeedRecipes()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<Recipe>>() {
+                    @Override public void onCompleted() {}
+                    @Override public void onError(Throwable e) {
+                        Log.e(LOGTAG, "Recipe.Factory.selectFeedRecipes() failed");
+                        Log.e(LOGTAG, e.getMessage());
+                        selectRecipesCallback.onFailed(e);
                     }
                     @Override public void onNext(List<Recipe> recipes) {
                         // todo: register all recipes at the update observer
@@ -915,6 +998,21 @@ public class Recipe extends java.util.Observable {
     }
 
     @SuppressWarnings("unused")
+    public List<RecipeStepIngredient> getIngredients() {
+        return ingredients;
+    }
+
+    @SuppressWarnings("unused")
+    public void setIngredients(List<RecipeStepIngredient> ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    @SuppressWarnings("unused")
+    public int getNumIngredientsRequested() {
+        return numIngredientsRequested;
+    }
+
+    @SuppressWarnings("unused")
     public List<RecipeStep> getRecipeSteps() {
         return recipeSteps;
     }
@@ -928,6 +1026,36 @@ public class Recipe extends java.util.Observable {
     @SuppressWarnings("unused")
     public int getNumRecipeStepsRequested() {
         return numRecipeStepsRequested;
+    }
+
+    @SuppressWarnings("unused")
+    public List<Image> getRecipeImages() {
+        return recipeImages;
+    }
+
+    @SuppressWarnings("unused")
+    public void setRecipeImages(List<Image> recipeImages) {
+        this.recipeImages = recipeImages;
+    }
+
+    @SuppressWarnings("unused")
+    public int getNumRecipeImagesRequested() {
+        return numRecipeImagesRequested;
+    }
+
+    @SuppressWarnings("unused")
+    public List<Recipe> getSimilarRecipes() {
+        return similarRecipes;
+    }
+
+    @SuppressWarnings("unused")
+    public void setSimilarRecipes(List<Recipe> similarRecipes) {
+        this.similarRecipes = similarRecipes;
+    }
+
+    @SuppressWarnings("unused")
+    public int getNumSimilarRecipesRequested() {
+        return numSimilarRecipesRequested;
     }
 
     /**
@@ -1317,75 +1445,67 @@ public class Recipe extends java.util.Observable {
                 in.nextName();
                 int flags = in.nextInt();
 
-                // categories
-                in.nextName();
-                in.beginArray();
-                List<Category> categories = new ArrayList<>();
-                while(in.hasNext()) {
-                    JsonToken categoryToken = in.peek();
-                    if(categoryToken == JsonToken.END_ARRAY)
-                        break;
-
-                    in.beginObject();
-                    in.nextName();
-                    final long categoryId = in.nextLong();
-                    in.nextName();
-                    String categoryName = in.nextString();
-                    in.endObject();
-
-                    categories.add(new Category(categoryId, languageId, categoryName));
-                }
-                in.endArray();
-
                 in.nextName();
                 int numCategoriesRequested = in.nextInt();
 
-                // tags
-                in.nextName();
-                in.beginArray();
-                List<Tag> tags = new ArrayList<>();
-                while(in.hasNext()) {
-                    JsonToken tagToken = in.peek();
-                    if(tagToken == JsonToken.END_ARRAY)
-                        break;
-
-                    in.beginObject();
+                // categories
+                List<Category> categories = null;
+                if(numCategoriesRequested != 0) {
                     in.nextName();
-                    final long tagId = in.nextLong();
-                    in.nextName();
-                    String tagName = in.nextString();
-                    in.endObject();
+                    in.beginArray();
+                    categories = new ArrayList<>();
+                    while(in.hasNext()) {
+                        JsonToken categoryToken = in.peek();
+                        if(categoryToken == JsonToken.END_ARRAY)
+                            break;
 
-                    tags.add(Tag.Factory.createTag(tagId, tagName));
+                        in.beginObject();
+                        in.nextName();
+                        final long categoryId = in.nextLong();
+                        in.nextName();
+                        String categoryName = in.nextString();
+                        in.endObject();
+
+                        categories.add(new Category(categoryId, languageId, categoryName));
+                    }
+                    in.endArray();
                 }
-                in.endArray();
 
                 in.nextName();
                 int numTagsRequested = in.nextInt();
 
-                // steps
-                in.nextName();
-                in.beginArray();
-                List<RecipeStep> recipeSteps = new ArrayList<>();
-                while(in.hasNext()) {
-                    JsonToken rsToken = in.peek();
-                    if(rsToken == JsonToken.END_ARRAY)
-                        break;
-
-                    in.beginObject();
-                    in.nextName();
-                    final long recipeStepId = in.nextLong();
-                    in.nextName();
-                    int stepNumber = in.nextInt();
-                    in.nextName();
-                    String stepTitle = in.nextString();
-                    in.nextName();
-                    String stepDescription = in.nextString();
-
-                    // ingredients
+                // tags
+                List<Tag> tags = null;
+                if(numTagsRequested != 0) {
                     in.nextName();
                     in.beginArray();
-                    List<RecipeStepIngredient> recipeStepIngredients = new ArrayList<>();
+                    tags = new ArrayList<>();
+                    while(in.hasNext()) {
+                        JsonToken tagToken = in.peek();
+                        if(tagToken == JsonToken.END_ARRAY)
+                            break;
+
+                        in.beginObject();
+                        in.nextName();
+                        final long tagId = in.nextLong();
+                        in.nextName();
+                        String tagName = in.nextString();
+                        in.endObject();
+
+                        tags.add(Tag.Factory.createTag(tagId, tagName));
+                    }
+                    in.endArray();
+                }
+
+                in.nextName();
+                int numIngredientsRequested = in.nextInt();
+
+                // ingredients
+                List<RecipeStepIngredient> ingredients = null;
+                if(numIngredientsRequested != 0) {
+                    in.nextName();
+                    in.beginArray();
+                    ingredients = new ArrayList<>();
                     while(in.hasNext()) {
                         JsonToken rsiToken = in.peek();
                         if(rsiToken == JsonToken.END_ARRAY)
@@ -1410,37 +1530,161 @@ public class Recipe extends java.util.Observable {
                         String customUnit = in.nextString();
                         in.endObject();
 
-                        recipeStepIngredients.add(RecipeStepIngredient.Factory
+                        ingredients.add(RecipeStepIngredient.Factory
                             .createRecipeStepIngredient(ingredientId, ingredientName,
                                 ingredientDescription, ingredientAmount, unitTypeId, unitTypeName,
                                 unitTypeAbbreviation, customUnit));
                     }
                     in.endArray();
-                    in.endObject();
-
-                    RecipeStep newRecipeStep = RecipeStep.Factory.createRecipeStep(recipeStepId, stepNumber, stepTitle,
-                        stepDescription, recipeStepIngredients);
-
-                    recipeSteps.add(newRecipeStep);
                 }
-                in.endArray();
 
                 in.nextName();
                 int numRecipeStepsRequested = in.nextInt();
 
-                // ratings
-                in.nextName();
-                in.beginArray();
-                //List<Rating> ratings = new ArrayList<>();
-                while(in.hasNext()) {
-                    JsonToken categoryToken = in.peek();
-                    if(categoryToken == JsonToken.END_ARRAY)
-                        break;
+                // steps
+                List<RecipeStep> recipeSteps = null;
+                if(numRecipeStepsRequested != 0) {
+                    in.nextName();
+                    in.beginArray();
+                    recipeSteps = new ArrayList<>();
+                    while(in.hasNext()) {
+                        JsonToken rsToken = in.peek();
+                        if(rsToken == JsonToken.END_ARRAY)
+                            break;
+
+                        in.beginObject();
+                        in.nextName();
+                        final long recipeStepId = in.nextLong();
+                        in.nextName();
+                        int stepNumber = in.nextInt();
+                        in.nextName();
+                        String stepTitle = in.nextString();
+                        in.nextName();
+                        String stepDescription = in.nextString();
+
+                        // ingredients
+                        in.nextName();
+                        in.beginArray();
+                        List<RecipeStepIngredient> recipeStepIngredients = new ArrayList<>();
+                        while(in.hasNext()) {
+                            JsonToken rsiToken = in.peek();
+                            if(rsiToken == JsonToken.END_ARRAY)
+                                break;
+
+                            in.beginObject();
+                            in.nextName();
+                            final long ingredientId = in.nextLong();
+                            in.nextName();
+                            String ingredientName = in.nextString();
+                            in.nextName();
+                            String ingredientDescription = in.nextString();
+                            in.nextName();
+                            float ingredientAmount = (float)in.nextDouble();
+                            in.nextName();
+                            final long unitTypeId = in.nextLong();
+                            in.nextName();
+                            String unitTypeName = in.nextString();
+                            in.nextName();
+                            String unitTypeAbbreviation = in.nextString();
+                            in.nextName();
+                            String customUnit = in.nextString();
+                            in.endObject();
+
+                            recipeStepIngredients.add(RecipeStepIngredient.Factory
+                                .createRecipeStepIngredient(ingredientId, ingredientName,
+                                    ingredientDescription, ingredientAmount, unitTypeId, unitTypeName,
+                                    unitTypeAbbreviation, customUnit));
+                        }
+                        in.endArray();
+                        in.endObject();
+
+                        RecipeStep newRecipeStep = RecipeStep.Factory.createRecipeStep(recipeStepId, stepNumber, stepTitle,
+                            stepDescription, recipeStepIngredients);
+
+                        recipeSteps.add(newRecipeStep);
+                    }
+                    in.endArray();
                 }
-                in.endArray();
 
                 in.nextName();
                 int numRecipeRatingsRequested = in.nextInt();
+
+                // ratings (not yet implemented)
+                if(numRecipeRatingsRequested != 0) {
+                    in.nextName();
+                    in.beginArray();
+                    //List<Rating> ratings = new ArrayList<>();
+                    while(in.hasNext()) {
+                        JsonToken categoryToken = in.peek();
+                        if(categoryToken == JsonToken.END_ARRAY)
+                            break;
+                    }
+                    in.endArray();
+                }
+
+                in.nextName();
+                int numRecipeImagesRequested = in.nextInt();
+
+                // recipe images
+                List<Image> recipeImages = null;
+                if(numRecipeImagesRequested != 0) {
+                    in.nextName();
+                    in.beginArray();
+                    recipeImages = new ArrayList<>();
+                    while(in.hasNext()) {
+                        JsonToken tagToken = in.peek();
+                        if(tagToken == JsonToken.END_ARRAY)
+                            break;
+
+                        in.beginObject();
+                        in.nextName();
+                        final long imageId = in.nextLong();
+                        in.nextName();
+                        final long imageCreatorId = in.nextLong();
+                        in.nextName();
+                        String imageCreatorName = in.nextString();
+                        in.nextName();
+                        final long imageModifierId = in.nextLong();
+                        in.nextName();
+                        String imageModifierName = in.nextString();
+                        in.nextName();
+                        String imageName = in.nextString();
+                        in.nextName();
+                        String imageFileName = in.nextString();
+                        in.nextName();
+                        String imageCreatedDateTime = in.nextString();
+                        in.nextName();
+                        String imageLastModifiedDateTime = in.nextString();
+                        in.nextName();
+                        float imageRating = (float)in.nextDouble();
+                        in.endObject();
+
+                        Image newImage = Image.Factory.createImage(imageId, imageCreatorId,
+                            imageCreatorName, imageModifierId, imageModifierName, imageName,
+                            imageFileName, imageCreatedDateTime, imageLastModifiedDateTime,
+                            imageRating);
+
+                        recipeImages.add(newImage);
+                    }
+                    in.endArray();
+                }
+
+                in.nextName();
+                int numSimilarRecipesRequested = in.nextInt();
+
+                // recipe images
+                List<Recipe> similarRecipes = null;
+                if(numSimilarRecipesRequested != 0) {
+                    in.nextName();
+                    in.beginArray();
+                    similarRecipes = new ArrayList<>();
+                    while(in.hasNext()) {
+                        JsonToken tagToken = in.peek();
+                        if(tagToken == JsonToken.END_ARRAY)
+                            break;
+                    }
+                    in.endArray();
+                }
 
                 in.endObject();
 
@@ -1456,8 +1700,17 @@ public class Recipe extends java.util.Observable {
                 newRecipe.tags = tags;
                 newRecipe.numTagsRequested = numTagsRequested;
 
+                newRecipe.ingredients = ingredients;
+                newRecipe.numIngredientsRequested = numIngredientsRequested;
+
                 newRecipe.recipeSteps = recipeSteps;
                 newRecipe.numRecipeStepsRequested = numRecipeStepsRequested;
+
+                newRecipe.recipeImages = recipeImages;
+                newRecipe.numRecipeImagesRequested = numRecipeImagesRequested;
+
+                newRecipe.similarRecipes = similarRecipes;
+                newRecipe.numSimilarRecipesRequested = numSimilarRecipesRequested;
 
                 newRecipe.setFlags(flags);
 

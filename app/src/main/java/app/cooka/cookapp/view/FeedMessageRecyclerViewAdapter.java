@@ -34,7 +34,9 @@ import java.util.Date;
 import java.util.List;
 
 import app.cooka.cookapp.R;
+import app.cooka.cookapp.CookModeActivity;
 import app.cooka.cookapp.UserProfileActivity;
+import app.cooka.cookapp.RecipeDetailsActivity;
 import app.cooka.cookapp.model.EFeedMessageType;
 import app.cooka.cookapp.model.FeedMessage;
 import app.cooka.cookapp.utils.TimeUtils;
@@ -259,11 +261,11 @@ public class FeedMessageRecyclerViewAdapter extends
                 break;
 
             case addedRecipeToCollection:
-                message = resources.getString(R.string.added_recipe_to_collection, feedMessage.getObject1Name(), "");
+                message = resources.getString(R.string.added_recipe_to_collection, feedMessage.getObject1Name());
                 break;
 
             case addedImageToRecipe:
-                message = resources.getString(R.string.added_image_to_recipe, feedMessage.getObject1Name(), "");
+                message = resources.getString(R.string.added_image_to_recipe, feedMessage.getObject1Name());
                 break;
 
             // this should not happen
@@ -349,6 +351,18 @@ public class FeedMessageRecyclerViewAdapter extends
                     {
                         viewHolder.ivwImage.setImageBitmap(resource);
                         viewHolder.ivwImage.setVisibility(View.VISIBLE);
+                        viewHolder.ivwImage.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                switch(messageType) {
+                                    case createdRecipe:
+                                    case modifiedRecipe:
+                                    case cookedRecipe:
+                                        RecipeDetailsActivity.startAndLoadRecipe(viewHolder.context,
+                                            feedMessage.getObject1Id());
+                                }
+                            }
+                        });
                         return true;
                     }
                 })
@@ -442,16 +456,16 @@ public class FeedMessageRecyclerViewAdapter extends
                             context.startActivity(profileIntent2);
                             return true;
                         case FMCM_VIEW_RECIPE:
-                            Toast.makeText(viewHolder.context, String.format("view recipe %s",
-                                feedMessage.getObject1Name()), Toast.LENGTH_LONG).show();
+                            RecipeDetailsActivity.startAndLoadRecipe(viewHolder.context,
+                                feedMessage.getObject1Id());
                             return true;
                         case FMCM_PIN_RECIPE:
                             Toast.makeText(viewHolder.context, String.format("pin recipe %s",
                                 feedMessage.getObject1Name()), Toast.LENGTH_LONG).show();
                             return true;
                         case FMCM_COOK_RECIPE_NOW:
-                            Toast.makeText(viewHolder.context, String.format("cook recipe %s now",
-                                feedMessage.getObject1Name()), Toast.LENGTH_LONG).show();
+                            CookModeActivity.startAndLoadRecipe(viewHolder.context,
+                                feedMessage.getObject1Id());
                             return true;
                         case FMCM_BROWSE_COLLECTION:
                             Toast.makeText(viewHolder.context, String.format("browse %s",

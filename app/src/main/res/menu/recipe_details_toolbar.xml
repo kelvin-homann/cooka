@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_share"
+        android:icon="@drawable/ic_share_white_24px"
+        android:title="Share"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_add_to_collection"
+        android:icon="@drawable/ic_collection_white_24px"
+        android:title="Add to collection"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_cook_now"
+        android:title="Cook now"
+        android:icon="@drawable/ic_cook_black_24dp"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_add_image_to_recipe"
+        android:title="Add image to recipe"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_show_creator_profile"
+        android:title="Show creator's profile"
+        android:icon="@drawable/ic_people_24dp"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_find_similar_recipes"
+        android:title="Find similar recipes"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_report_recipe"
+        android:title="Report this recipe"
+        android:icon="@drawable/ic_report_24dp"
+        app:showAsAction="never" />
+</menu>

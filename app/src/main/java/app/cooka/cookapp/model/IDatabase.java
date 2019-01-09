@@ -188,8 +188,11 @@ public interface IDatabase {
         @Query("recipeId") long recipeId,
         @Query("numCategoriesRequested") int numCategoriesRequested,
         @Query("numTagsRequested") int numTagsRequested,
+        @Query("numIngredientsRequested") int numIngredientsRequested,
         @Query("numRecipeStepsRequested") int numRecipeStepsRequested,
-        @Query("numRecipeRatingsRequested") int numRecipeRatingsRequested
+        @Query("numRecipeRatingsRequested") int numRecipeRatingsRequested,
+        @Query("numRecipeImagesRequested") int numRecipeImagesRequested,
+        @Query("numSimilarRecipesRequested") int numSimilarRecipesRequested
     );
 
     @POST("database.php?action=selectRecipes")
@@ -201,6 +204,21 @@ public interface IDatabase {
         @Query("sortKey") List<String> sortKeys,
         @Query("limit") long limit,
         @Query("offset") long offset
+    );
+
+    @POST("database.php?action=selectFeedRecipes")
+    Observable<List<Recipe>> selectFeedRecipes(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Query("languageId") long languageId
+    );
+
+    @POST("database.php?action=selectFeedRecipes")
+    Observable<List<Recipe>> selectFeedRecipes(
+        @Query("userId") long userId,
+        @Query("accessToken") String accessToken,
+        @Query("languageId") long languageId,
+        @Query("ofuserId") long ofuserId
     );
 
     /*  ************************************************************************************  *

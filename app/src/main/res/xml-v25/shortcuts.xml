@@ -7,7 +7,7 @@
         android:shortcutLongLabel="@string/shortcut_explore_long"
         android:shortcutDisabledMessage="@string/shortcut_not_available">
         <intent
-            android:action="android.intent.action.VIEW"
+            android:action="android.intent.action.VIEW_EXPLORE"
             android:targetPackage="app.cooka.cookapp"
             android:targetClass="app.cooka.cookapp.MainActivity" />
     </shortcut>
@@ -19,7 +19,7 @@
         android:shortcutLongLabel="@string/shortcut_collection_long"
         android:shortcutDisabledMessage="@string/shortcut_not_available">
         <intent
-            android:action="android.intent.action.VIEW"
+            android:action="android.intent.action.VIEW_COLLECTION"
             android:targetPackage="app.cooka.cookapp"
             android:targetClass="app.cooka.cookapp.MainActivity" />
     </shortcut>
@@ -31,7 +31,7 @@
         android:shortcutLongLabel="@string/shortcut_grocery_list_long"
         android:shortcutDisabledMessage="@string/shortcut_not_available">
         <intent
-            android:action="android.intent.action.VIEW"
+            android:action="android.intent.action.VIEW_GROCERYLIST"
             android:targetPackage="app.cooka.cookapp"
             android:targetClass="app.cooka.cookapp.MainActivity" />
     </shortcut>

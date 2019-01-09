@@ -1,8 +1,6 @@
 package app.cooka.cookapp;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,16 +8,15 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.PreferenceManagerFix;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 
-import app.cooka.cookapp.login.LoginManager;
 import app.cooka.cookapp.view.LoadingScreenView;
 
 public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener {
+
+    public static final String VIEW_EXPLORE = "android.intent.action.VIEW_EXPLORE";
+    public static final String VIEW_COLLECTION = "android.intent.action.VIEW_COLLECTION";
+    public static final String VIEW_GROCERYLIST = "android.intent.action.VIEW_GROCERYLIST";
 
     //Bottom navigation bar ui component
     private BottomNavigationView navigationView;
@@ -30,27 +27,19 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private PlanFragment planFragment;
     private CookFragment cookFragment;
 
-
     //Generic loading screen
     private LoadingScreenView loadingScreen;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Init fragments
-        exploreFragment = new ExploreFragment();
-        cookbookFragment = new CookbookFragment();
-        planFragment = new PlanFragment();
-        cookFragment = new CookFragment();
-
-        //Load explore fragment
-        loadFragment(exploreFragment);
+        Intent callIntent = getIntent();
+        final String intentAction = callIntent.getAction();
 
         //Get reference to bottom navigation bar
-        navigationView = (BottomNavigationView) findViewById(R.id.navigation);
+        navigationView = findViewById(R.id.navigation);
 
         //Add the item selected listener that calls onNavigationItemSelected to switch the fragment
         navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -60,11 +49,31 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             }
         });
 
+        //Init fragments
+        exploreFragment = new ExploreFragment();
+        cookbookFragment = new CookbookFragment();
+        planFragment = new PlanFragment();
+        cookFragment = new CookFragment();
+
+        // load intended fragment
+        if(intentAction.equalsIgnoreCase(VIEW_COLLECTION)) {
+            loadFragment(cookbookFragment);
+            navigationView.setSelectedItemId(R.id.navigation_cookbook);
+        }
+        else if(intentAction.equalsIgnoreCase(VIEW_GROCERYLIST)) {
+            loadFragment(planFragment);
+            navigationView.setSelectedItemId(R.id.navigation_plan);
+        }
+        // default intent action (started through android.intent.action.MAIN, etc.)
+        else {
+            loadFragment(exploreFragment);
+            navigationView.setSelectedItemId(R.id.navigation_explore);
+        }
+
         //Loading screen
         loadingScreen = findViewById(R.id.loading_screen);
         loadingScreen.hide();
     }
-
 
     //Change out the current fragment
     private void loadFragment(Fragment fragment) {

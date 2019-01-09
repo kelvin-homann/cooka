@@ -208,6 +208,7 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
         findViewById(R.id.btnPollRecipes).setOnClickListener(this);
         findViewById(R.id.btnPollFeedMessages).setOnClickListener(this);
         findViewById(R.id.btnNotify).setOnClickListener(this);
+        findViewById(R.id.btnViewRecipe).setOnClickListener(this);
 
         databaseClient = DatabaseClient.Factory.getInstance(this);
 
@@ -271,6 +272,9 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
 
             case R.id.btnNotify:
                 testNotification();
+
+            case R.id.btnViewRecipe:
+                viewRecipe();
         }
     }
 
@@ -609,6 +613,9 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
 
                             btnPollRecipes.setClickable(true);
                         }
+
+                        @Override
+                        public void onFailed(Throwable t) {}
                     });
         }
         catch(Exception e) {
@@ -650,6 +657,9 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
 
                             btnPollFeedMessages.setClickable(true);
                         }
+
+                        @Override
+                        public void onFailed(Throwable t) {}
                     });
         }
         catch(Exception e) {
@@ -756,6 +766,9 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
                 // then perform an update
                 updateTestRecipe(recipe);
             }
+
+            @Override
+            public void onFailed(Throwable t) {}
         });
     }
 
@@ -787,6 +800,16 @@ public class DatabaseTestActivity extends AppCompatActivity implements View.OnCl
                 Log.e(LOGTAG, errorMessage);
             }
         });
+    }
+
+    private void viewRecipe() {
+
+        EditText etRecipeId = findViewById(R.id.etRecipeId);
+        long recipeId = Long.parseLong(etRecipeId.getText().toString());
+
+        if(recipeId != 0) {
+            RecipeDetailsActivity.startAndLoadRecipe(this, recipeId);
+        }
     }
 
     private void testFirebase() {

@@ -76,6 +76,9 @@ public class FollowerFragment extends Fragment {
                     loadingScreen.setVisible(false);
                 }
             }
+
+            @Override
+            public void onFailed(Throwable t) {}
         });
         return view;
     }
@@ -99,6 +102,9 @@ public class FollowerFragment extends Fragment {
 
                 followerListViewAdapter.notifyDataSetChanged();
             }
+
+            @Override
+            public void onFailed(Throwable t) {}
         });
     }
 }

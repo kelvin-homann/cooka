@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".RecipeDetailsActivity">
+
+    <app.cooka.cookapp.view.LoadingScreenView
+        android:id="@+id/lsvwRecipeDetailsLoadingScreen"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@android:color/white" />
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/abltAppbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/ctbltCollapsingToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="230dp"
+            android:fitsSystemWindows="true"
+            app:contentScrim="?attr/colorPrimary"
+            app:expandedTitleMarginStart="500dp"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+
+            <ImageView
+                android:id="@+id/ivwMainImage"
+                android:layout_width="match_parent"
+                android:layout_height="230dp"
+                android:fitsSystemWindows="true"
+                android:focusableInTouchMode="true"
+                android:scaleType="centerCrop"
+                app:layout_collapseMode="parallax"
+                app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed" />
+
+            <ImageView
+                android:id="@+id/ivwMockupIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="96dp"
+                android:layout_gravity="bottom|right"
+                android:paddingRight="15dp"
+                android:paddingBottom="18dp"
+                app:srcCompat="@drawable/ic_mockup" />
+
+            <View
+                android:id="@+id/vwToolbarScrim"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_gravity="top"
+                android:background="@drawable/scrim_top_dark_down_transparent"
+                app:layout_collapseMode="pin" />
+
+            <ProgressBar
+                android:id="@+id/pbarLoadingMainImage"
+                android:layout_width="@dimen/progress_spinner_size"
+                android:layout_height="@dimen/progress_spinner_size"
+                android:layout_gravity="center"
+                android:layout_marginTop="32dp"
+                android:indeterminateDrawable="@drawable/progressbar_white" />
+
+            <TextView
+                android:id="@+id/tvwCouldNotLoadImage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center"
+                android:layout_marginLeft="48dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginRight="48dp"
+                android:fontFamily="@font/roboto_condensed_regular"
+                android:lineSpacingMultiplier="1.25"
+                android:text="@string/recipe_details_could_not_load_image"
+                android:textAlignment="center"
+                android:textColor="#eeeeee"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/tvwImageMissing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center"
+                android:layout_marginLeft="48dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginRight="48dp"
+                android:fontFamily="@font/roboto_condensed_regular"
+                android:lineSpacingMultiplier="1.25"
+                android:text="@string/recipe_details_image_missing"
+                android:textAlignment="center"
+                android:textColor="#eeeeee"
+                android:textSize="18sp" />
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/tbarRecipeDetailsToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:minHeight="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/RecipeDetailsToolbarPopupThemeLight"
+                app:theme="@style/RecipeDetailsToolbarTheme" />
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/nsvwScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="96dp"
+            android:nestedScrollingEnabled="true"
+            tools:context=".RecipeDetailsActivity">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:layout_gravity="top"
+                android:background="@drawable/scrim_top_grey_down_transparent" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/leftGuide"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="16dp" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/middleGuide"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/rightGuide"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_end="16dp" />
+
+            <TextView
+                android:id="@+id/tvwRecipeTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/roboto_condensed_bold"
+                android:text="Käse-Lauch-Suppe mit Hackfleisch"
+                android:textAllCaps="false"
+                android:textColor="#333333"
+                android:textSize="22sp"
+                app:layout_constraintEnd_toStartOf="@+id/rightGuide"
+                app:layout_constraintStart_toStartOf="@+id/leftGuide"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvwCreatedBy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/roboto_condensed_regular"
+                android:text="@string/recipe_details_by"
+                android:textAllCaps="false"
+                android:textColor="#999999"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/tvwRecipeTitle"
+                app:layout_constraintTop_toBottomOf="@+id/tvwRecipeTitle" />
+
+            <TextView
+                android:id="@+id/tvwCreatorName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:fontFamily="@font/roboto_condensed_regular"
+                android:text="\@sepplroy"
+                android:textAllCaps="false"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="16sp"
+                app:layout_constraintStart_toEndOf="@+id/tvwCreatedBy"
+                app:layout_constraintTop_toTopOf="@+id/tvwCreatedBy" />
+
+            <TextView
+                android:id="@+id/tvwRecipeDescription"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/roboto_condensed_regular"
+                android:lineSpacingMultiplier="1.15"
+                android:text="Käse-Lauch-Suppe mit Hack gehört zu den Evergreens unter den Suppenrezepten. Denn sie ist richtig lecker, einfach gemacht und mega günstig. Besonders gut macht sich das Gericht als Partysuppe. Dank dem würzigen Hackfleisch und dem vielen Käse sättigt sie die ganze Nacht."
+                android:textColor="#666666"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@+id/rightGuide"
+                app:layout_constraintStart_toStartOf="@+id/leftGuide"
+                app:layout_constraintTop_toBottomOf="@+id/tvwCreatorName" />
+
+            <TextView
+                android:id="@+id/tvwRatingHeading"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/roboto_condensed_bold"
+                android:text="@string/recipe_details_rating"
+                android:textAllCaps="true"
+                android:textColor="#444444"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@+id/ivwRatingStar1"
+                app:layout_constraintStart_toStartOf="@+id/leftGuide"
+                app:layout_constraintTop_toBottomOf="@+id/tvwRecipeDescription" />
+
+            <ImageView
+                android:id="@+id/ivwRatingStar1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:tint="@color/colorAccent"
+                app:layout_constraintBottom_toBottomOf="@+id/tvwRatingHeading"
+                app:layout_constraintEnd_toStartOf="@+id/ivwRatingStar2"
+                app:layout_constraintTop_toTopOf="@+id/tvwRatingHeading"
+                app:layout_constraintVertical_bias="0.55"
+                app:srcCompat="@drawable/ic_rating_star_full" />
+
+            <ImageView
+                android:id="@+id/ivwRatingStar2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:tint="@color/colorAccent"
+                app:layout_constraintEnd_toStartOf="@+id/ivwRatingStar3"
+                app:layout_constraintTop_toTopOf="@+id/ivwRatingStar1"
+                app:srcCompat="@drawable/ic_rating_star_full" />
+
+            <ImageView
+                android:id="@+id/ivwRatingStar3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:tint="@color/colorAccent"
+                app:layout_constraintEnd_toStartOf="@+id/ivwRatingStar4"
+                app:layout_constraintTop_toTopOf="@+id/ivwRatingStar2"
+                app:srcCompat="@drawable/ic_rating_star_full" />
+
+            <ImageView
+                android:id="@+id/ivwRatingStar4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:tint="@color/colorAccent"
+                app:layout_constraintEnd_toStartOf="@+id/ivwRatingStar5"
+                app:layout_constraintTop_toTopOf="@+id/ivwRatingStar3"
+                app:srcCompat="@drawable/ic_rating_star_full" />
+
+            <ImageView
+                android:id="@+id/ivwRatingStar5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="24dp"
+                android:tint="@color/colorAccent"
+                app:layout_constraintEnd_toStartOf="@+id/rightGuide"
+                app:layout_constraintTop_toTopOf="@+id/ivwRatingStar4"
+                app:srcCompat="@drawable/ic_rating_star_half" />
+
+            <ImageView
+                android:id="@+id/ivwDivider1"
+                android:layout_width="0dp"
+                android:layout_height="96dp"
+                android:background="#eeeeee"
+                app:layout_constraintBottom_toBottomOf="@+id/tvwPreparationTimeHeading"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvwDifficultyHeading" />
+
+            <TextView
+                android:id="@+id/tvwDifficultyHeading"
+                android:layout_width="0dp"
+                android:layout_height="29dp"
+                android:layout_marginTop="48dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/roboto_condensed_bold"
+                android:text="@string/recipe_details_difficulty"
+                android:textAllCaps="true"
+                android:textColor="#444444"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@+id/middleGuide"
+                app:layout_constraintStart_toStartOf="@+id/leftGuide"
+                app:layout_constraintTop_toBottomOf="@+id/tvwRatingHeading" />
+
+            <TextView
+                android:id="@+id/tvwDifficultyValue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/roboto_condensed_regular"
+                android:text="@string/recipe_details_difficulty_simple"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@+id/rightGuide"
+                app:layout_constraintStart_toStartOf="@+id/middleGuide"
+                app:layout_constraintTop_toTopOf="@+id/tvwDifficultyHeading" />
+
+            <TextView
+                android:id="@+id/tvwPreparationTimeValue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/roboto_condensed_regular"
+                android:text="30 min."
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@+id/rightGuide"
+                app:layout_constraintStart_toStartOf="@+id/middleGuide"
+                app:layout_constraintTop_toTopOf="@+id/tvwPreparationTimeHeading" />
+
+            <TextView
+                android:id="@+id/tvwPreparationTimeHeading"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/roboto_condensed_bold"
+                android:text="@string/recipe_details_preparation_time"
+                android:textAllCaps="true"
+                android:textColor="#444444"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@+id/middleGuide"
+                app:layout_constraintStart_toStartOf="@+id/leftGuide"
+                app:layout_constraintTop_toBottomOf="@+id/tvwDifficultyHeading" />
+
+            <TextView
+                android:id="@+id/tvwIngredientsHeading"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/roboto_condensed_bold"
+                android:text="@string/recipe_details_ingredients"
+                android:textAllCaps="true"
+                android:textColor="#444444"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@+id/middleGuide"
+                app:layout_constraintStart_toStartOf="@+id/leftGuide"
+                app:layout_constraintTop_toBottomOf="@+id/ivwDivider1" />
+
+            <TextView
+                android:id="@+id/tvwForNServings"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_condensed_regular"
+                android:text="@string/recipe_details_for_n_servings"
+                android:textAlignment="textEnd"
+                android:textAllCaps="false"
+                android:textColor="#777777"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@+id/rightGuide"
+                app:layout_constraintStart_toStartOf="@+id/middleGuide"
+                app:layout_constraintTop_toTopOf="@+id/tvwIngredientsHeading" />
+
+            <TextView
+                android:id="@+id/tvwIngredientsMissing"
+                android:layout_width="0dp"
+                android:layout_height="21dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/roboto_condensed_regular"
+                android:text="@string/recipe_details_has_no_ingredients_yet"
+                android:textAllCaps="false"
+                android:textColor="#444444"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@+id/rightGuide"
+                app:layout_constraintStart_toStartOf="@+id/leftGuide"
+                app:layout_constraintTop_toBottomOf="@+id/tvwIngredientsHeading" />
+
+            <app.cooka.cookapp.view.RecipeDetailsIngredientsFrameLayout
+                android:id="@+id/fltRecipeDetailsIngredients"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:minHeight="24dp"
+                app:layout_constraintEnd_toStartOf="@+id/rightGuide"
+                app:layout_constraintStart_toStartOf="@+id/leftGuide"
+                app:layout_constraintTop_toBottomOf="@+id/tvwIngredientsHeading" />
+
+            <TextView
+                android:id="@+id/tvwRecipeStepsHeading"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/roboto_condensed_bold"
+                android:text="@string/recipe_details_steps"
+                android:textAllCaps="true"
+                android:textColor="#444444"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@+id/middleGuide"
+                app:layout_constraintStart_toStartOf="@+id/leftGuide"
+                app:layout_constraintTop_toBottomOf="@+id/fltRecipeDetailsIngredients" />
+
+            <TextView
+                android:id="@+id/tvwRecipeStepsMissing"
+                android:layout_width="0dp"
+                android:layout_height="21dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/roboto_condensed_regular"
+                android:text="@string/recipe_details_has_no_steps_yet"
+                android:textAllCaps="false"
+                android:textColor="#444444"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@+id/rightGuide"
+                app:layout_constraintStart_toStartOf="@+id/leftGuide"
+                app:layout_constraintTop_toBottomOf="@+id/tvwRecipeStepsHeading" />
+
+            <app.cooka.cookapp.view.RecipeDetailsStepsFrameLayout
+                android:id="@+id/fltRecipeDetailsSteps"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:minHeight="24dp"
+                app:layout_constraintEnd_toStartOf="@+id/rightGuide"
+                app:layout_constraintStart_toStartOf="@+id/leftGuide"
+                app:layout_constraintTop_toBottomOf="@+id/tvwRecipeStepsHeading" />
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/vwRecipeImagesBackground"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:background="#FF427833"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fltRecipeDetailsSteps">
+
+                <android.support.constraint.Guideline
+                    android:id="@+id/leftGuide2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_begin="16dp" />
+
+                <TextView
+                    android:id="@+id/tvwRecipeImagesHeading"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="0dp"
+                    android:fontFamily="@font/roboto_condensed_bold"
+                    android:text="@string/recipe_details_images"
+                    android:textAllCaps="true"
+                    android:textColor="#eeeeee"
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toStartOf="@+id/leftGuide2"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvwImagesMissing"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:fontFamily="@font/roboto_condensed_regular"
+                    android:text="@string/recipe_details_has_no_other_images"
+                    android:textAllCaps="false"
+                    android:textColor="#cccccc"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/leftGuide2"
+                    app:layout_constraintTop_toBottomOf="@+id/tvwRecipeImagesHeading" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/tvwSimilarRecipesHeading"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="0dp"
+                android:fontFamily="@font/roboto_condensed_bold"
+                android:text="@string/recipe_details_similar_recipes"
+                android:textAllCaps="true"
+                android:textColor="#444444"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@+id/rightGuide"
+                app:layout_constraintStart_toStartOf="@+id/leftGuide"
+                app:layout_constraintTop_toBottomOf="@+id/vwRecipeImagesBackground" />
+
+            <TextView
+                android:id="@+id/tvwCouldNotFindSimilarRecipes"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/roboto_condensed_regular"
+                android:minHeight="24dp"
+                android:text="@string/recipe_details_could_not_find_any_similar_recipes"
+                android:textAllCaps="false"
+                android:textColor="#444444"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@+id/rightGuide"
+                app:layout_constraintStart_toStartOf="@+id/leftGuide"
+                app:layout_constraintTop_toBottomOf="@+id/tvwSimilarRecipesHeading" />
+
+            <TextView
+                android:id="@+id/tvwTagsHeading"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="0dp"
+                android:fontFamily="@font/roboto_condensed_bold"
+                android:text="@string/recipe_details_similar_recipes"
+                android:textAllCaps="true"
+                android:textColor="#444444"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@+id/rightGuide"
+                app:layout_constraintStart_toStartOf="@+id/leftGuide"
+                app:layout_constraintTop_toBottomOf="@+id/tvwCouldNotFindSimilarRecipes" />
+
+            <TextView
+                android:id="@+id/tvwNoRecipeTagsAdded"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/roboto_condensed_regular"
+                android:minHeight="24dp"
+                android:text="@string/recipe_details_no_tags_added"
+                android:textAllCaps="false"
+                android:textColor="#444444"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@+id/rightGuide"
+                app:layout_constraintStart_toStartOf="@+id/leftGuide"
+                app:layout_constraintTop_toBottomOf="@+id/tvwTagsHeading" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabCookRecipe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:clickable="true"
+        android:src="@drawable/ic_cook_black_24dp"
+        android:tint="#ffffff"
+        android:visibility="visible"
+        app:backgroundTint="@color/colorAccent"
+        app:fabSize="normal"
+        app:layout_anchor="@id/nsvwScrollView"
+        app:layout_anchorGravity="bottom|right|end" />
+
+</android.support.design.widget.CoordinatorLayout>

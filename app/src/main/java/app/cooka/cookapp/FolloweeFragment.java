@@ -78,6 +78,9 @@ public class FolloweeFragment extends Fragment {
                     loadingScreen.setVisible(false);
                 }
             }
+
+            @Override
+            public void onFailed(Throwable t) {}
         });
         return view;
     }
@@ -101,6 +104,8 @@ public class FolloweeFragment extends Fragment {
                 followeeListViewAdapter.notifyDataSetChanged();
             }
 
+            @Override
+            public void onFailed(Throwable t) {}
         });
     }
 }

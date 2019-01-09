@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:allowBackup="true"
@@ -54,7 +54,7 @@
             </intent-filter>
         </activity>
 
-        <!--Launcher Activity-->
+        <!-- Main activity -->
         <activity
             android:name=".LauncherActivity"
             android:exported="true"
@@ -84,8 +84,10 @@
         <!-- Database test activity -->
         <activity
             android:name=".DatabaseTestActivity"
-            android:exported="true"
-            android:windowSoftInputMode="stateHidden">
+            android:label="@string/database_test"
+            android:windowSoftInputMode="stateHidden"
+            android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
@@ -102,21 +104,34 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_cook_mode"
             android:theme="@style/FullscreenTheme" />
+
         <activity
             android:name=".RecipeEditorActivity"
-            android:exported="true" />
-        android:theme="@style/FullscreenTheme" />
+            android:exported="true"
+            android:theme="@style/FullscreenTheme" />
+
         <activity android:name=".AdministrationActivity" />
+
         <activity android:name=".LoginActivity" />
+
         <activity android:name=".RegisterActivity" />
-        android:exported="true" />
+
+        <activity android:name=".RecipeDetailsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".UserProfileActivity"
+            android:label="@string/title_activity_user_profile"
+            android:exported="true" />
+
+        <activity android:name=".TutorialActivity" />
             android:label="@string/title_activity_user_profile" />
-        <activity
-            android:name=".TutorialActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />

@@ -25,6 +25,8 @@
     $numIngredientsRequested = 0;
     $numRecipeStepsRequested = -1;
     $numRecipeRatingsRequested = 0;
+    $numRecipeImagesRequested = 0;
+    $numSimilarRecipesRequested = 0;
     $recipe = null;
     $sqlqueries = array();
 
@@ -38,6 +40,10 @@
         $numRecipeStepsRequested = $_getpost['numRecipeStepsRequested'];
     if(isset($_getpost['numRecipeRatingsRequested']) && is_numeric($_getpost['numRecipeRatingsRequested']))
         $numRecipeRatingsRequested = $_getpost['numRecipeRatingsRequested'];
+    if(isset($_getpost['numRecipeImagesRequested']) && is_numeric($_getpost['numRecipeImagesRequested']))
+        $numRecipeImagesRequested = $_getpost['numRecipeImagesRequested'];
+    if(isset($_getpost['numSimilarRecipesRequested']) && is_numeric($_getpost['numSimilarRecipesRequested']))
+        $numSimilarRecipesRequested = $_getpost['numSimilarRecipesRequested'];
     
     try {
         // select the actual recipe
@@ -126,6 +132,7 @@
             );
 
             // query categories
+            $recipe['numCategoriesRequested'] = $numCategoriesRequested;
             if($numCategoriesRequested != 0)
             {
                 $selectRecipeCategoriesSql = "select distinct category.categoryId, categoryNameString.originalValue as name " .
@@ -159,12 +166,9 @@
 
                 $recipe['categories'] = $categories;
             }
-            else
-                $recipe['categories'] = array();
-
-            $recipe['numCategoriesRequested'] = $numCategoriesRequested;
 
             // query tags
+            $recipe['numTagsRequested'] = $numTagsRequested;
             if($numTagsRequested != 0)
             {
                 $selectRecipeTagsSql = "select tag.tagId, tag.name " .
@@ -197,12 +201,9 @@
 
                 $recipe['tags'] = $tags;
             }
-            else
-                $recipe['tags'] = array();
-
-            $recipe['numTagsRequested'] = $numTagsRequested;
 
             // query ingredients in sum
+            $recipe['numIngredientsRequested'] = $numIngredientsRequested;
             if($numIngredientsRequested != 0)
             {
                 $selectIngredientsSql = "select recipeStepIngredient.ingredientId, ingredientNameString.originalValue as ingredientName, " .
@@ -246,12 +247,10 @@
                 }
 
                 $recipe['ingredients'] = $ingredients;
-                $recipe['numIngredientsRequested'] = $numIngredientsRequested;
             }
-            //else
-            //    $recipe['ingredients'] = array();
 
             // query cooking steps
+            $recipe['numRecipeStepsRequested'] = $numRecipeStepsRequested;
             if($numRecipeStepsRequested != 0)
             {
                 $selectRecipeStepsSql = "select recipeStep.recipeStepId, recipeStep.stepNumber, stepTitleString.originalValue as stepTitle, " .
@@ -329,17 +328,64 @@
 
                 $recipe['recipeSteps'] = $steps;
             }
-            else
-                $recipe['recipeSteps'] = array();
 
-            $recipe['numRecipeStepsRequested'] = $numRecipeStepsRequested;
-
-            // query ratings
-            if($numRatingsRequested != 0) {
+            // query recipe ratings
+            $recipe['numRecipeRatingsRequested'] = $numRecipeRatingsRequested;
+            if($numRecipeRatingsRequested != 0)
+            {
+                $recipe['recipeRatings'] = array();
             }
 
-            $recipe['recipeRatings'] = array();
-            $recipe['numRecipeRatingsRequested'] = $numRecipeRatingsRequested;
+            // query recipe images
+            $recipe['numRecipeImagesRequested'] = $numRecipeImagesRequested;
+            if($numRecipeImagesRequested != 0)
+            {
+                $selectImagesSql = "select image.imageId, image.creatorId, creator.userName, image.modifierId, modifier.userName, " .
+                    "nameString.originalValue as name, image.imageFileName, image.createdDateTime, image.lastModifiedDateTime, " . 
+                    "image.rating " . 
+                    "from Images image " . 
+                    "inner join RecipeImages recipeImage on (recipeImage.imageId = image.imageId and recipeImage.recipeId = ?) " .
+                    "left join Users creator on creator.userId = image.creatorId " . 
+                    "left join Users modifier on modifier.userId = image.modifierId " . 
+                    "left join Strings nameString on nameString.stringId = image.nameStringId";
+
+                if($numRecipeImagesRequested > 0)
+                    $selectImagesSql .= " limit ?";
+
+                $selectImagesStmt = $database->prepare($selectImagesSql);
+                $selectImagesStmt->bindValue(1, $recipeId, PDO::PARAM_INT);
+                if($numRecipeImagesRequested > 0)
+                    $selectImagesStmt->bindValue(2, $numRecipeImagesRequested, PDO::PARAM_INT);
+                $selectImagesStmt->execute();
+                $imageRows = $selectImagesStmt->fetchAll(PDO::FETCH_ASSOC);
+                $images = array();
+
+                foreach($imageRows as $imageRow) {
+                    $image = array(
+                        'imageId' => isset($imageRow['imageId']) ? $imageRow['imageId'] : 0, 
+                        'creatorId' => isset($imageRow['creatorId']) ? $imageRow['creatorId'] : 0, 
+                        'creatorName' => isset($imageRow['creatorName']) ? $imageRow['creatorName'] : "", 
+                        'modifierId' => isset($imageRow['modifierId']) ? $imageRow['modifierId'] : 0, 
+                        'modifierName' => isset($imageRow['modifierName']) ? $imageRow['modifierName'] : "", 
+                        'name' => isset($imageRow['name']) ? $imageRow['name'] : "", 
+                        'imageFileName' => isset($imageRow['imageFileName']) ? $imageRow['imageFileName'] : "", 
+                        'createdDateTime' => isset($imageRow['createdDateTime']) ? $imageRow['createdDateTime'] : "", 
+                        'lastModifiedDateTime' => isset($imageRow['lastModifiedDateTime']) ? $imageRow['lastModifiedDateTime'] : "", 
+                        'rating' => isset($imageRow['rating']) ? $imageRow['rating'] : 0, 
+                    );
+
+                    $images[] = $image;
+                }
+
+                $recipe['recipeImages'] = $images;
+            }
+
+            // query similar recipes
+            $recipe['numSimilarRecipesRequested'] = $numSimilarRecipesRequested;
+            if($numSimilarRecipesRequested != 0)
+            {
+                $recipe['similarRecipes'] = array();
+            }
 
             // update viewed count
             $updateRecipeSql = 'update Recipes set viewedCount = viewedCount + 1 where recipeId = ?';

@@ -13,7 +13,7 @@
 
     $userId = $_getpost['userId'];
     $accessToken = $_getpost['accessToken'];
-    $ofuserId = null;
+    $ofuserId = $userId;
     $selectedTypes = 65519;//65535 ^ 16;
     $onlyOwnMessages = false;
     $conflateRelatedMessages = true;

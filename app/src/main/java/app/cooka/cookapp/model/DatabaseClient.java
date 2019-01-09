@@ -360,15 +360,17 @@ public class DatabaseClient {
     }
 
     public Observable<Recipe> selectRecipe(final long recipeId, final int numCategoriesRequested,
-        final int numTagsRequested, final int numRecipeStepsRequested, final int
-        numRecipeRatingsRequested)
+        final int numTagsRequested, final int numIngredientsRequested, final int
+        numRecipeStepsRequested, final int numRecipeRatingsRequested, final int
+        numRecipeImagesRequested, final int numSimilarRecipesRequested)
     {
         final long userId = sharedPreferences.getLong(LoginManager.SPK_USERID, 0L);
         final String accessToken = sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, "");
         final long languageId = sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L);
         return databaseInterface.selectRecipe(userId, accessToken, languageId, recipeId,
-            numCategoriesRequested, numTagsRequested, numRecipeStepsRequested,
-            numRecipeRatingsRequested);
+            numCategoriesRequested, numTagsRequested, numIngredientsRequested,
+            numRecipeStepsRequested, numRecipeRatingsRequested, numRecipeImagesRequested,
+            numSimilarRecipesRequested);
     }
 
     public Observable<List<Recipe>> selectRecipes(final List<String> filterKeys,
@@ -379,6 +381,22 @@ public class DatabaseClient {
         final long languageId = sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L);
         return databaseInterface.selectRecipes(userId, accessToken, languageId, filterKeys,
             sortKeys, limit, offset);
+    }
+
+    public Observable<List<Recipe>> selectFeedRecipes() {
+
+        final long userId = sharedPreferences.getLong(LoginManager.SPK_USERID, 0L);
+        final String accessToken = sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, "");
+        final long languageId = sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L);
+        return databaseInterface.selectFeedRecipes(userId, accessToken, languageId);
+    }
+
+    public Observable<List<Recipe>> selectFeedRecipes(final long ofuserId) {
+
+        final long userId = sharedPreferences.getLong(LoginManager.SPK_USERID, 0L);
+        final String accessToken = sharedPreferences.getString(LoginManager.SPK_ACCESSTOKEN, "");
+        final long languageId = sharedPreferences.getLong(LoginManager.SPK_LANGUAGEID, 1031L);
+        return databaseInterface.selectFeedRecipes(userId, accessToken, languageId, ofuserId);
     }
 
     /*  ************************************************************************************  *

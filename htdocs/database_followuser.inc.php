@@ -112,6 +112,7 @@
         // iterate through followUserIds
         foreach($followUserIds as $user) {
             if(is_array($user) || !is_numeric($user)) continue;
+            if($user == $foruserId) continue; // can't follow yourself!
             if(strlen($insertUserUserFollowsValuesSql) > 0) $insertUserUserFollowsValuesSql .= ', ';
             $insertUserUserFollowsValuesSql .= '(?, ?)';
             $insertUserUserFollowsParams[$p++] = array($foruserId, PDO::PARAM_INT);

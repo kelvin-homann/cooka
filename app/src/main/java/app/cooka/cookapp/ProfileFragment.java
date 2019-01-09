@@ -213,6 +213,9 @@ public class ProfileFragment extends Fragment {
                     }
                 }
             }
+
+            @Override
+            public void onFailed(Throwable t) {}
         });
 
         profileFollower.setOnClickListener(new View.OnClickListener() {
@@ -260,6 +263,9 @@ public class ProfileFragment extends Fragment {
                 feed.addAll(result);
                 feedListAdapter.notifyDataSetChanged();
             }
+
+            @Override
+            public void onFailed(Throwable t) {}
         });
     }
 }
