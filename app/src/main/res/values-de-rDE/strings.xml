@@ -174,4 +174,13 @@
     <string name="username_cooked_recipes">%1$s kochte Rezepte</string>
     <string name="username_cooked_recipe_and_n_more">%1$s kochte Rezept <a href="%3$s">%2$s</a> und %4$d andere</string>
     <string name="username_created_collection">%1$s erstelle Kollektion <a href="%3$s">%2$s</a></string>
+    <string name="recipe_uploaded_msg">Rezept hochgeladen</string>
+    <string name="retry">Wiederholen</string>
+    <string name="recipe_upload_failed_msg">Rezept konnte nicht hochgeladen werden</string>
+    <string name="category">Kategorie</string>
+    <string name="select_category">Kategorie auswählen</string>
+    <string name="save_recipe">Rezept Speichern</string>
+    <string name="description">Beschreibung</string>
+    <string name="title">Titel</string>
+    <string name="save">Speichern</string>
 </resources>
