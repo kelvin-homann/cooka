@@ -12,14 +12,26 @@ import app.cooka.cookapp.R;
 
 public class LoadingScreenView extends FrameLayout {
 
+    public static final int MIN_LOADING_TIME = 1000;
+
     private ProgressBar progressBar;
     private boolean visible;
     private View[] hiddenViews;
+    private boolean hidable = true;
+    private boolean wasHidden = false;
+    private OnHideListener onHideListener;
 
     private Runnable hideRunnable = new Runnable() {
         @Override
         public void run() {
             hide();
+        }
+    };
+    private Runnable makeHidableRunnable = new Runnable() {
+        @Override
+        public void run() {
+            hidable = true;
+            if(wasHidden) hide();
         }
     };
 
@@ -62,9 +74,18 @@ public class LoadingScreenView extends FrameLayout {
     }
 
     public void setVisible(boolean visible) {
+        if(!hidable && !visible) {
+            wasHidden = true;
+            return;
+        }
+
         this.visible = visible;
         this.setVisibility(visible ? VISIBLE : INVISIBLE);
-        if(visible) this.bringToFront();
+
+        if(visible) {
+            this.bringToFront();
+            wasHidden = false;
+        }
 
         //Unhide hidden views
         if(!visible && hiddenViews != null) {
@@ -72,38 +93,69 @@ public class LoadingScreenView extends FrameLayout {
                 hiddenViews[i].setVisibility(VISIBLE);
             }
         }
+
+        if(!visible && onHideListener != null) onHideListener.onHide();
     }
 
     public boolean isVisible() {
         return visible;
     }
 
+    public void hide() {
+        setVisible(false);
+    }
+
+    //Different variations of show method
     public void show() {
+        show((OnHideListener) null);
+    }
+
+    public void show(OnHideListener listener) {
+        setOnHideListener(listener);
         setVisible(true);
     }
 
     public void show(View... viewsToHide) {
+        show(null, viewsToHide);
+    }
+
+    public void show(OnHideListener listener, View... viewsToHide) {
         //Hide extra views
         for (int i = 0; i < viewsToHide.length; i++) {
             viewsToHide[i].setVisibility(INVISIBLE);
         }
         hiddenViews = viewsToHide;
-        show();
-    }
-
-    public void hide() {
-        setVisible(false);
-    }
-
-    public void showFor(long milliseconds) {
-        show();
-        Handler handler = new Handler();
-        handler.postDelayed(hideRunnable, milliseconds);
+        show(listener);
     }
 
     public void showFor(long milliseconds, View... viewsToHide) {
-        show(viewsToHide);
+        showFor(milliseconds, null, viewsToHide);
+    }
+
+    public void showFor(long milliseconds, OnHideListener listener, View... viewsToHide) {
+        show(listener, viewsToHide);
         Handler handler = new Handler();
         handler.postDelayed(hideRunnable, milliseconds);
     }
+
+    public void showForAtLeast(long milliseconds, View... viewsToHide) {
+        showForAtLeast(milliseconds, null, viewsToHide);
+    }
+
+    public void showForAtLeast(long milliseconds, OnHideListener listener, View... viewsToHide) {
+        hidable = false;
+        show(listener, viewsToHide);
+        Handler handler = new Handler();
+        handler.postDelayed(makeHidableRunnable, milliseconds);
+    }
+
+    //Hide listener
+    public void setOnHideListener(OnHideListener onHideListener) {
+        this.onHideListener = onHideListener;
+    }
+
+    public interface OnHideListener {
+        void onHide();
+    }
+
 }

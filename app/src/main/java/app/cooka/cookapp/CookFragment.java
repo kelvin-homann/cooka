@@ -39,10 +39,17 @@ public class CookFragment extends Fragment {
         });
 
         //Button
-        fragmentView.findViewById(R.id.btn_cook_me).setOnClickListener(new View.OnClickListener() {
+        fragmentView.findViewById(R.id.btn_cook_mode).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cookMe_onClick(v);
+                CookModeActivity.startAndLoadRecipe(getContext(), 11);
+            }
+        });
+
+        fragmentView.findViewById(R.id.btn_recipe_editor).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RecipeEditorActivity.startAndCreateNew(getContext());
             }
         });
 
@@ -85,9 +92,5 @@ public class CookFragment extends Fragment {
 
         }
         return false;
-    }
-
-    public void cookMe_onClick(View view) {
-        CookModeActivity.startAndLoadRecipe(getContext(), 11);
     }
 }

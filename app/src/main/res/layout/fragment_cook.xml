@@ -19,11 +19,26 @@
             style="@style/ToolbarStyle"
             app:title="@string/title_cook"/>
 
-        <android.support.design.button.MaterialButton
-            android:id="@+id/btn_cook_me"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Cook Me"/>
+            android:orientation="horizontal">
 
+        <android.support.design.button.MaterialButton
+            android:id="@+id/btn_cook_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cook Mode"
+            android:layout_margin="4dp"
+            android:layout_weight="0.5"/>
+
+        <android.support.design.button.MaterialButton
+            android:id="@+id/btn_recipe_editor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Recipe Editor"
+            android:layout_margin="4dp"
+            android:layout_weight="0.5"/>
+        </LinearLayout>
     </LinearLayout>
 </FrameLayout>

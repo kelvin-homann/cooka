@@ -1,6 +1,10 @@
 package app.cooka.cookapp;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
@@ -12,19 +16,29 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.rd.PageIndicatorView;
 import com.rd.utils.DensityUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import app.cooka.cookapp.login.LoginManager;
+import app.cooka.cookapp.model.CreateRecipeResult;
+import app.cooka.cookapp.model.EDifficultyType;
+import app.cooka.cookapp.model.ICreateRecipeCallback;
 import app.cooka.cookapp.model.IResultCallback;
 import app.cooka.cookapp.model.Recipe;
 import app.cooka.cookapp.model.RecipeStep;
 import app.cooka.cookapp.model.RecipeStepIngredient;
+import app.cooka.cookapp.model.Tag;
 import app.cooka.cookapp.view.IngredientsView;
 import app.cooka.cookapp.view.LoadingScreenView;
 
 public class RecipeEditorActivity extends AppCompatActivity {
 
+    private CoordinatorLayout parentLayout;
     private Toolbar toolbar;
     private LoadingScreenView loadingScreen;
 
@@ -58,6 +72,9 @@ public class RecipeEditorActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_editor);
+
+        //Parent layout
+        parentLayout = findViewById(R.id.parent_layout);
 
         //Toolbar
         toolbar = findViewById(R.id.toolbar);
@@ -102,13 +119,14 @@ public class RecipeEditorActivity extends AppCompatActivity {
         loadingScreen = findViewById(R.id.loading_screen);
         loadingScreen.hide();
 
-        loadRecipe(11);
+        //Try to load recipe id from Bundle
+        long recipeToLoad = getIntent().getExtras().getLong(CookModeActivity.EXTRA_RECIPE_ID, -1);
+        if(recipeToLoad != -1) loadRecipe(recipeToLoad);
+        else newRecipe();
     }
 
     public void fab_onClick(View view) {
-        cardAdapter.addItem();
-        cardAdapter.notifyDataSetChanged();
-        cardViewPager.setCurrentItem(cardAdapter.getCount()-1, true);
+        addStep();
     }
 
     public void currentCardDelete_onClick(View view) {
@@ -145,6 +163,16 @@ public class RecipeEditorActivity extends AppCompatActivity {
                 show();
     }
 
+    private void addStep() {
+        RecipeStep newStep = RecipeStep.Factory.
+                createRecipeStepDraft(recipe.getRecipeSteps().size()+1,
+                        "", "", new ArrayList<RecipeStepIngredient>());
+        recipe.getRecipeSteps().add(newStep);
+        cardAdapter.addItem(newStep);
+        cardAdapter.notifyDataSetChanged();
+        cardViewPager.setCurrentItem(cardAdapter.getCount()-1, true);
+    }
+
     private void deleteCurrentStep() {
         int itemToRemove = cardViewPager.getCurrentItem();
 
@@ -157,6 +185,28 @@ public class RecipeEditorActivity extends AppCompatActivity {
 
         cardAdapter.notifyDataSetChanged();
         cardViewPager.setCurrentItem(itemToRemove >= cardAdapter.getCount() ? cardAdapter.getCount()-1 : itemToRemove);
+    }
+
+    public void newRecipe() {
+        //Create new empty recipe
+        Recipe newRecipe = Recipe.Factory
+                .createRecipeDraft(Settings.getInstance().getCurrentLanguageId());
+        newRecipe.setTitle("");
+        newRecipe.setDescription("");
+        newRecipe.setMainCategoryId(11);
+        newRecipe.setDifficultyType(EDifficultyType.SIMPLE);
+        newRecipe.setPreparationTime(0);
+
+        //Init tags
+        List<Tag> tags = new ArrayList<>();
+        newRecipe.setTags(tags);
+
+        //Init step list
+        newRecipe.setRecipeSteps(new ArrayList<RecipeStep>());
+
+        //Load recipe and add first step
+        loadRecipe(newRecipe);
+        addStep();
     }
 
     public void loadRecipe(long id) {
@@ -187,27 +237,56 @@ public class RecipeEditorActivity extends AppCompatActivity {
     }
 
     private void saveRecipe() {
-        //Create save recipe dialog
-//        SaveRecipeDialogFragment dialog = new SaveRecipeDialogFragment();
-//        dialog.show(getSupportFragmentManager(), recipe, new SaveRecipeDialogFragment.OnSubmitListener() {
-//            @Override
-//            public void onSubmit() {
-//
-//            }
-//        });
-
+        //Create save recipe fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         SaveRecipeDialogFragment saveFragment = new SaveRecipeDialogFragment();
         saveFragment.setRecipe(recipe);
         saveFragment.setOnSubmitListener(new SaveRecipeDialogFragment.OnSubmitListener() {
             @Override
             public void onSubmit() {
-
+                uploadRecipe();
             }
         });
+
+        //Make fragment transaction
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.add(android.R.id.content, saveFragment).addToBackStack(null).commit();
+    }
+
+    private void uploadRecipe() {
+        loadingScreen.showForAtLeast(LoadingScreenView.MIN_LOADING_TIME, new LoadingScreenView.OnHideListener() {
+            @Override
+            public void onHide() {
+                Toast.makeText(getApplicationContext(), R.string.recipe_uploaded_msg, Toast.LENGTH_LONG).show();
+            }
+        });
+
+        //Set the user id
+        recipe.setCreatorId(LoginManager.Factory.getInstance(getApplicationContext()).getUserId());
+
+        Recipe.Factory.submitRecipe(getApplicationContext(), recipe, false,
+                new ICreateRecipeCallback() {
+                    @Override
+                    public void onSucceeded(CreateRecipeResult createRecipeResult, Recipe createdRecipe) {
+                        loadingScreen.hide();
+                    }
+
+                    @Override
+                    public void onFailed(CreateRecipeResult createRecipeResult) {
+                        loadingScreen.hide();
+                        Log.d("RecipeEditor", createRecipeResult.resultMessage);
+                        new AlertDialog.Builder(RecipeEditorActivity.this, R.style.Dialog).
+                                setMessage(R.string.recipe_upload_failed_msg).
+                                setPositiveButton(R.string.ok, null).
+                                setNegativeButton(R.string.retry, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        uploadRecipe();
+                                    }
+                                }).show();
+                    }
+                });
     }
 
     private RecipeStep getCurrentStep() {
@@ -228,5 +307,16 @@ public class RecipeEditorActivity extends AppCompatActivity {
                 return true;
         }
         return false;
+    }
+
+    public static void startAndCreateNew(Context context) {
+        Intent i = new Intent(context, RecipeEditorActivity.class);
+        context.startActivity(i);
+    }
+
+    public static void startAndLoad(Context context, long recipeId) {
+        Intent i = new Intent(context, RecipeEditorActivity.class);
+        i.putExtra(CookModeActivity.EXTRA_RECIPE_ID, recipeId);
+        context.startActivity(i);
     }
 }

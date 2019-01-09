@@ -1,10 +1,8 @@
 package app.cooka.cookapp;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.button.MaterialButton;
@@ -15,26 +13,15 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.transition.TransitionManager;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.Transformation;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.rd.PageIndicatorView;
 import com.rd.utils.DensityUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import app.cooka.cookapp.model.IResultCallback;
 import app.cooka.cookapp.model.Recipe;
 import app.cooka.cookapp.model.RecipeStep;
-import app.cooka.cookapp.model.RecipeStepIngredient;
 import app.cooka.cookapp.view.IngredientsView;
 import app.cooka.cookapp.view.LoadingScreenView;
 
@@ -66,7 +53,7 @@ public class CookModeActivity extends AppCompatActivity {
     private static final int FAB_OVERVIEW_WIDTH = DensityUtils.dpToPx(155);
     private static final int FAB_STEPS_WIDTH = DensityUtils.dpToPx(125);
 
-    private static final String EXTRA_ID = "app.cooka.cookapp.EXTRA_ID";
+    public static final String EXTRA_RECIPE_ID = "app.cooka.cookapp.EXTRA_RECIPE_ID";
 
     //Loading screen
     private LoadingScreenView loadingScreen;
@@ -137,8 +124,8 @@ public class CookModeActivity extends AppCompatActivity {
         //Hide the default system ui for this activity
         hideSystemUI();
 
-        //Try to load recipe id from Bundle
-        long recipeToLoad = getIntent().getExtras().getLong(EXTRA_ID, -1);
+        //Try to load recipe id
+        long recipeToLoad = getIntent().getExtras().getLong(EXTRA_RECIPE_ID, -1);
         if(recipeToLoad != -1) loadRecipe(recipeToLoad);
     }
 
@@ -295,7 +282,7 @@ public class CookModeActivity extends AppCompatActivity {
         Intent intent = new Intent(context, CookModeActivity.class);
 
         //TODO: use URI and Intent filter to start activity
-        intent.putExtra(EXTRA_ID, recipeId);
+        intent.putExtra(EXTRA_RECIPE_ID, recipeId);
         context.startActivity(intent);
     }
 }

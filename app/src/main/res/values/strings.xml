@@ -178,6 +178,12 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions." </string>
     <string name="login_background_desc">Login Background</string>
     <string name="profile_cookbook_ivw">Cookbook Imageview</string>
+    <string name="title_activity_user_profile">UserProfileActivity</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="login_with_alternative">or Login with</string>
+    <string name="register_with_alternative">or Login with</string>
+    <string name="btn_login">Login</string>
+    <string name="btn_register">Register</string>
 
     <!-- FollowerFragment -->
     <string name="headertext_follower">Follower</string>
@@ -262,4 +268,7 @@
     <string name="tut_desc1">Swipe through your feed to see what your friends are cooking and explore recommended recipes!</string>
     <string name="tut_desc2">Follow your friends and take a look at their Profile to see what they are cooking and who they follow!</string>
     <string name="tut_desc3">Use the cook mode to cook your favorite recipes in no time!</string>
+    <string name="recipe_upload_failed_msg">Your recipe could not be uploaded.</string>
+    <string name="retry">Retry</string>
+    <string name="recipe_uploaded_msg">Recipe uploaded</string>
 </resources>

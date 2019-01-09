@@ -117,6 +117,10 @@
         <item name="android:letterSpacing">0.15</item>
     </style>
 
+    <style name="FABProgressBar" parent="AppTheme">
+        <item name="colorAccent">@color/colorPrimary</item>
+    </style>
+
     <style name="HeaderBar">
         <item name="android:background">#303F9F</item>
     </style>
