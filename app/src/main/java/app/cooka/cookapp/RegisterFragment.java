@@ -257,6 +257,7 @@ public class RegisterFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), LoginActivity.class);
                 startActivity(intent);
+                getActivity().finish();
             }
         });
 

@@ -1,5 +1,6 @@
 package app.cooka.cookapp;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManagerFix;
 import android.view.MenuItem;
 
+import app.cooka.cookapp.login.LoginManager;
 import app.cooka.cookapp.view.LoadingScreenView;
 
 public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener {
@@ -27,6 +29,9 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     // Settings
     SharedPreferences settings;
 
+    // LoginManager
+    private LoginManager loginManager;
+
     //Generic loading screen
     private LoadingScreenView loadingScreen;
 
@@ -37,6 +42,21 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
         // Get SharedPreferences
         settings = PreferenceManagerFix.getDefaultSharedPreferences(this);
+
+        // Login Manager
+        loginManager = LoginManager.Factory.getInstance(getApplicationContext());
+
+        // If no user is logged in the registerFragment is started
+        if (!isLoggedIn()){
+            Intent intent_register = new Intent(this, RegisterActivity.class);
+            startActivity(intent_register);
+        }
+
+        // If Tutorial Enabled in the Settings tutorial is started at the start of the app
+        if (tutorialIsEnabled()){
+            Intent intent_tutorial = new Intent(this, TutorialActivity.class);
+            startActivity(intent_tutorial);
+        }
 
         //Init fragments
         exploreFragment = new ExploreFragment();
@@ -94,5 +114,21 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    /**
+     * if no user is logged in it returns false, if someone is logged in it returns true
+     * @return boolean
+     */
+    public boolean isLoggedIn(){
+        return loginManager.getUserId() != 0L;
+    }
+
+    /**
+     * If the tutorial is enabled in the settings it returns true, when its disable it returns false
+     * @return boolean
+     */
+    public boolean tutorialIsEnabled(){
+        return settings.getBoolean("tutorialCheckBox", true);
     }
 }
