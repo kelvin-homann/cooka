@@ -218,6 +218,9 @@ public class RecipeEditorActivity extends AppCompatActivity {
             public void onSucceeded(Recipe result) {
                 loadRecipe(result);
             }
+
+            @Override
+            public void onFailed(Throwable t) {}
         });
     }
 
