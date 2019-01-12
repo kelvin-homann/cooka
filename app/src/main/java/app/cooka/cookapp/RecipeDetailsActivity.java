@@ -63,6 +63,9 @@ public class RecipeDetailsActivity extends AppCompatActivity {
     private TextView tvwPreparationTimeValue;
     private RecipeDetailsIngredientsFrameLayout fltRecipeDetailsIngredients;
     private TextView tvwForNServings;
+    private ImageView ivwIncreaseNumServings;
+    private ImageView ivwDecreaseNumServings;
+    private int numServings = 2;
     private TextView tvwIngredientsMissing;
     private RecipeDetailsStepsFrameLayout fltRecipeDetailsSteps;
     private TextView tvwRecipeStepsMissing;
@@ -110,9 +113,31 @@ public class RecipeDetailsActivity extends AppCompatActivity {
         tvwPreparationTimeValue = findViewById(R.id.tvwPreparationTimeValue);
         fltRecipeDetailsIngredients = findViewById(R.id.fltRecipeDetailsIngredients);
         tvwForNServings = findViewById(R.id.tvwForNServings);
+        ivwIncreaseNumServings = findViewById(R.id.ivwIncreaseNumServings);
+        ivwDecreaseNumServings = findViewById(R.id.ivwDecreaseNumServings);
         tvwIngredientsMissing = findViewById(R.id.tvwIngredientsMissing);
         fltRecipeDetailsSteps = findViewById(R.id.fltRecipeDetailsSteps);
         tvwRecipeStepsMissing = findViewById(R.id.tvwRecipeStepsMissing);
+
+        ivwIncreaseNumServings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(numServings < 9) {
+                    numServings++;
+                    updateServings();
+                }
+            }
+        });
+
+        ivwDecreaseNumServings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(numServings > 1) {
+                    numServings--;
+                    updateServings();
+                }
+            }
+        });
 
         fabCookRecipe = findViewById(R.id.fabCookRecipe);
         fabCookRecipe.hide();
@@ -319,21 +344,7 @@ public class RecipeDetailsActivity extends AppCompatActivity {
             ivwMockupIndicator.setVisibility(View.GONE);
         }
 
-        List<RecipeStepIngredient> ingredients = recipe.getIngredients();
-        if(ingredients.size() > 0) {
-            fltRecipeDetailsIngredients.setIngredients(ingredients);
-            fltRecipeDetailsIngredients.setVisibility(View.VISIBLE);
-            // fixed servings number for now
-            tvwForNServings.setText(getString(R.string.recipe_details_for_n_servings, 1));
-            tvwForNServings.setVisibility(View.VISIBLE);
-            tvwIngredientsMissing.setVisibility(View.GONE);
-        }
-        else {
-            fltRecipeDetailsIngredients.clearIngredients();
-            fltRecipeDetailsIngredients.setVisibility(View.INVISIBLE);
-            tvwForNServings.setVisibility(View.GONE);
-            tvwIngredientsMissing.setVisibility(View.VISIBLE);
-        }
+        updateServings();
 
         List<RecipeStep> steps = recipe.getRecipeSteps();
         if(steps.size() > 0) {
@@ -395,6 +406,46 @@ public class RecipeDetailsActivity extends AppCompatActivity {
                 }
             })
             .submit();
+    }
+
+    private void updateServings() {
+
+        List<RecipeStepIngredient> ingredients = recipe.getIngredients();
+        if(ingredients.size() > 0) {
+            fltRecipeDetailsIngredients.setIngredients(ingredients, numServings);
+            fltRecipeDetailsIngredients.setVisibility(View.VISIBLE);
+            tvwForNServings.setText(getString(R.string.recipe_details_for_n_servings, numServings));
+            tvwForNServings.setVisibility(View.VISIBLE);
+            updateNumServingsControls(false);
+            tvwIngredientsMissing.setVisibility(View.GONE);
+        }
+        else {
+            fltRecipeDetailsIngredients.clearIngredients();
+            fltRecipeDetailsIngredients.setVisibility(View.INVISIBLE);
+            tvwForNServings.setVisibility(View.GONE);
+            updateNumServingsControls(true);
+            tvwIngredientsMissing.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void updateNumServingsControls(boolean hide) {
+
+        if(hide) {
+            ivwIncreaseNumServings.setVisibility(View.GONE);
+            ivwDecreaseNumServings.setVisibility(View.GONE);
+        }
+        else if(numServings == 1) {
+            ivwIncreaseNumServings.setVisibility(View.VISIBLE);
+            ivwDecreaseNumServings.setVisibility(View.GONE);
+        }
+        else if(numServings == 9) {
+            ivwIncreaseNumServings.setVisibility(View.GONE);
+            ivwDecreaseNumServings.setVisibility(View.VISIBLE);
+        }
+        else {
+            ivwIncreaseNumServings.setVisibility(View.VISIBLE);
+            ivwDecreaseNumServings.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setMainImagePlaceholder() {

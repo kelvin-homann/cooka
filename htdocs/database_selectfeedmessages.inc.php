@@ -168,17 +168,24 @@
 
         /************************************************************************************************************************************************************************************ */
         // part select created recipes
+        // $partSelectCreatedRecipesSql = 
+        //     "select 'createdRecipe' as 'type', concat(user.userName, ' created recipe ', recipeTitle.originalValue) as message, " .
+        //     "recipe.creatorId as userId, user.userName as userName, userImage.imageFileName as userImageFileName, " .
+        //     "recipe.recipeId as object1Id, recipeTitle.originalValue as object1Name, (" .
+        //         "select image.imageFileName " .
+        //         "from Images image " .
+        //         "left join RecipeImages recipeImage on recipeImage.imageId = image.imageId " .
+        //         "left join Users user on user.userId = image.creatorId " .
+        //         "where recipeImage.recipeId = recipe.recipeId and (image.creatorId = user.userId or image.creatorId != user.userId or image.creatorId is null) " . // prefer the user's image if he added one
+        //         "order by image.rating desc, rand() limit 1" . // second order random if multiple best ratings
+        //     ") as object1ImageFileName, null as object2Id, recipe.createdDateTime as performedDateTime " .
+        //     "from Recipes recipe ";
+
         $partSelectCreatedRecipesSql = 
             "select 'createdRecipe' as 'type', concat(user.userName, ' created recipe ', recipeTitle.originalValue) as message, " .
             "recipe.creatorId as userId, user.userName as userName, userImage.imageFileName as userImageFileName, " .
-            "recipe.recipeId as object1Id, recipeTitle.originalValue as object1Name, (" .
-                "select image.imageFileName " .
-                "from Images image " .
-                "left join RecipeImages recipeImage on recipeImage.imageId = image.imageId " .
-                "left join Users user on user.userId = image.creatorId " .
-                "where recipeImage.recipeId = recipe.recipeId and (image.creatorId = user.userId or image.creatorId != user.userId or image.creatorId is null) " . // prefer the user's image if he added one
-                "order by image.rating desc, rand() limit 1" . // second order random if multiple best ratings
-            ") as object1ImageFileName, null as object2Id, recipe.createdDateTime as performedDateTime " .
+            "recipe.recipeId as object1Id, recipeTitle.originalValue as object1Name, mainImage.imageFileName as object1ImageFileName, " .
+            "null as object2Id, recipe.createdDateTime as performedDateTime " .
             "from Recipes recipe ";
 
         if(isset($ofuserId)) {
@@ -190,6 +197,7 @@
             "left join Strings recipeTitle on recipeTitle.stringId = recipe.titleStringId " .
             "left join Users user on user.userId = recipe.creatorId " .
             "left join Images userImage on userImage.imageId = user.profileImageId " .
+            "left join Images mainImage on mainImage.imageId = recipe.mainImageId " .
             "where recipe.createdDateTime is not null ";
 
         if(isset($startDate)) {

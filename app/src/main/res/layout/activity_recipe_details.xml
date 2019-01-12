@@ -364,6 +364,34 @@
                 app:layout_constraintStart_toStartOf="@+id/middleGuide"
                 app:layout_constraintTop_toTopOf="@+id/tvwIngredientsHeading" />
 
+            <ImageView
+                android:id="@+id/ivwIncreaseNumServings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="63dp"
+                android:layout_marginBottom="20dp"
+                android:paddingTop="8dp"
+                android:scaleX="1.4"
+                android:scaleY="1.5"
+                android:tint="@color/colorAccent"
+                app:layout_constraintBottom_toBottomOf="@+id/tvwForNServings"
+                app:layout_constraintEnd_toEndOf="@+id/tvwForNServings"
+                app:srcCompat="@drawable/ic_baseline_arrow_drop_up_24px" />
+
+            <ImageView
+                android:id="@+id/ivwDecreaseNumServings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:layout_marginEnd="63dp"
+                android:paddingBottom="8dp"
+                android:scaleX="1.4"
+                android:scaleY="1.5"
+                android:tint="@color/colorAccent"
+                app:layout_constraintEnd_toEndOf="@+id/tvwForNServings"
+                app:layout_constraintTop_toTopOf="@+id/tvwForNServings"
+                app:srcCompat="@drawable/ic_baseline_arrow_drop_down_24px" />
+
             <TextView
                 android:id="@+id/tvwIngredientsMissing"
                 android:layout_width="0dp"
@@ -432,7 +460,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:background="#FF427833"
+                android:background="#ffe990"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/fltRecipeDetailsSteps">
@@ -453,7 +481,7 @@
                     android:fontFamily="@font/roboto_condensed_bold"
                     android:text="@string/recipe_details_images"
                     android:textAllCaps="true"
-                    android:textColor="#eeeeee"
+                    android:textColor="#444444"
                     android:textSize="18sp"
                     app:layout_constraintStart_toStartOf="@+id/leftGuide2"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -467,7 +495,7 @@
                     android:fontFamily="@font/roboto_condensed_regular"
                     android:text="@string/recipe_details_has_no_other_images"
                     android:textAllCaps="false"
-                    android:textColor="#cccccc"
+                    android:textColor="#444444"
                     android:textSize="18sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/leftGuide2"
@@ -512,7 +540,7 @@
                 android:layout_marginTop="30dp"
                 android:layout_marginEnd="0dp"
                 android:fontFamily="@font/roboto_condensed_bold"
-                android:text="@string/recipe_details_similar_recipes"
+                android:text="Tags"
                 android:textAllCaps="true"
                 android:textColor="#444444"
                 android:textSize="18sp"

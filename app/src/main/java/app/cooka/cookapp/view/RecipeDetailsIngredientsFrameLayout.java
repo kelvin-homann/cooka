@@ -50,11 +50,11 @@ public class RecipeDetailsIngredientsFrameLayout extends FrameLayout {
         frameLayout = findViewById(R.id.recipe_details_ingredients_framelayout);
     }
 
-    public void setIngredients(List<RecipeStepIngredient> ingredients) {
+    public void setIngredients(List<RecipeStepIngredient> ingredients, int numServings) {
 
         frameLayout.removeAllViews();
         for(RecipeStepIngredient ingredient : ingredients)
-            addIngredient(ingredient);
+            addIngredient(ingredient, numServings);
     }
 
     public void clearIngredients() {
@@ -62,12 +62,13 @@ public class RecipeDetailsIngredientsFrameLayout extends FrameLayout {
         frameLayout.removeAllViews();
     }
 
-    public void addIngredient(RecipeStepIngredient ingredient) {
+    public void addIngredient(RecipeStepIngredient ingredient, int numServings) {
 
         View item = View.inflate(getContext(), R.layout.recipe_details_ingredients_item, null);
 
+        if(numServings < 1) numServings = 1;
         final String ingredientAmount = RecipeUtils.ingredientAmountToString(ingredient,
-            ingredient.getIngredientAmount(), false);
+            ingredient.getIngredientAmount() * numServings, false);
         final String ingredientName = ingredient.getIngredientName() != null &&
             ingredient.getIngredientName().length() > 0 ? ingredient.getIngredientName() :
             ingredient.getCustomUnit();

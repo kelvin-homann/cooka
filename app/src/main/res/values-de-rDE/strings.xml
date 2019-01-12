@@ -195,7 +195,7 @@
     <string name="recipe_details_preparation_time">Zubereitungszeit</string>
     <string name="recipe_details_preparation_time_n_min">%1$d min.</string>
     <string name="recipe_details_ingredients">Zutaten</string>
-    <string name="recipe_details_for_n_servings">für %1$d Portionen</string>
+    <string name="recipe_details_for_n_servings">für %1$d Portion/en</string>
     <string name="recipe_details_steps">Kochschritte</string>
     <string name="recipe_details_step_n">Schritt %1$d</string>
     <string name="recipe_details_images">Bilder</string>
