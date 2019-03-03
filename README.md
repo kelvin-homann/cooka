@@ -5,3 +5,10 @@ Cooka is a cooking app with Social Media features developed for Android
 
 * [Retrofit](https://square.github.io/retrofit/)
 * [GSON](https://github.com/google/gson)
+
+### Contributors
+
+* Kelvin Homann
+* Karl Möller
+* Sebastian Zander
+* Arne Schüler
