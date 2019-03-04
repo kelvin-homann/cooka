@@ -1,4 +1,4 @@
-![cooka](https://i.imgur.com/zvud8sb.png)
+![cooka](https://imgur.com/a/7WoNqjC)
 Cooka is a cooking app with Social Media features developed for Android. It is designed to be intuitive and give a good user experience on a mobile device. This app was developed for our Mobile Computing class.
 
 ### Design
