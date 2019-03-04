@@ -10,7 +10,7 @@ The Design Process and look of the App can be seen on [Behance](https://www.beha
 * [Retrofit](https://square.github.io/retrofit/)
 * [GSON](https://github.com/google/gson)
 
-### Contributors
+### Developers
 
 * Kelvin Homann
 * Karl Möller
